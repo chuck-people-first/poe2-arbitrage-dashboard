@@ -10,6 +10,16 @@ Apply, in order, with the Supabase CLI or SQL editor:
 2. `002_public_view_retention.sql` — fixed-column `opportunity_public` view and 14-day/90-day retention function.
 3. `003_ingestion_rpcs.sql` — service-role-only atomic begin/complete RPCs.
 4. `004_failure_and_cron_notes.sql` — failure marker RPC and scheduling notes.
+5. `005_public_view_security_invoker.sql` — removes default security-definer view behavior.
+6. `006_explicit_private_policies.sql` — explicit browser-role deny policies and FK index.
+7. `007_invoker_functions.sql` — removes unnecessary security-definer function behavior.
+8. `008_fix_idempotency_status.sql` — qualifies the idempotency status column.
+
+## Remote deployment
+
+Migrations `001` through `008` are applied to the independent Free project `poe2-arbitrage-dashboard` (ref `eyuapmpubojcsnedzprn`). Remote verification confirmed all six tables, the public view, four RPC functions, RLS, and migration history. A real replay test returned `started` then `skipped` on the identical second call; its synthetic rows were removed afterward.
+
+The Edge Function and hourly Cron are not deployed yet; the current repository contains the Node worker helper and fixture-backed dashboard shell. Do not claim live ingestion until an endpoint and server-side service-role secret are configured.
 
 The six base tables have RLS enabled and browser roles have no table grants. Only `opportunity_public` is granted to `anon` and `authenticated`. The service-role key must remain server-side.
 
