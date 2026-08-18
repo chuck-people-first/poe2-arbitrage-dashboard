@@ -2,7 +2,7 @@
 // Zod-validated at the boundary; rejects partial/typed-wrong payloads.
 
 import { z } from "zod";
-import type { GggMarket, GggPayload } from "./types";
+import type { GggMarket, GggPayload } from "./types.ts";
 
 const marketsSchema = z.object({
   league: z.string(),

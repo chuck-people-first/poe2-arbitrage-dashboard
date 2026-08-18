@@ -1,9 +1,9 @@
 // Conservative scoring: haircut raw profit for movement and market impact,
 // then rank. All thresholds are configurable in RunSettings.
 
-import type { DirectedEdge, Route, RouteLeg, RunSettings } from "./types";
-import type { EvaluatedRoute, RouteCandidate } from "./routes";
-import { valueInBase } from "./routes";
+import type { DirectedEdge, Route, RouteLeg, RunSettings } from "./types.ts";
+import type { EvaluatedRoute, RouteCandidate } from "./routes.ts";
+import { valueInBase } from "./routes.ts";
 
 export interface ScoringResult {
   route: RouteCandidate;

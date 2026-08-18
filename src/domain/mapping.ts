@@ -11,7 +11,7 @@
 //   mirror->divine GGG 4758  vs ninja 4759   (0.02% match)
 
 import type { ItemId } from "./types";
-import { GENERATED_MAPPING } from "./mapping.generated";
+import { GENERATED_MAPPING } from "./mapping.generated.ts";
 
 export const GGG_HUB_PATHS = {
   DIVINE: "Metadata/Items/Currency/CurrencyModValues",

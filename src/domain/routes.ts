@@ -11,9 +11,9 @@
 //  5. Closed triangle: A -> X -> B -> A. Three legs, ends in A.
 //     These are ranked below equally-profitable two-leg flips (extra fill risk).
 
-import type { DirectedEdge, Route, RouteLeg, RunSettings } from "./types";
-import { conflictsWith, edgeIndex } from "./edges";
-import { walkChain } from "./playbook";
+import type { DirectedEdge, Route, RouteLeg, RunSettings } from "./types.ts";
+import { conflictsWith, edgeIndex } from "./edges.ts";
+import { walkChain } from "./playbook.ts";
 
 export interface RouteCandidate {
   strategy: Route["strategy"];

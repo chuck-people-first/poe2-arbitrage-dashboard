@@ -2,8 +2,8 @@
 // In PoE2's Currency Exchange, orders are integer stacks and gold is charged
 // per unit of the item on the RECEIVED (want) side.
 
-import type { DirectedEdge, RouteLeg } from "./types";
-import { goldCostPerUnit } from "./mapping";
+import type { DirectedEdge, RouteLeg } from "./types.ts";
+import { goldCostPerUnit } from "./mapping.ts";
 
 /**
  * Compute an integer trade for one directed edge.

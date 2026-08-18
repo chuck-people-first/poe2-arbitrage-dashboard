@@ -58,7 +58,10 @@ async function rpc(name: string, body: Record<string, unknown>): Promise<unknown
     body: JSON.stringify(body),
     signal: AbortSignal.timeout(30_000),
   });
-  if (!response.ok) throw new Error(`database RPC ${name} returned HTTP ${response.status}`);
+  if (!response.ok) {
+    const detail = (await response.text()).replace(/(authorization|apikey|service.role|secret|password|token)\s*[:=]\s*[^\s,;]+/gi, "$1=[redacted]").slice(0, 300);
+    throw new Error(`database RPC ${name} returned HTTP ${response.status}: ${detail}`);
+  }
   return response.json();
 }
 
@@ -134,7 +137,8 @@ Deno.serve(async (request) => {
     console.log(JSON.stringify({ function: FUNCTION, status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: opportunities.length, durationMs: Date.now() - startedAt }));
     return json(200, { status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: count, durationMs: Date.now() - startedAt });
   } catch (error) {
-    console.error(JSON.stringify({ function: FUNCTION, status: "failed", sourceHour: sourceHourUtc, durationMs: Date.now() - startedAt, error: safeError(error) }));
+    const detail = safeError(error);
+    console.error(JSON.stringify({ function: FUNCTION, status: "failed", sourceHour: sourceHourUtc, durationMs: Date.now() - startedAt, error: detail }));
     return json(502, { error: "ingestion failed", sourceHour: sourceHourUtc });
   }
 });

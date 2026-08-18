@@ -3,7 +3,7 @@
 // A rate and its reciprocal are the SAME observation — no route may use both
 // an edge and its reverse edge, or it manufactures profit from a single price.
 
-import type { DirectedEdge, GggMarket } from "./types";
+import type { DirectedEdge, GggMarket } from "./types.ts";
 
 /**
  * Derive the full directed-edge set from one completed hour of GGG markets.
