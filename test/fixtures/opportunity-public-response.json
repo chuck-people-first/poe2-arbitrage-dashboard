@@ -1,0 +1,47 @@
+[
+  {
+    "id": "row-one",
+    "strategy": "two-leg-cross",
+    "start_currency": "Metadata/Items/Currency/CurrencyModValues",
+    "end_currency": "Metadata/Items/Currency/CurrencyRerollRare",
+    "start_units": "100",
+    "end_units": "2465",
+    "gross_profit_base": "7.12",
+    "conservative_profit_base": "6.81",
+    "expected_profit_base": "6.2",
+    "gold_cost": "303800",
+    "bottleneck_volume_share": "0.04",
+    "ratio_range_pct": "3.2",
+    "movement_haircut_pct": "4.1",
+    "fill_confidence": "0.71",
+    "score": "12.5",
+    "source_hour": "2026-08-18T21:00:00Z",
+    "league": "Runes of Aldur",
+    "route": {
+      "id": "route-one",
+      "strategy": "two-leg-cross",
+      "legs": [
+        {"from": "Metadata/Items/Currency/CurrencyModValues", "to": "Metadata/Items/Currency/CurrencyRerollRare", "playbook": {"give": 100, "receive": 2465}},
+        {"from": "Metadata/Items/Currency/CurrencyRerollRare", "to": "Metadata/Items/Currency/CurrencyRerollRare", "playbook": {"give": 1, "receive": 1}}
+      ]
+    }
+  },
+  {
+    "id": "row-two",
+    "strategy": "closed-triangle",
+    "start_currency": "Metadata/Items/Currency/CurrencyModValues",
+    "end_currency": "Metadata/Items/Currency/CurrencyModValues",
+    "start_units": 100,
+    "end_units": 139,
+    "gross_profit_base": 0.8,
+    "conservative_profit_base": 0.6,
+    "gold_cost": 1168240,
+    "source_hour": "2026-08-18T21:00:00Z",
+    "league": "Runes of Aldur",
+    "route": {
+      "legs": [
+        {"from": "Metadata/Items/Currency/CurrencyModValues", "to": "Metadata/Items/Currency/CurrencyRerollRare", "playbook": {"give": 100, "receive": 3350}}
+      ]
+    }
+  }
+]

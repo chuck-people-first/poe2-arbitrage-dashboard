@@ -1,5 +1,5 @@
 const $=s=>document.querySelector(s);let run=null,tab='best';
-const name=p=>{const x=p.split('/').filter(Boolean).pop()||p;return x.replaceAll('-',' ').replaceAll('_',' ').replace(/\b\w/g,c=>c.toUpperCase())};
+const {normalizeOpportunityRow,name}=window.POE2Dashboard;
 const fmt=n=>new Intl.NumberFormat('en-US',{maximumFractionDigits:2}).format(n);
 function render(){if(!run)return;const hour=run.sourceHourUtc?new Date(run.sourceHourUtc):null;const ageHours=hour?Math.max(0,(Date.now()-hour.getTime())/36e5):null;$('#sourceAge').textContent=hour?`Completed ${hour.toISOString().replace('T',' ').slice(0,16)} UTC${ageHours>2?' · STALE':''}`:'No completed ingestion yet';$('#age').textContent=hour?run.sourceHourUtc.slice(0,10):'—';$('#count').textContent=run.routes.length;let rows=run.routes.filter(r=>tab==='best'||(tab==='two'?r.strategy==='two-leg-cross':r.strategy==='closed-triangle'));$('#tabTitle').textContent=tab==='best'?'Best overall':tab==='two'?'Two-leg':'Closed loops';$('#routes').innerHTML=rows.map(r=>{const legs=(r.legs||[]).map(l=>`${l.playbook.give} ${name(l.from)} → ${l.playbook.receive} ${name(l.to)}`).join(' · ');return `<tr><td><strong>${r.strategy==='closed-triangle'?'▲':'='} ${r.startUnits} ${name(r.startCurrency)} → ${r.endUnits} ${name(r.endCurrency)}</strong><div class="route-sub">${legs}</div></td><td><span class="badge ${r.strategy==='closed-triangle'?'tri':''}">${r.strategy==='closed-triangle'?'3 legs':'2 legs'} · ${Math.round((r.fillConfidence||0)*100)}% conf.</span><div class="route-sub">Hourly signal · ${r.dataAgeHours??'—'}h age</div></td><td class="green"><strong>+${Number(r.conservativeProfitBase||0).toFixed(2)} Divine</strong><div class="route-sub">haircut ${Number(r.movementHaircutPct||0).toFixed(1)}%</div></td><td>${fmt(Number(r.profitPer1mGold||0))}</td><td>${Number(r.profitPerTrade||0).toFixed(3)}</td><td>${Number(r.capitalRoiPct||0).toFixed(1)}%</td><td>${fmt(Number(r.goldCostTotal||r.gold_cost||0))}</td><td>${(Number(r.bottleneckVolumeShare||r.bottleneck_volume_share||0)*100).toFixed(1)}%</td></tr>`}).join('')||'<tr><td colspan="8" class="empty">No completed ingestion data is available yet. The dashboard will not fall back to fixtures.</td></tr>'}
 async function load(){
@@ -8,7 +8,8 @@ async function load(){
   if(!url||!key){run={routes:[],sourceHourUtc:null,league:'',settings:{}};$('#sourceAge').textContent='No live connection configured';$('#age').textContent='—';$('#count').textContent='0';render();return}
   const response=await fetch(`${url}/rest/v1/opportunity_public?select=*&order=score.desc`,{headers:{apikey:key,Authorization:`Bearer ${key}`}});
   if(!response.ok){$('#sourceAge').textContent=`Live read unavailable (${response.status})`;run={routes:[],sourceHourUtc:null,league:'',settings:{}};render();return;}
-  const rows=await response.json();
-  run={routes:rows,sourceHourUtc:rows[0]?.source_hour??null,league:rows[0]?.league??'',settings:{}};render();
+  const rows = await response.json();
+  const routes = rows.map(normalizeOpportunityRow);
+  run={routes,sourceHourUtc:rows[0]?.source_hour??null,league:rows[0]?.league??'',settings:{}};render();
 }
 document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>{document.querySelectorAll('[data-tab]').forEach(x=>x.classList.remove('active'));b.classList.add('active');tab=b.dataset.tab;render()});$('#refresh').onclick=load;load();
