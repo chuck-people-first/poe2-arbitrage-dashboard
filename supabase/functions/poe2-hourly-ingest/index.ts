@@ -134,6 +134,7 @@ Deno.serve(async (request) => {
     if (!run || run.status === "skipped") return json(200, { status: "skipped", sourceHour: sourceHourUtc, durationMs: Date.now() - startedAt });
     if (!run.run_id) throw new Error("begin RPC returned no run id");
     const count = await rpc("complete_poe2_ingestion", { p_run_id: run.run_id, p_league: LEAGUE, p_source_hour: sourceHourUtc, p_payload_sha256: payloadSha256, p_opportunities: opportunities });
+    await rpc("project_poe2_opportunities", { p_run_id: run.run_id });
     console.log(JSON.stringify({ function: FUNCTION, status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: opportunities.length, durationMs: Date.now() - startedAt }));
     return json(200, { status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: count, durationMs: Date.now() - startedAt });
   } catch (error) {
