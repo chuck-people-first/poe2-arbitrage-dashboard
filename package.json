@@ -7,6 +7,7 @@
   "type": "module",
   "scripts": {
     "spike": "tsx src/spike.ts",
+    "build": "node scripts/build-static.mjs",
     "dashboard:fixture": "tsx scripts/generate-dashboard-fixture.ts",
     "dashboard:serve": "python -m http.server 4173 --directory public",
     "test": "vitest run",
