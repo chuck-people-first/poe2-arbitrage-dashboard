@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PoE2 Arbitrage Dashboard</title>
+  <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div><p class="eyebrow">POE2 MARKET INTELLIGENCE</p><h1>Arbitrage signals</h1><p class="subhead">Conservative hourly opportunities — verify every quote in Exchange before posting.</p></div>
+      <div class="source-badge"><span class="dot"></span><div><strong>Hourly signal</strong><small id="sourceAge">Loading source…</small></div></div>
+    </header>
+    <section class="controls"><label>League<select id="league"><option>Runes of Aldur</option></select></label><label>Base currency<select><option>Divine Orb</option></select></label><label>Capital<input id="capital" type="number" value="100" min="1"></label><button id="refresh">Refresh fixture</button></section>
+    <section class="cards"><article><span>Source age</span><strong id="age">—</strong><small>Completed UTC hour</small></article><article><span>Candidate routes</span><strong id="count">—</strong><small>After conservative filters</small></article><article><span>Gold budget</span><strong id="budget">2,000,000</strong><small>Per run</small></article><article><span>Data policy</span><strong>≤ 20%</strong><small>Hourly volume ceiling</small></article></section>
+    <nav class="tabs"><button class="active" data-tab="best">Best overall</button><button data-tab="two">Two-leg</button><button data-tab="triangle">Closed loops</button></nav>
+    <section class="panel"><div class="panel-head"><div><h2 id="tabTitle">Best overall</h2><p>Ranked by expected profit per gold, fewer legs, freshness, and persistence.</p></div><span class="pill">SOURCE: GGG COMPLETED HOUR</span></div><div class="table-wrap"><table><thead><tr><th>Route</th><th>Signal</th><th>Conservative profit</th><th>Profit / 1M gold</th><th>Profit / trade</th><th>Capital ROI</th><th>Gold</th><th>Volume share</th></tr></thead><tbody id="routes"></tbody></table></div></section>
+    <footer><span>⚠ Historical aggregate data is not live or executable.</span><span>Source age and assumptions are shown per route.</span></footer>
+  </main><script src="/dashboard.js"></script>
+</body></html>

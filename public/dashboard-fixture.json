@@ -1,0 +1,199 @@
+{
+  "runId": "fixture-phase3",
+  "league": "Runes of Aldur",
+  "sourceHourUtc": "2026-08-18T03:00:00Z",
+  "settings": {
+    "startCurrency": "Metadata/Items/Currency/CurrencyRerollRare",
+    "baseCurrency": "Metadata/Items/Currency/CurrencyModValues",
+    "capitalUnits": 100,
+    "goldBudget": 2000000,
+    "maxLegs": 3,
+    "maxVolumeSharePct": 20,
+    "minConservativeProfitBase": 0.05,
+    "maxDataAgeHours": 0,
+    "movementRiskTolerancePct": 100
+  },
+  "routes": [
+    {
+      "id": "CurrencyRerollRare-CurrencyModValues",
+      "strategy": "two-leg-cross",
+      "startCurrency": "Metadata/Items/Currency/CurrencyRerollRare",
+      "endCurrency": "Metadata/Items/Currency/CurrencyAddModToRare",
+      "hubCurrency": "Metadata/Items/Currency/CurrencyModValues",
+      "legs": [
+        {
+          "edgeKey": "Metadata/Items/Currency/CurrencyRerollRare|Metadata/Items/Currency/CurrencyModValues:Metadata/Items/Currency/CurrencyRerollRare->Metadata/Items/Currency/CurrencyModValues",
+          "from": "Metadata/Items/Currency/CurrencyRerollRare",
+          "to": "Metadata/Items/Currency/CurrencyModValues",
+          "fromUnits": 100,
+          "toUnits": 10,
+          "playbook": {
+            "give": 100,
+            "pay": "Metadata/Items/Currency/CurrencyRerollRare",
+            "receive": 10,
+            "want": "Metadata/Items/Currency/CurrencyModValues"
+          },
+          "goldCost": 8000,
+          "volumeShare": 0.000040299993149001164
+        },
+        {
+          "edgeKey": "Metadata/Items/Currency/CurrencyModValues|Metadata/Items/Currency/CurrencyAddModToRare:Metadata/Items/Currency/CurrencyModValues->Metadata/Items/Currency/CurrencyAddModToRare",
+          "from": "Metadata/Items/Currency/CurrencyModValues",
+          "to": "Metadata/Items/Currency/CurrencyAddModToRare",
+          "fromUnits": 10,
+          "toUnits": 2465,
+          "playbook": {
+            "give": 10,
+            "pay": "Metadata/Items/Currency/CurrencyModValues",
+            "receive": 2465,
+            "want": "Metadata/Items/Currency/CurrencyAddModToRare"
+          },
+          "goldCost": 295800,
+          "volumeShare": 0.0017075544564400433
+        }
+      ],
+      "startUnits": 100,
+      "endUnits": 2465,
+      "grossProfitBase": 7.433876811594203,
+      "goldCostTotal": 303800,
+      "movementHaircutPct": 39.148073022312374,
+      "conservativeProfitBase": 6.810636738226252,
+      "fillConfidence": 0.6025590836545199,
+      "expectedProfitBase": 4.103811032089419,
+      "score": 6.75413270587462,
+      "profitPer1mGold": 22.418159112002147,
+      "profitPerTrade": 3.405318369113126,
+      "capitalRoiPct": 427.8019269776876,
+      "bottleneckVolumeShare": 0.0017075544564400433,
+      "bottleneckEdgeKey": "Metadata/Items/Currency/CurrencyModValues|Metadata/Items/Currency/CurrencyAddModToRare:Metadata/Items/Currency/CurrencyModValues->Metadata/Items/Currency/CurrencyAddModToRare",
+      "dataAgeHours": 0,
+      "ratioRangePct": 78.29614604462475
+    },
+    {
+      "id": "CurrencyRerollRare-CurrencyAddModToRare",
+      "strategy": "two-leg-cross",
+      "startCurrency": "Metadata/Items/Currency/CurrencyRerollRare",
+      "endCurrency": "Metadata/Items/Currency/CurrencyGemQuality",
+      "hubCurrency": "Metadata/Items/Currency/CurrencyAddModToRare",
+      "legs": [
+        {
+          "edgeKey": "Metadata/Items/Currency/CurrencyRerollRare|Metadata/Items/Currency/CurrencyAddModToRare:Metadata/Items/Currency/CurrencyRerollRare->Metadata/Items/Currency/CurrencyAddModToRare",
+          "from": "Metadata/Items/Currency/CurrencyRerollRare",
+          "to": "Metadata/Items/Currency/CurrencyAddModToRare",
+          "fromUnits": 100,
+          "toUnits": 3350,
+          "playbook": {
+            "give": 100,
+            "pay": "Metadata/Items/Currency/CurrencyRerollRare",
+            "receive": 3350,
+            "want": "Metadata/Items/Currency/CurrencyAddModToRare"
+          },
+          "goldCost": 402000,
+          "volumeShare": 0.029084153043417865
+        },
+        {
+          "edgeKey": "Metadata/Items/Currency/CurrencyGemQuality|Metadata/Items/Currency/CurrencyAddModToRare:Metadata/Items/Currency/CurrencyAddModToRare->Metadata/Items/Currency/CurrencyGemQuality",
+          "from": "Metadata/Items/Currency/CurrencyAddModToRare",
+          "to": "Metadata/Items/Currency/CurrencyGemQuality",
+          "fromUnits": 3350,
+          "toUnits": 744,
+          "playbook": {
+            "give": 3350,
+            "pay": "Metadata/Items/Currency/CurrencyAddModToRare",
+            "receive": 744,
+            "want": "Metadata/Items/Currency/CurrencyGemQuality"
+          },
+          "goldCost": 744000,
+          "volumeShare": 0.05054004483391074
+        }
+      ],
+      "startUnits": 100,
+      "endUnits": 744,
+      "grossProfitBase": 3.3944444444444475,
+      "goldCostTotal": 1146000,
+      "movementHaircutPct": 11.249999999999998,
+      "conservativeProfitBase": 2.2069444444444475,
+      "fillConfidence": 0.7149162228393391,
+      "expectedProfitBase": 1.577780386238488,
+      "score": 0.6883858578701956,
+      "profitPer1mGold": 1.9257804925344217,
+      "profitPerTrade": 1.1034722222222237,
+      "capitalRoiPct": 20.907894736842135,
+      "bottleneckVolumeShare": 0.05054004483391074,
+      "bottleneckEdgeKey": "Metadata/Items/Currency/CurrencyGemQuality|Metadata/Items/Currency/CurrencyAddModToRare:Metadata/Items/Currency/CurrencyAddModToRare->Metadata/Items/Currency/CurrencyGemQuality",
+      "dataAgeHours": 0,
+      "ratioRangePct": 22.499999999999996
+    },
+    {
+      "id": "CurrencyRerollRare-CurrencyAddModToRare-CurrencyGemQuality",
+      "strategy": "closed-triangle",
+      "startCurrency": "Metadata/Items/Currency/CurrencyRerollRare",
+      "endCurrency": "Metadata/Items/Currency/CurrencyRerollRare",
+      "hubCurrency": "Metadata/Items/Currency/CurrencyRerollRare",
+      "legs": [
+        {
+          "edgeKey": "Metadata/Items/Currency/CurrencyRerollRare|Metadata/Items/Currency/CurrencyAddModToRare:Metadata/Items/Currency/CurrencyRerollRare->Metadata/Items/Currency/CurrencyAddModToRare",
+          "from": "Metadata/Items/Currency/CurrencyRerollRare",
+          "to": "Metadata/Items/Currency/CurrencyAddModToRare",
+          "fromUnits": 100,
+          "toUnits": 3350,
+          "playbook": {
+            "give": 100,
+            "pay": "Metadata/Items/Currency/CurrencyRerollRare",
+            "receive": 3350,
+            "want": "Metadata/Items/Currency/CurrencyAddModToRare"
+          },
+          "goldCost": 402000,
+          "volumeShare": 0.029084153043417865
+        },
+        {
+          "edgeKey": "Metadata/Items/Currency/CurrencyGemQuality|Metadata/Items/Currency/CurrencyAddModToRare:Metadata/Items/Currency/CurrencyAddModToRare->Metadata/Items/Currency/CurrencyGemQuality",
+          "from": "Metadata/Items/Currency/CurrencyAddModToRare",
+          "to": "Metadata/Items/Currency/CurrencyGemQuality",
+          "fromUnits": 3350,
+          "toUnits": 744,
+          "playbook": {
+            "give": 3350,
+            "pay": "Metadata/Items/Currency/CurrencyAddModToRare",
+            "receive": 744,
+            "want": "Metadata/Items/Currency/CurrencyGemQuality"
+          },
+          "goldCost": 744000,
+          "volumeShare": 0.05054004483391074
+        },
+        {
+          "edgeKey": "Metadata/Items/Currency/CurrencyGemQuality|Metadata/Items/Currency/CurrencyRerollRare:Metadata/Items/Currency/CurrencyGemQuality->Metadata/Items/Currency/CurrencyRerollRare",
+          "from": "Metadata/Items/Currency/CurrencyGemQuality",
+          "to": "Metadata/Items/Currency/CurrencyRerollRare",
+          "fromUnits": 744,
+          "toUnits": 139,
+          "playbook": {
+            "give": 744,
+            "pay": "Metadata/Items/Currency/CurrencyGemQuality",
+            "receive": 139,
+            "want": "Metadata/Items/Currency/CurrencyRerollRare"
+          },
+          "goldCost": 22240,
+          "volumeShare": 0.11146752205292702
+        }
+      ],
+      "startUnits": 100,
+      "endUnits": 139,
+      "grossProfitBase": 4.116666666666667,
+      "goldCostTotal": 1168240,
+      "movementHaircutPct": 33.33333333333333,
+      "conservativeProfitBase": 0.5981481481481494,
+      "fillConfidence": 0.44395201884190394,
+      "expectedProfitBase": 0.2655490779369172,
+      "score": 0.07576898523617213,
+      "profitPer1mGold": 0.5120079334281906,
+      "profitPerTrade": 0.19938271604938315,
+      "capitalRoiPct": 5.6666666666666785,
+      "bottleneckVolumeShare": 0.11146752205292702,
+      "bottleneckEdgeKey": "Metadata/Items/Currency/CurrencyGemQuality|Metadata/Items/Currency/CurrencyRerollRare:Metadata/Items/Currency/CurrencyGemQuality->Metadata/Items/Currency/CurrencyRerollRare",
+      "dataAgeHours": 0,
+      "ratioRangePct": 66.66666666666666
+    }
+  ],
+  "createdAtUtc": "2026-08-18T20:10:42.161Z"
+}
