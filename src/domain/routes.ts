@@ -14,7 +14,6 @@
 import type { DirectedEdge, Route, RouteLeg, RunSettings } from "./types";
 import { conflictsWith, edgeIndex } from "./edges";
 import { walkChain } from "./playbook";
-import { displayName, goldCostPerUnit } from "./mapping";
 
 export interface RouteCandidate {
   strategy: Route["strategy"];
@@ -65,6 +64,7 @@ export function enumerateClosedTriangles(
   edges: DirectedEdge[],
   settings: RunSettings,
 ): RouteCandidate[] {
+  if (settings.maxLegs < 3) return [];
   const out: RouteCandidate[] = [];
   const byFrom = new Map<string, DirectedEdge[]>();
   for (const e of edges) {
@@ -144,16 +144,20 @@ export function valueInBase(
   units: number,
   basePath: string,
   edges: DirectedEdge[],
+  usedEdgeKeys: Set<string> = new Set(),
 ): number | null {
   if (itemPath === basePath) return units;
   const idx = edgeIndex(edges);
-  const direct = idx.get(`${itemPath}->${basePath}`);
+  const direct = idx.getAllByEndpoints(itemPath, basePath).find((e) => !conflictsWith(e, usedEdgeKeys));
   if (direct) return units * direct.rate;
   // try via an intermediate hub (two hops) — only when both legs are independent
   const viaCandidates = edges.filter((e) => e.from === itemPath);
   for (const e of viaCandidates) {
-    const second = idx.get(`${e.to}->${basePath}`);
-    if (second && !conflictsWith(second, new Set([e.key]))) {
+    if (conflictsWith(e, usedEdgeKeys)) continue;
+    const second = idx.getAllByEndpoints(e.to, basePath).find(
+      (candidate) => !conflictsWith(candidate, new Set([...usedEdgeKeys, e.key])),
+    );
+    if (second) {
       return units * e.rate * second.rate;
     }
   }

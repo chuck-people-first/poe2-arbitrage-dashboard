@@ -30,11 +30,13 @@ export interface ScoringResult {
 export function ewmaVolatility(prices: number[], lambda = 0.94): number {
   if (prices.length < 2) return 0;
   let variance = 0;
-  let mean = 0;
+
   // robust MAD volatility to avoid outlier-driven values
   const diffs: number[] = [];
   for (let i = 1; i < prices.length; i++) {
-    if (prices[i - 1] !== 0) diffs.push(Math.log(prices[i] / prices[i - 1]));
+    const previous = prices[i - 1]!;
+    const current = prices[i]!;
+    if (previous > 0 && current > 0) diffs.push(Math.log(current / previous));
   }
   if (diffs.length === 0) return 0;
   const med = diffs.slice().sort((a, b) => a - b)[Math.floor(diffs.length / 2)]!;
@@ -67,11 +69,12 @@ export function scoreCandidate(
   const hard = hardFilters(c, ev, allEdges, settings);
   if (hard) return { route: c, score: null, fields: null, rejection: hard };
 
-  const startValue = valueInBase(c.startCurrency, c.startUnits, settings.baseCurrency, allEdges);
+  const used = new Set(c.edges.map((e) => e.key));
+  const startValue = valueInBase(c.startCurrency, c.startUnits, settings.baseCurrency, allEdges, used);
   if (startValue === null) {
     return { route: c, score: null, fields: null, rejection: "start currency not valued in base" };
   }
-  const endValue = valueInBase(c.endCurrency, ev.endUnits, settings.baseCurrency, allEdges);
+  const endValue = valueInBase(c.endCurrency, ev.endUnits, settings.baseCurrency, allEdges, used);
   if (endValue === null) {
     return { route: c, score: null, fields: null, rejection: "end currency not valued in base" };
   }
@@ -160,7 +163,7 @@ function hardFilters(
     if (leg.toUnits <= 0) return "zero received units after integer rounding";
     if (leg.goldCost < 0) return "negative gold cost";
   }
-  const startValue = valueInBase(c.startCurrency, c.startUnits, settings.baseCurrency, allEdges);
+  const startValue = valueInBase(c.startCurrency, c.startUnits, settings.baseCurrency, allEdges, new Set(c.edges.map((e) => e.key)));
   if (startValue === null) return "start currency unvalued";
   if (startValue <= 0) return "non-positive start value";
   return null;

@@ -50,12 +50,15 @@ export function pairRate(
   m: GggMarket,
   side: RatioSide,
   which: "low" | "high" | "mid",
-): { from: string; to: string; rate: number } {
+): { from: string; to: string; rate: number | null } {
   const a = m.pair[0]!;
   const b = m.pair[1]!;
   const ra = (which === "low" ? m.lowestRatio : which === "high" ? m.highestRatio : m.lowestRatio)[a] ?? 0;
   const rb = (which === "low" ? m.lowestRatio : which === "high" ? m.highestRatio : m.highestRatio)[b] ?? 0;
   // rate a->b = rb/ra (units of b per 1 unit of a)
+  if (ra <= 0 || rb <= 0) {
+    return { from: side === 0 ? a : b, to: side === 0 ? b : a, rate: null };
+  }
   if (which === "mid") {
     const lo = Math.min(
       (m.lowestRatio[b] ?? 0) / (m.lowestRatio[a] ?? 0),
@@ -65,6 +68,9 @@ export function pairRate(
       (m.lowestRatio[b] ?? 0) / (m.lowestRatio[a] ?? 0),
       (m.highestRatio[b] ?? 0) / (m.highestRatio[a] ?? 0),
     );
+    if (!Number.isFinite(lo) || !Number.isFinite(hi) || lo <= 0 || hi <= 0) {
+      return { from: side === 0 ? a : b, to: side === 0 ? b : a, rate: null };
+    }
     if (side === 0) return { from: a, to: b, rate: (lo + hi) / 2 };
     return { from: b, to: a, rate: 2 / (lo + hi) };
   }

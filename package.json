@@ -1,13 +1,23 @@
 {
   "name": "poe2-arbitrage-dashboard",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "private": true,
-  "description": "PoE2 currency-exchange arbitrage signal dashboard. Phase 0 data/algorithm spike.",
+  "description": "PoE2 currency-exchange arbitrage signal dashboard",
   "license": "MIT",
   "type": "module",
   "scripts": {
     "spike": "tsx src/spike.ts",
     "test": "vitest run",
-    "test:watch": "vitest"
+    "test:watch": "vitest",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "@types/node": "^24.10.1",
+    "tsx": "^4.20.6",
+    "typescript": "^5.9.3",
+    "vitest": "^4.1.10"
   }
 }

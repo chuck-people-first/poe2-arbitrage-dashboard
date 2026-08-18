@@ -48,8 +48,9 @@ export interface GggPayload {
  * or it manufactures profit from a single price.
  */
 export interface DirectedEdge {
-  key: string; // "A→B"
-  reverseEdgeKey: string; // "B→A"
+  observationId: string;
+  key: string; // "observation:A→B"
+  reverseEdgeKey: string; // "observation:B→A"
   from: string;
   to: string;
   /** units of `to` received per 1 unit of `from` (midpoint of observed range) */

@@ -67,13 +67,13 @@ describe("reciprocal edges never fabricate arbitrage", () => {
     ];
     const edges = deriveEdges(mkts, "2026-08-18T00:00:00Z");
     // Build the triangle CHAOS -> DIVINE -> EXALTED -> CHAOS manually:
-    const e1 = edges.find((e) => e.key === `${CHAOS}->${DIVINE}`)!;
-    const e2 = edges.find((e) => e.key === `${DIVINE}->${EXALTED}`)!;
-    const e3 = edges.find((e) => e.key === `${EXALTED}->${CHAOS}`)!;
+    const e1 = edges.find((e) => e.from === CHAOS && e.to === DIVINE)!;
+    const e2 = edges.find((e) => e.from === DIVINE && e.to === EXALTED)!;
+    const e3 = edges.find((e) => e.from === EXALTED && e.to === CHAOS)!;
     // All three are distinct markets — this is a legitimate triangle.
     expect(chainUsesIndependentObservations([e1, e2, e3])).toBe(true);
     // But using e1 then its reverse is rejected:
-    const reverse = edges.find((e) => e.key === `${DIVINE}->${CHAOS}`)!;
+    const reverse = edges.find((e) => e.from === DIVINE && e.to === CHAOS && e.observationId === e1.observationId)!;
     expect(chainUsesIndependentObservations([e1, reverse])).toBe(false);
   });
 
@@ -111,7 +111,7 @@ describe("integer playbook conservation", () => {
   it("received units are floored, never rounded up", () => {
     const mkts = [market("ROA", [CHAOS, DIVINE], [100, 1], [10000, 100])];
     const edges = deriveEdges(mkts, "2026-08-18T00:00:00Z");
-    const e = edges.find((x) => x.key === `${CHAOS}->${DIVINE}`)!;
+    const e = edges.find((x) => x.from === CHAOS && x.to === DIVINE)!;
     // 100 chaos -> exactly 1 divine
     const res = walkChain([e], 100);
     expect(res.endUnits).toBe(1);
