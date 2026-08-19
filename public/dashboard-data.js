@@ -42,6 +42,7 @@
       realizedProfitBase: route.realizedProfitBase ?? null,
       // Phase A: the Edge Function embeds the resolved two-leg flip under
       // route.flip. Where present it is the authoritative product projection.
+      cycle: route.cycle || row?.cycle || null,
       flip: route.flip || null,
     };
   }

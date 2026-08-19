@@ -352,7 +352,9 @@ export interface ClosedFlipCycle {
   finalStartingQuantity: number;
   leftoverStartingCurrency: number;
   netRealizedProfitStart: number;
+  realizedProfitDivineEquivalent: number;
   conservativeRealizedProfitStart: number;
+  conservativeRealizedProfitDivine: number;
   totalGold: number;
   tradeCount: 3;
   bottleneckVolume: number;

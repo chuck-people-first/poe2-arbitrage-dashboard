@@ -221,8 +221,8 @@ export function toClosedFlipCycle(route: Route, league: string, sourceHourUtc: s
   const toFlipLeg = (l: RouteLeg): FlipLeg => ({ pay: l.fromUnits, receive: l.toUnits, goldCost: l.goldCost, hourlyVolume: l.fromUnits / l.volumeShare });
   return { id: route.id, familyId: route.routeFamilyId, league, sourceHourUtc, startCurrency: start, startingQuantity: route.startUnits, item,
     buyLeg: toFlipLeg(leg1), sellLeg: toFlipLeg(leg2), returnLeg: toFlipLeg(leg3), legSourceHours: legs.map(l => l.sourceHourUtc ?? sourceHourUtc),
-    finalStartingQuantity, leftoverStartingCurrency: 0, netRealizedProfitStart: gross, conservativeRealizedProfitStart, totalGold, tradeCount: 3,
+    finalStartingQuantity, leftoverStartingCurrency: 0, netRealizedProfitStart: gross, realizedProfitDivineEquivalent: route.grossProfitBase, conservativeRealizedProfitStart, conservativeRealizedProfitDivine: route.conservativeProfitBase, totalGold, tradeCount: 3,
     bottleneckVolume, maxVolumeShare: maxShare, movementHaircutPct: Math.max(...legs.map(l => l.movementHaircutPct ?? route.movementHaircutPct)), marketImpactHaircutPct: Math.max(...legs.map(l => l.marketImpactPct ?? route.estimatedMarketImpactPct)),
-    realizedProfitPer100kGold: totalGold > 0 ? conservativeRealizedProfitStart / totalGold * 100_000 : 0, capitalRoiPct: route.startUnits > 0 ? conservativeRealizedProfitStart / route.startUnits * 100 : 0,
+    realizedProfitPer100kGold: totalGold > 0 ? route.conservativeProfitBase / totalGold * 100_000 : 0, capitalRoiPct: route.startUnits > 0 ? conservativeRealizedProfitStart / route.startUnits * 100 : 0,
     executable: true, closed: true, rejectionReason: null };
 }

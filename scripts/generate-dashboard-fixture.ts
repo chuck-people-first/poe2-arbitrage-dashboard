@@ -90,20 +90,46 @@ const demoRoute: Route = {
   valuation: valuation(),
 };
 
+const closedDemoRoute: Route = {
+  ...demoRoute,
+  id: "demo-closed-tul-cycle",
+  routeFamilyId: "fam-tul-closed-demo",
+  strategy: "closed-triangle",
+  endCurrency: EX,
+  endUnits: 340,
+  legs: [
+    leg(EX, TULS, 265, 62, 43400, "EX->TUL"),
+    leg(TULS, DIV, 62, 2, 1600, "TUL->DIV"),
+    leg(DIV, EX, 2, 340, 2000, "DIV->EX"),
+  ],
+  goldCostTotal: 47000,
+  grossProfitBase: 1.0,
+  conservativeProfitBase: 0.8,
+  profitKind: "closed-realized",
+  profitClass: "closed-realized",
+  realizedCurrency: EX,
+  realizedProfitStart: 75,
+  realizedProfitBase: 1.0,
+  valuation: { ...valuation(), profitKind: "closed-realized", returnToBaseIncluded: true, valuationExecutable: true, valuationGoldIncluded: true, valuationTradeCountIncluded: 1 },
+};
+
 const row = projectRoute(demoRoute, LEAGUE, HOUR, HASH, REF)!;
+const closedRow = projectRoute(closedDemoRoute, LEAGUE, HOUR, HASH, REF)!;
 const fixture = {
   _demo: true,
   _note: "DEMO DATA — NOT LIVE OR EXECUTABLE. Synthetic demonstration of the product model (real Tul's Catalyst identity, controlled quantities). Never a live fallback.",
   league: LEAGUE,
-  status: { league: LEAGUE, latest_successful_source_hour: HOUR, completed_at: new Date(REF).toISOString(), candidate_count: 1, algorithm_version: "phase-a-demo", run_status: "succeeded" },
-  routes: [row],
+  status: { league: LEAGUE, latest_successful_source_hour: HOUR, completed_at: new Date(REF).toISOString(), candidate_count: 2, algorithm_version: "phase-a-demo", run_status: "succeeded" },
+  routes: [closedRow, row],
 };
 
 mkdirSync("public", { recursive: true });
 writeFileSync(join("public", "dashboard-fixture.json"), JSON.stringify(fixture, null, 2));
 writeFileSync(join("public", "dashboard-demo.js"), `window.POE2_DEMO_DATA=${JSON.stringify(fixture)};\n`);
 const f = row.route.flip!;
+const c = closedRow.cycle!;
 console.log(`Wrote dashboard-fixture.json + dashboard-demo.js (DEMO)`);
 console.log(`  Pay ${f.buyLeg.pay} ${f.buyCurrency.name} -> receive ${f.buyLeg.receive} ${f.item.name}`);
 console.log(`  Pay ${f.sellLeg.pay} ${f.item.name} -> receive ${f.sellLeg.receive} ${f.sellCurrency.name}`);
 console.log(`  conservative ${f.conservativeNetProfitDivine.toFixed(3)} Div | div/100k ${f.divPer100kGold.toFixed(2)} | gold ${f.goldRequired} | ${f.fillRiskLabel} fill | icon ${f.item.iconUrl!.slice(0, 60)}...`);
+console.log(`  CLOSED cycle ${c.startingQuantity} ${c.startCurrency.name} -> ${c.finalStartingQuantity} ${c.startCurrency.name} | profit ${c.netRealizedProfitStart} ${c.startCurrency.name} | div/100k ${c.realizedProfitPer100kGold.toFixed(2)} | gold ${c.totalGold}`);

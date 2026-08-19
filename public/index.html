@@ -33,16 +33,20 @@
 
     <section class="cards">
       <article><span>Source age</span><strong id="age">—</strong><small>Completed UTC hour</small></article>
-      <article><span>Executable flips</span><strong id="count">—</strong><small>Same-item two-leg flips</small></article>
+      <article><span>Executable opportunities</span><strong id="count">—</strong><small>Closed cycles + mark-to-market</small></article>
       <article><span>Run status</span><strong id="runStatus">—</strong><small>succeeded / failed / running</small></article>
       <article><span>Algorithm</span><strong id="algorithmVersion">—</strong><small>Version of this run</small></article>
     </section>
 
+    <nav class="tabs" aria-label="Opportunity type">
+      <button class="active" data-tab="closed">Closed Cycles</button>
+      <button data-tab="mtm">Mark-to-Market</button>
+    </nav>
     <section class="panel">
       <div class="panel-head">
         <div>
-          <h2 id="tabTitle">Same-item two-leg flips</h2>
-          <p id="tabHint">Every row is an executable playbook: buy the item, then sell that same item for another currency.</p>
+          <h2 id="tabTitle">Closed Cycles</h2>
+          <p id="tabHint">Executable three-trade cycles only. The return conversion is independently observed and included.</p>
         </div>
         <span class="pill">SOURCE: GGG COMPLETED HOUR</span>
       </div>
@@ -50,15 +54,7 @@
         <table>
           <thead>
             <tr>
-              <th>Item</th>
-              <th>Buy With / Path</th>
-              <th>Conservative P&amp;L</th>
-              <th class="sort-dg" data-sort="dg">Div / 100K Gold <span class="sort-caret">↕</span></th>
-              <th>Volume</th>
-              <th>Fill Risk</th>
-              <th>Gold</th>
-              <th>Trend</th>
-              <th>Recommendation</th>
+              <th>Trade cycle</th><th>Start → Final</th><th>Realized profit</th><th>Div / 100K Gold</th><th>Trades</th><th>Bottleneck</th><th>Total gold</th><th>Recommendation</th>
             </tr>
           </thead>
           <tbody id="routes"></tbody>
@@ -67,7 +63,7 @@
     </section>
 
     <footer>
-      <span>ⓘ Div / 100K Gold = Net Divine profit per 100K Gold = <code>conservative profit ÷ gold × 100,000</code>.</span>
+      <span>ⓘ Div / 100K Gold = conservative realized Divine-equivalent profit ÷ total gold across every leg × 100,000.</span>
       <span>Fill risk is an estimate from hourly volume and spread — never a guarantee. Mark-to-market edges are not closed realized loops.</span>
     </footer>
   </main>

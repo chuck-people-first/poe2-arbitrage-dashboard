@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import type { Route, RouteLeg } from "../src/domain/types.ts";
 import { toClosedFlipCycle } from "../src/domain/flips.ts";
+import { projectRoute } from "../src/domain/opportunity.ts";
 import { GGG_HUB_PATHS } from "../src/domain/mapping.ts";
 
 const EX = GGG_HUB_PATHS.EXALTED;
@@ -39,7 +40,13 @@ describe("ClosedFlipCycle", () => {
     expect(c?.returnLeg.pay).toBe(2); expect(c?.returnLeg.receive).toBe(340);
     expect(c?.netRealizedProfitStart).toBe(75); expect(c?.totalGold).toBe(47_000);
     expect(c?.finalStartingQuantity).toBeGreaterThan(c!.startingQuantity);
-    expect(c?.realizedProfitPer100kGold).toBeCloseTo(.8 / 47_000 * 100_000 * 75, 5);
+    expect(c?.realizedProfitPer100kGold).toBeCloseTo(.8 / 47_000 * 100_000, 5);
+  });
+  it("projectRoute carries the closed-cycle projection into the public row", () => {
+    const row = projectRoute(cycle(), "Runes of Aldur", HOUR, "fixture", Date.parse("2026-08-18T22:10:00Z"));
+    expect(row?.cycle?.closed).toBe(true);
+    expect(row?.cycle?.tradeCount).toBe(3);
+    expect(row?.route.flip).toBeUndefined();
   });
   it("rejects a missing/non-executable return leg", () => {
     expect(toClosedFlipCycle(cycle({ legs: [leg(EX, TUL, 265, 62, 43_400), leg(TUL, DIV, 62, 2, 1_600)] }), "Runes of Aldur", HOUR)).toBeNull();
