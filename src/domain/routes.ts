@@ -146,10 +146,22 @@ export function valueInBase(
   edges: DirectedEdge[],
   usedEdgeKeys: Set<string> = new Set(),
 ): number | null {
-  if (itemPath === basePath) return units;
+  const path = valuationPath(itemPath, basePath, edges, usedEdgeKeys);
+  if (path === null) return null;
+  return path.reduce((value, edge) => value * edge.rate, units);
+}
+
+/** Return the independently observed edge path used to value an item. */
+export function valuationPath(
+  itemPath: string,
+  basePath: string,
+  edges: DirectedEdge[],
+  usedEdgeKeys: Set<string> = new Set(),
+): DirectedEdge[] | null {
+  if (itemPath === basePath) return [];
   const idx = edgeIndex(edges);
   const direct = idx.getAllByEndpoints(itemPath, basePath).find((e) => !conflictsWith(e, usedEdgeKeys));
-  if (direct) return units * direct.rate;
+  if (direct) return [direct];
   // try via an intermediate hub (two hops) — only when both legs are independent
   const viaCandidates = edges.filter((e) => e.from === itemPath);
   for (const e of viaCandidates) {
@@ -158,7 +170,7 @@ export function valueInBase(
       (candidate) => !conflictsWith(candidate, new Set([...usedEdgeKeys, e.key])),
     );
     if (second) {
-      return units * e.rate * second.rate;
+      return [e, second];
     }
   }
   return null;

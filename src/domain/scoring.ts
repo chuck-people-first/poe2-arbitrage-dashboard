@@ -3,7 +3,8 @@
 
 import type { DirectedEdge, Route, RouteLeg, RunSettings } from "./types.ts";
 import type { EvaluatedRoute, RouteCandidate } from "./routes.ts";
-import { valueInBase } from "./routes.ts";
+import { valuationPath } from "./routes.ts";
+import { validateCalculatedRoute } from "./invariants.ts";
 
 export interface ScoringResult {
   route: RouteCandidate;
@@ -70,11 +71,19 @@ export function scoreCandidate(
   if (hard) return { route: c, score: null, fields: null, rejection: hard };
 
   const used = new Set(c.edges.map((e) => e.key));
-  const startValue = valueInBase(c.startCurrency, c.startUnits, settings.baseCurrency, allEdges, used);
+  const inputPath = c.edges[0]?.to === settings.baseCurrency
+    ? [c.edges[0]]
+    : valuationPath(c.startCurrency, settings.baseCurrency, allEdges, used);
+  const startValue = inputPath === null
+    ? null
+    : inputPath.reduce((value, edge) => value * edge.rate, c.startUnits);
   if (startValue === null) {
     return { route: c, score: null, fields: null, rejection: "start currency not valued in base" };
   }
-  const endValue = valueInBase(c.endCurrency, ev.endUnits, settings.baseCurrency, allEdges, used);
+  const outputPath = valuationPath(c.endCurrency, settings.baseCurrency, allEdges, used);
+  const endValue = outputPath === null
+    ? null
+    : outputPath.reduce((value, edge) => value * edge.rate, ev.endUnits);
   if (endValue === null) {
     return { route: c, score: null, fields: null, rejection: "end currency not valued in base" };
   }
@@ -109,7 +118,9 @@ export function scoreCandidate(
   // fill confidence heuristic (labeled as an estimate)
   const volShare = Math.min(bottleneck.volumeShare, 1);
   const confidence = Math.max(0.05, Math.min(0.95, 0.9 - volShare * 0.8 - rangePcts.reduce((a, b) => a + b, 0) / 300));
-  const expectedProfitBase = conservativeProfitBase * confidence;
+  // Expected profit is the less conservative, probability-weighted estimate
+  // between the movement-haircut result and gross profit.
+  const expectedProfitBase = conservativeProfitBase + (grossProfitBase - conservativeProfitBase) * (1 - confidence);
 
   const profitPer1mGold = ev.goldTotal > 0 ? (conservativeProfitBase / ev.goldTotal) * 1_000_000 : 0;
   const profitPerTrade = conservativeProfitBase / legs.length;
@@ -121,6 +132,41 @@ export function scoreCandidate(
 
   const denominator = Math.max(ev.goldTotal / 1_000_000, 0.01) * legs.length;
   const score = (expectedProfitBase / denominator) * freshnessFactor * persistenceFactor;
+
+  const calculatedRoute: Route = {
+    id: c.edges.map((e) => e.from.split("/").pop()).join("-"),
+    strategy: c.strategy,
+    startCurrency: c.startCurrency,
+    endCurrency: c.endCurrency,
+    hubCurrency: c.strategy === "two-leg-cross" ? c.edges[0]!.to : c.startCurrency,
+    legs,
+    startUnits: c.startUnits,
+    endUnits: ev.endUnits,
+    grossProfitBase,
+    goldCostTotal: ev.goldTotal,
+    movementHaircutPct,
+    conservativeProfitBase,
+    fillConfidence: confidence,
+    expectedProfitBase,
+    score,
+    profitPer1mGold,
+    profitPerTrade,
+    capitalRoiPct,
+    bottleneckVolumeShare: bottleneck.volumeShare,
+    bottleneckEdgeKey: bottleneck.edgeKey,
+    dataAgeHours: 0,
+    ratioRangePct,
+  };
+  const invariant = validateCalculatedRoute({
+    candidate: c,
+    evaluated: ev,
+    route: calculatedRoute,
+    inputValueBase: startValue,
+    outputValueBase: endValue,
+    inputValuationPath: inputPath ?? [],
+    outputValuationPath: outputPath ?? [],
+  });
+  if (invariant) return { route: c, score: null, fields: null, rejection: `${invariant.code}: ${invariant.message}` };
 
   return {
     route: c,
@@ -163,7 +209,13 @@ function hardFilters(
     if (leg.toUnits <= 0) return "zero received units after integer rounding";
     if (leg.goldCost < 0) return "negative gold cost";
   }
-  const startValue = valueInBase(c.startCurrency, c.startUnits, settings.baseCurrency, allEdges, new Set(c.edges.map((e) => e.key)));
+  const used = new Set(c.edges.map((e) => e.key));
+  const inputPath = c.edges[0]?.to === settings.baseCurrency
+    ? [c.edges[0]]
+    : valuationPath(c.startCurrency, settings.baseCurrency, allEdges, used);
+  const startValue = inputPath === null
+    ? null
+    : inputPath.reduce((value, edge) => value * edge.rate, c.startUnits);
   if (startValue === null) return "start currency unvalued";
   if (startValue <= 0) return "non-positive start value";
   return null;
