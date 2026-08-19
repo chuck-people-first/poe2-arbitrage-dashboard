@@ -24,6 +24,9 @@
       sourceHour: row?.source_hour ?? route.sourceHour,
       league: row?.league ?? route.league,
       dataAgeHours: route.dataAgeHours ?? 0,
+      dataAgeIntervalHours: row?.data_age
+        ? (typeof row.data_age === 'number' ? row.data_age / 3600 : 0)
+        : (route.dataAgeHours ?? 0),
       legs: Array.isArray(route.legs) ? route.legs : [],
       // item 4: valuation-path risk disclosure
       valuationBottleneckVolumeShare: Number(row?.valuation_bottleneck_volume_share ?? valuation.valuationBottleneckVolumeShare ?? 0),
@@ -36,10 +39,17 @@
       profitClass: row?.profit_class ?? route.profitClass ?? (row?.strategy === 'closed-triangle' || route.strategy === 'closed-triangle' ? 'closed-realized' : 'mark-to-market'),
       realizedCurrency: row?.realized_currency ?? route.realizedCurrency ?? null,
       realizedProfitStart: route.realizedProfitStart ?? null,
-      realizedProfitBase: route.realizedProfitBase ?? null
+      realizedProfitBase: route.realizedProfitBase ?? null,
+      // Phase A: the Edge Function embeds the resolved two-leg flip under
+      // route.flip. Where present it is the authoritative product projection.
+      flip: route.flip || null,
     };
   }
 
+  // Resolve one GGG path to a readable label. This is ONLY a diagnostics
+  // fallback: the authoritative product projection is route.flip (resolved
+  // server-side, with unmapped items dropped). If a flip is unavailable, the
+  // raw last-segment is shown so the operator sees why it was not promoted.
   function name(path) {
     if (typeof path !== 'string' || !path.trim()) return 'Unknown currency';
     const x = path.split('/').filter(Boolean).pop() || path;

@@ -25,6 +25,7 @@ import type {
   Route,
   RouteLeg,
   TwoLegFlip,
+  ClosedFlipCycle,
   ValuationDisclosure,
 } from "./types.ts";
 import { lookupItem } from "./mapping.ts";
@@ -35,10 +36,17 @@ const ICON_BASE = "https://web.poecdn.com";
 export function resolveIdentity(gggPath: string): FlipIdentity | null {
   const item = lookupItem(gggPath);
   if (!item) return null;
+  // iconUrl may be a full absolute URL (authoritative identity bridge) or a
+  // relative path; never double-prefix.
+  const iconUrl = item.iconUrl
+    ? /^https?:\/\//i.test(item.iconUrl)
+      ? item.iconUrl
+      : `${ICON_BASE}${item.iconUrl}`
+    : null;
   return {
     id: gggPath,
     name: item.displayName,
-    iconUrl: item.iconUrl ? `${ICON_BASE}${item.iconUrl}` : null,
+    iconUrl,
     goldCostPerUnit: item.goldCostPerUnit,
   };
 }
@@ -97,7 +105,8 @@ export function toTwoLegFlip(
   const inputDivineValue = route.inputValueBase;
   const outputDivineValue = inputDivineValue + route.grossProfitBase;
 
-  const divPer100kGold = goldRequired > 0 ? (route.conservativeProfitBase / goldRequired) * 100_000 : 0;
+  const divineProfitPerGold = goldRequired > 0 ? route.conservativeProfitBase / goldRequired : 0;
+  const divPer100kGold = divineProfitPerGold * 100_000;
   const lowestLegVolume = Math.min(legLowestHourlyVolume(leg1), legLowestHourlyVolume(leg2));
   const fillRisk = estimateFillRisk(route.bottleneckVolumeShare, route.ratioRangePct ?? 0, lowestLegVolume);
 
@@ -133,12 +142,14 @@ export function toTwoLegFlip(
     outputDivineValue,
     grossProfitDivine: route.grossProfitBase,
     conservativeNetProfitDivine: route.conservativeProfitBase,
+    divineProfitPerGold,
     divPer100kGold,
     volumeShare: route.bottleneckVolumeShare,
     lowestLegVolume,
     fillRisk,
     fillRiskLabel: fillRiskLabel(fillRisk),
-    profitKind: route.profitKind,
+    // A two-leg cross ends in B, not A; it is never a realized cycle.
+    profitKind: "mark-to-market",
     valuation: route.valuation as ValuationDisclosure,
     ratioRangePct: route.ratioRangePct ?? 0,
     movementHaircutPct: route.movementHaircutPct,
@@ -184,4 +195,34 @@ export function fillRiskLabel(risk: number): "Low" | "Medium" | "High" {
   if (risk < 0.15) return "Low";
   if (risk < 0.35) return "Medium";
   return "High";
+}
+
+/** Build a genuinely closed cycle from an independently observed third leg. */
+export function toClosedFlipCycle(route: Route, league: string, sourceHourUtc: string, referenceTimeMs: number = Date.now(), maxVolumeShare = 0.2): ClosedFlipCycle | null {
+  if (route.strategy !== "closed-triangle" || route.legs.length !== 3 || route.startCurrency !== route.endCurrency) return null;
+  const [leg1, leg2, leg3] = route.legs;
+  if (!leg1 || !leg2 || !leg3 || leg1.to !== leg2.from || leg2.to !== leg3.from || leg3.to !== route.startCurrency) return null;
+  const start = resolveIdentity(route.startCurrency);
+  const item = resolveIdentity(leg1.to);
+  if (!start || !item) return null;
+  const legs = [leg1, leg2, leg3];
+  if (legs.some(l => ![l.fromUnits, l.toUnits].every(Number.isInteger) || l.fromUnits <= 0 || l.toUnits <= 0)) return null;
+  if (legs.some(l => !Number.isFinite(l.goldCost) || l.goldCost < 0 || !Number.isFinite(l.volumeShare) || l.volumeShare <= 0 || l.volumeShare > maxVolumeShare)) return null;
+  const sourceMs = Date.parse(sourceHourUtc);
+  if (!Number.isFinite(sourceMs) || (referenceTimeMs - sourceMs) / 3_600_000 > 24) return null;
+  const finalStartingQuantity = leg3.toUnits;
+  const gross = finalStartingQuantity - route.startUnits;
+  if (gross <= 0) return null;
+  const totalGold = legs.reduce((sum, l) => sum + l.goldCost, 0);
+  const maxShare = Math.max(...legs.map(l => l.volumeShare));
+  const bottleneckVolume = Math.min(...legs.map(l => l.fromUnits / l.volumeShare));
+  const conservativeRatio = route.grossProfitBase > 0 ? Math.max(0, Math.min(1, route.conservativeProfitBase / route.grossProfitBase)) : 0;
+  const conservativeRealizedProfitStart = gross * conservativeRatio;
+  const toFlipLeg = (l: RouteLeg): FlipLeg => ({ pay: l.fromUnits, receive: l.toUnits, goldCost: l.goldCost, hourlyVolume: l.fromUnits / l.volumeShare });
+  return { id: route.id, familyId: route.routeFamilyId, league, sourceHourUtc, startCurrency: start, startingQuantity: route.startUnits, item,
+    buyLeg: toFlipLeg(leg1), sellLeg: toFlipLeg(leg2), returnLeg: toFlipLeg(leg3), legSourceHours: legs.map(l => l.sourceHourUtc ?? sourceHourUtc),
+    finalStartingQuantity, leftoverStartingCurrency: 0, netRealizedProfitStart: gross, conservativeRealizedProfitStart, totalGold, tradeCount: 3,
+    bottleneckVolume, maxVolumeShare: maxShare, movementHaircutPct: Math.max(...legs.map(l => l.movementHaircutPct ?? route.movementHaircutPct)), marketImpactHaircutPct: Math.max(...legs.map(l => l.marketImpactPct ?? route.estimatedMarketImpactPct)),
+    realizedProfitPer100kGold: totalGold > 0 ? conservativeRealizedProfitStart / totalGold * 100_000 : 0, capitalRoiPct: route.startUnits > 0 ? conservativeRealizedProfitStart / route.startUnits * 100 : 0,
+    executable: true, closed: true, rejectionReason: null };
 }

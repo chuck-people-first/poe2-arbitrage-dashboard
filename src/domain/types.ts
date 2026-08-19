@@ -94,6 +94,11 @@ export interface RouteLeg {
   toShare: number;
   /** max(fromShare, toShare); capped 0..1 after validation. */
   volumeShare: number;
+  /** Per-leg disclosure fields populated when the source supplies them. */
+  sourceHourUtc?: string;
+  ratioRangePct?: number;
+  marketImpactPct?: number;
+  movementHaircutPct?: number;
 }
 
 export type RouteStrategy = "two-leg-cross" | "closed-triangle";
@@ -183,7 +188,7 @@ export interface Route {
   fillConfidence: number;
   expectedProfitBase: number;
   score: number;
-  profitPer1mGold: number;
+  divineProfitPerGold: number;
   profitPerTrade: number;
   capitalRoiPct: number;
   bottleneckVolumeShare: number;
@@ -300,7 +305,9 @@ export interface TwoLegFlip {
   grossProfitDivine: number;
   /** conservative net profit after movement/market-impact haircut. */
   conservativeNetProfitDivine: number;
-  /** Net Divine profit per 100K Gold — the Div/Gold column definition. */
+  /** Unscaled Divine profit per one Gold. */
+  divineProfitPerGold: number;
+  /** Net Divine profit per 100K Gold — the Div / 100K Gold display metric. */
   divPer100kGold: number;
 
   /** Highest leg volume share of executed hourly volume (0..1, bottleneck). */
@@ -327,6 +334,36 @@ export interface TwoLegFlip {
   // means "insufficient history" — never fabricated.
   trend: FlipTrend | null;
   recommendation: FlipRecommendation | null;
+}
+
+/** A fully executable closed cycle: two item legs plus an observed return leg. */
+export interface ClosedFlipCycle {
+  id: string;
+  familyId: string;
+  league: string;
+  sourceHourUtc: string;
+  startCurrency: FlipIdentity;
+  startingQuantity: number;
+  item: FlipIdentity;
+  buyLeg: FlipLeg;
+  sellLeg: FlipLeg;
+  returnLeg: FlipLeg;
+  legSourceHours: string[];
+  finalStartingQuantity: number;
+  leftoverStartingCurrency: number;
+  netRealizedProfitStart: number;
+  conservativeRealizedProfitStart: number;
+  totalGold: number;
+  tradeCount: 3;
+  bottleneckVolume: number;
+  maxVolumeShare: number;
+  movementHaircutPct: number;
+  marketImpactHaircutPct: number;
+  realizedProfitPer100kGold: number;
+  capitalRoiPct: number;
+  executable: boolean;
+  closed: true;
+  rejectionReason: string | null;
 }
 
 /** Deterministic historical trend features for one flip family. */

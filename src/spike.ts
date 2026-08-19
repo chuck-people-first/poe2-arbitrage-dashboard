@@ -75,7 +75,7 @@ const routes = [...scoredFlips, ...scoredTris]
   .filter((r) => r.route !== null)
   .sort((a, b) => rankDefault(a.route, b.route));
 
-console.log("=== TOP 25 ROUTES by profit-per-1M-gold (conservative) ===\n");
+console.log("=== TOP 25 ROUTES by profit per Divine per Gold (conservative) ===\n");
 for (const { route } of routes.slice(0, 25)) {
   const legNames = route.legs
     .map((l) => `give ${l.playbook.give} ${displayName(l.from).split(" ")[0]} -> get ${l.playbook.receive} ${displayName(l.to).split(" ")[0]}`)
@@ -85,7 +85,7 @@ for (const { route } of routes.slice(0, 25)) {
       `${route.endUnits} ${displayName(route.endCurrency).padEnd(12)} ` +
       `gross=${route.grossProfitBase.toFixed(2)} adj=${route.conservativeProfitBase.toFixed(2)} ` +
       `gold=${route.goldCostTotal.toLocaleString()} ` +
-      `per1M=${route.profitPer1mGold.toFixed(2)} pt=${route.profitPerTrade.toFixed(3)} ` +
+      `perDivineGold=${route.divineProfitPerGold.toFixed(2)} pt=${route.profitPerTrade.toFixed(3)} ` +
       `roi=${route.capitalRoiPct.toFixed(2)}% conf=${(route.fillConfidence * 100).toFixed(0)}% ` +
       `bottleneck=${(route.bottleneckVolumeShare * 100).toFixed(1)}%`,
   );

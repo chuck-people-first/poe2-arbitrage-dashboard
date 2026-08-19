@@ -11,7 +11,7 @@
 //   mirror->divine GGG 4758  vs ninja 4759   (0.02% match)
 
 import type { ItemId } from "./types.ts";
-import { GENERATED_MAPPING } from "./mapping.generated.ts";
+import { GENERATED_MAPPING, AUTHORITATIVE_IDENTITY_MAPPING } from "./mapping.generated.ts";
 
 export const GGG_HUB_PATHS = {
   DIVINE: "Metadata/Items/Currency/CurrencyModValues",
@@ -58,6 +58,16 @@ const MANUAL_OVERRIDES: Record<string, ItemId> = {
 export const ITEM_MAP: Record<string, ItemId> = Object.fromEntries(
   Object.entries(GENERATED_MAPPING).map(([path, rec]) => [path, { ...rec.entry, mappingSource: verified }]),
 );
+
+// Merge authoritative identity-only entries (real GGG path + readable name +
+// icon from the poe.ninja image-decoded bridge) so `lookupItem` resolves them.
+// These carry goldCostPerUnit = -1 (FEE_UNKNOWN): they render a readable
+// identity, but goldCostPerUnit() reports unverified so no route is marketed
+// or priced without a verified fee. Ambiguous paths are never included.
+for (const [path, rec] of Object.entries(AUTHORITATIVE_IDENTITY_MAPPING)) {
+  if (ITEM_MAP[path]) continue; // rate-verified entry wins over identity-only
+  ITEM_MAP[path] = { ...rec.entry, mappingSource: verified };
+}
 
 // Apply manual overrides (gold costs from the poe2wiki exchange table).
 for (const [path, item] of Object.entries(MANUAL_OVERRIDES)) {

@@ -3,6 +3,7 @@ import { parseGggPayload } from "../../../src/domain/ggg.ts";
 import { enumerateClosedTriangles, enumerateTwoLegFlips, evaluateCandidate } from "../../../src/domain/routes.ts";
 import { GGG_HUB_PATHS } from "../../../src/domain/mapping.ts";
 import { rankDefault, scoreCandidate, toRoute } from "../../../src/domain/scoring.ts";
+import { projectRoute } from "../../../src/domain/opportunity.ts";
 import { dedupeOpportunityRows } from "../../../src/domain/dedupe.ts";
 import type { RunSettings } from "../../../src/domain/types.ts";
 
@@ -75,27 +76,11 @@ function buildOpportunities(payload: ReturnType<typeof parseGggPayload>, sourceH
     const scoring = scoreCandidate(candidate, evaluation, edges, settings);
     const route = toRoute(candidate, scoring, evaluation, sourceHourUtc, edges);
     if (!route || scoring.score === null) return null;
-    return {
-      strategy: route.strategy,
-      route,
-      playbook: route.legs.map((leg) => leg.playbook),
-      startCurrency: route.startCurrency,
-      endCurrency: route.endCurrency,
-      startUnits: route.startUnits,
-      endUnits: route.endUnits,
-      grossProfitBase: route.grossProfitBase,
-      conservativeProfitBase: route.conservativeProfitBase,
-      expectedProfitBase: route.expectedProfitBase,
-      goldCost: route.goldCostTotal,
-      legCount: route.legs.length,
-      bottleneckVolumeShare: route.bottleneckVolumeShare,
-      ratioRangePct: route.ratioRangePct,
-      movementHaircutPct: route.movementHaircutPct,
-      fillConfidence: route.fillConfidence,
-      score: route.score,
-      sourceHour: sourceHourUtc,
-      payloadSha256: hash,
-    };
+    // Single shared projection (Edge + Node parity): resolves the two-leg flip
+    // to executable readable identities and embeds it as route.flip. A route
+    // that is not a clean same-item two-leg flip, or that cannot be resolved,
+    // is projected WITHOUT a flip and is dropped from the public dashboard.
+    return projectRoute(route, LEAGUE, sourceHourUtc, hash);
   }).filter((row): row is NonNullable<typeof row> => row !== null);
   // Deduplicate sizing variants within this single league/source-hour set.
   return dedupeOpportunityRows(rows, (r) => {

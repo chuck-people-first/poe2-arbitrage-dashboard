@@ -76,6 +76,6 @@ for (const { route } of valid.slice(0, 15)) {
   console.log(
     `${route.strategy === "closed-triangle" ? "▲" : "="} ${route.startUnits} ${displayName(route.startCurrency).split(" ")[0]}→${route.endUnits} ${displayName(route.endCurrency).split(" ")[0]} ` +
       `gross=${route.grossProfitBase.toFixed(2)} adj=${route.conservativeProfitBase.toFixed(2)} gold=${route.goldCostTotal.toLocaleString()} ` +
-      `per1M=${route.profitPer1mGold.toFixed(1)} roi=${route.capitalRoiPct.toFixed(2)}% conf=${(route.fillConfidence * 100).toFixed(0)}% ${legs}`,
+      `perDivineGold=${route.divineProfitPerGold.toFixed(1)} roi=${route.capitalRoiPct.toFixed(2)}% conf=${(route.fillConfidence * 100).toFixed(0)}% ${legs}`,
   );
 }

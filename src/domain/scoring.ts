@@ -42,7 +42,7 @@ export interface ScoredFields {
   conservativeProfitBase: number;
   fillConfidence: number;
   expectedProfitBase: number;
-  profitPer1mGold: number;
+  divineProfitPerGold: number;
   profitPerTrade: number;
   bottleneckVolumeShare: number;
   bottleneckEdgeKey: string;
@@ -278,7 +278,7 @@ export function scoreCandidate(
   // gross profit, lower confidence approaches the conservative haircut.
   const expectedProfitBase = expectedProfit(conservativeProfitBase, grossProfitBase, confidence);
 
-  const profitPer1mGold = ev.goldTotal > 0 ? (conservativeProfitBase / ev.goldTotal) * 1_000_000 : 0;
+  const divineProfitPerGold = ev.goldTotal > 0 ? conservativeProfitBase / ev.goldTotal : 0;
   const profitPerTrade = conservativeProfitBase / legs.length;
   const capitalRoiPct = startValue > 0 ? (conservativeProfitBase / startValue) * 100 : 0;
 
@@ -287,7 +287,7 @@ export function scoreCandidate(
   const freshnessFactor = Math.max(0.1, 1 - dataAgeHours * 0.1);
   const persistenceFactor = 1; // Phase 0: no multi-hour history yet
 
-  const denominator = Math.max(ev.goldTotal / 1_000_000, 0.01) * legs.length;
+  const denominator = Math.max(ev.goldTotal, 0.01) * legs.length;
   const score = (expectedProfitBase / denominator) * freshnessFactor * persistenceFactor;
 
   const familyId = routeFamilyId(c.strategy, c.edges);
@@ -319,7 +319,7 @@ export function scoreCandidate(
     conservativeProfitBase,
     fillConfidence: confidence,
     expectedProfitBase,
-    profitPer1mGold,
+    divineProfitPerGold,
     profitPerTrade,
     bottleneckVolumeShare: bottleneck.volumeShare,
     bottleneckEdgeKey: bottleneck.edgeKey,
@@ -404,7 +404,7 @@ export function routeFromScoring(
     fillConfidence: f.fillConfidence,
     expectedProfitBase: f.expectedProfitBase,
     score,
-    profitPer1mGold: f.profitPer1mGold,
+    divineProfitPerGold: f.divineProfitPerGold,
     profitPerTrade: f.profitPerTrade,
     capitalRoiPct: f.capitalRoiPct,
     bottleneckVolumeShare: f.bottleneckVolumeShare,
@@ -487,10 +487,10 @@ export function toRoute(
 }
 
 /**
- * The one true rank default: profit per 1M gold (conservative) then fewer legs,
+ * The one true rank default: profit per Divine per Gold (conservative) then fewer legs,
  * matching the acceptance criteria. Direct sorts remain available downstream.
  */
 export function rankDefault(a: Route, b: Route): number {
-  if (b.profitPer1mGold !== a.profitPer1mGold) return b.profitPer1mGold - a.profitPer1mGold;
+  if (b.divineProfitPerGold !== a.divineProfitPerGold) return b.divineProfitPerGold - a.divineProfitPerGold;
   return a.legs.length - b.legs.length;
 }

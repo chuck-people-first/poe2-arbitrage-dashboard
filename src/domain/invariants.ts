@@ -71,8 +71,8 @@ export function validateCalculatedRoute(input: MathInvariantInput): MathInvarian
   if (Math.abs(route.profitPerTrade - route.conservativeProfitBase / route.legs.length) > 1e-8) {
     return { code: "TRADE_PROFIT_MISMATCH", message: "profit per trade uses the wrong trade count" };
   }
-  if (Math.abs(route.profitPer1mGold - route.conservativeProfitBase / route.goldCostTotal * 1_000_000) > 1e-8) {
-    return { code: "GOLD_PROFIT_MISMATCH", message: "profit per 1M gold uses the wrong gold divisor" };
+  if (Math.abs(route.divineProfitPerGold - route.conservativeProfitBase / route.goldCostTotal) > 1e-8) {
+    return { code: "GOLD_PROFIT_MISMATCH", message: "divineProfitPerGold must equal conservative profit divided by total gold" };
   }
   const goldSum = route.legs.reduce((sum, leg) => sum + leg.goldCost, 0);
   if (goldSum !== route.goldCostTotal) {

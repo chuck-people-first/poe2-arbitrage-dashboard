@@ -4,7 +4,7 @@ import type { Route } from "./types.ts";
  * Deduplicate only sizing variants within one source-hour route set.
  *
  * The comparison is a deterministic LEXICOGRAPHIC ordering — it picks the
- * single best route by a fixed priority sequence (profit-per-1M-gold, then
+ * single best route by a fixed priority sequence (profit-per-Divine-per-Gold, then
  * profit-per-trade, then smaller start, then lower movement, then lower
  * bottleneck, then id). It is NOT a Pareto-front selection: it does not
  * return the full set of mutually-non-dominated variants. Callers must treat
@@ -54,7 +54,7 @@ export function dedupeOpportunityRows<T extends { route: unknown }>(
 
 /** Deterministic lexicographic ranking (NOT a Pareto front). */
 function compareLexicographic(a: Route, b: Route): number {
-  return b.profitPer1mGold - a.profitPer1mGold
+  return b.divineProfitPerGold - a.divineProfitPerGold
     || b.profitPerTrade - a.profitPerTrade
     || a.startUnits - b.startUnits
     || a.movementHaircutPct - b.movementHaircutPct
