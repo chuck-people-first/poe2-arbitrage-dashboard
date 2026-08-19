@@ -30,6 +30,7 @@ function market(league: string, pair: [string, string], ratio: [number, number],
 
 function settings(overrides: Partial<RunSettings> = {}): RunSettings {
   return {
+    league: "ROA",
     startCurrency: CHAOS,
     baseCurrency: DIVINE,
     capitalUnits: 1000,

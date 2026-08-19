@@ -15,17 +15,19 @@ import { chainUsesIndependentObservations } from "../src/domain/playbook";
 import type { RunSettings } from "../src/domain/types";
 
 const LEAGUE = "Runes of Aldur";
-const HOUR_UTC = "2026-08-18T03:00:00Z";
+const FIXTURE = "ggg-currency-exchange-1787090400.json";
+const HOUR_UTC = "2026-08-18T22:00:00Z";
 
 function loadFixture() {
   const raw = JSON.parse(
-    readFileSync(join(process.cwd(), "fixtures", "ggg-currency-exchange-1787022000.json"), "utf8"),
+    readFileSync(join(process.cwd(), "fixtures", FIXTURE), "utf8"),
   );
   return parseGggPayload(raw);
 }
 
 function settings(): RunSettings {
   return {
+    league: LEAGUE,
     startCurrency: GGG_HUB_PATHS.CHAOS,
     baseCurrency: GGG_HUB_PATHS.DIVINE,
     capitalUnits: 100,
@@ -43,12 +45,14 @@ describe("golden playbook on real fixture data", () => {
     const payload = loadFixture();
     const roa = payload.markets.filter((m) => m.league === LEAGUE);
     const edges = deriveEdges(roa, HOUR_UTC);
+    // Reference time matches the fixture's source hour so actual source age is 0.
+    const referenceTimeMs = Date.parse(HOUR_UTC);
 
     const flips = enumerateTwoLegFlips(edges, settings());
     const scored = flips
-      .map((c) => ({ c, ev: evaluateCandidate(c), sc: scoreCandidate(c, evaluateCandidate(c), edges, settings()) }))
+      .map((c) => ({ c, ev: evaluateCandidate(c), sc: scoreCandidate(c, evaluateCandidate(c), edges, settings(), referenceTimeMs) }))
       .filter((x) => x.sc.score !== null)
-      .map((x) => ({ route: toRoute(x.c, x.sc, x.ev, HOUR_UTC)!, sc: x.sc }))
+      .map((x) => ({ route: toRoute(x.c, x.sc, x.ev, HOUR_UTC, edges, referenceTimeMs)!, sc: x.sc }))
       .filter((x) => x.route !== null)
       .sort((a, b) => rankDefault(a.route, b.route));
 
@@ -72,11 +76,12 @@ describe("golden playbook on real fixture data", () => {
     expect(top.conservativeProfitBase).toBeGreaterThan(0);
   });
 
-  it("fixture round trip: derived edges count matches earlier spike output", () => {
+  it("fixture round trip: derived edges count matches deriveEdges output", () => {
     const payload = loadFixture();
     const roa = payload.markets.filter((m) => m.league === LEAGUE);
     const edges = deriveEdges(roa, HOUR_UTC);
-    // 1324 markets × 2 directed edges = 2648, minus 496 rejected for zero ratios
-    expect(edges.length).toBe(2152);
+    // 1389 markets × 2 directed edges = 2778, minus pairs rejected for zero ratios
+    expect(roa.length).toBe(1389);
+    expect(edges.length).toBe(2212);
   });
 });

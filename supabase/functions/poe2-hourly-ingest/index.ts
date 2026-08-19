@@ -3,6 +3,7 @@ import { parseGggPayload } from "../../../src/domain/ggg.ts";
 import { enumerateClosedTriangles, enumerateTwoLegFlips, evaluateCandidate } from "../../../src/domain/routes.ts";
 import { GGG_HUB_PATHS } from "../../../src/domain/mapping.ts";
 import { rankDefault, scoreCandidate, toRoute } from "../../../src/domain/scoring.ts";
+import { dedupeOpportunityRows } from "../../../src/domain/dedupe.ts";
 import type { RunSettings } from "../../../src/domain/types.ts";
 
 const FUNCTION = "poe2-hourly-ingest";
@@ -69,10 +70,10 @@ function buildOpportunities(payload: ReturnType<typeof parseGggPayload>, sourceH
   const markets = payload.markets.filter((market) => market.league === LEAGUE);
   const edges = deriveEdges(markets.filter((market) => market.league === LEAGUE), sourceHourUtc);
   const candidates = [...enumerateTwoLegFlips(edges, settings), ...enumerateClosedTriangles(edges, settings)];
-  return candidates.map((candidate) => {
+  const rows = candidates.map((candidate) => {
     const evaluation = evaluateCandidate(candidate);
     const scoring = scoreCandidate(candidate, evaluation, edges, settings);
-    const route = toRoute(candidate, scoring, evaluation, sourceHourUtc);
+    const route = toRoute(candidate, scoring, evaluation, sourceHourUtc, edges);
     if (!route || scoring.score === null) return null;
     return {
       strategy: route.strategy,
@@ -95,7 +96,12 @@ function buildOpportunities(payload: ReturnType<typeof parseGggPayload>, sourceH
       sourceHour: sourceHourUtc,
       payloadSha256: hash,
     };
-  }).filter((row): row is NonNullable<typeof row> => row !== null).sort((a, b) => rankDefault(a.route, b.route));
+  }).filter((row): row is NonNullable<typeof row> => row !== null);
+  // Deduplicate sizing variants within this single league/source-hour set.
+  return dedupeOpportunityRows(rows, (r) => {
+    const route = r.route as { routeFamilyId?: string } | null | undefined;
+    return route?.routeFamilyId ?? `${r.strategy}|${r.startCurrency}|${r.endCurrency}`;
+  }, (r) => r.score).sort((a, b) => rankDefault(a.route, b.route));
 }
 
 Deno.serve(async (request) => {
@@ -109,6 +115,7 @@ Deno.serve(async (request) => {
   const sourceHourUtc = sourceHour.toISOString();
   const sourceUrl = `https://web.poecdn.com/api/currency-exchange/poe2/${Math.floor(sourceHour.getTime() / 1000)}`;
   const settings: RunSettings = {
+    league: LEAGUE,
     startCurrency: GGG_HUB_PATHS.CHAOS,
     baseCurrency: GGG_HUB_PATHS.DIVINE,
     capitalUnits: Number(Deno.env.get("POE2_CAPITAL_UNITS") ?? "100"),
@@ -116,8 +123,8 @@ Deno.serve(async (request) => {
     maxLegs: 3,
     maxVolumeSharePct: 20,
     minConservativeProfitBase: 0.05,
-    maxDataAgeHours: 0,
-    movementRiskTolerancePct: 100,
+    maxDataAgeHours: Number(Deno.env.get("POE2_MAX_DATA_AGE_HOURS") ?? "3"),
+    movementRiskTolerancePct: Number(Deno.env.get("POE2_MOVEMENT_TOLERANCE_PCT") ?? "100"),
   };
 
   try {

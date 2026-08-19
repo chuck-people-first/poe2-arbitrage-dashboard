@@ -30,6 +30,7 @@ const subedges = edges.filter((e) => feeVerified.has(e.from) && feeVerified.has(
 console.log(`Subgraph edges: ${subedges.length}\n`);
 
 const settings: RunSettings = {
+  league: LEAGUE,
   startCurrency: GGG_HUB_PATHS.CHAOS,
   baseCurrency: GGG_HUB_PATHS.DIVINE,
   capitalUnits: 1000,

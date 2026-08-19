@@ -1,119 +1,175 @@
-# Phase 0 Math Audit — Published Opportunities
+# Phase 0 Math Audit — Published Opportunities (corrected)
 
-Audit inputs: raw GGG completed-hour fixtures for 2026-08-18 21:00Z and 22:00Z; base currency is Divine Orb. All quantities below are integer Exchange quantities.
+Audit inputs: raw GGG completed-hour fixture `fixtures/ggg-currency-exchange-1787090400.json`
+for league "Runes of Aldur", base currency **Divine Orb**; source hour 2026-08-18T22:00:00Z.
+All quantities below are integer Exchange quantities. The engine is exercised by
+`test/current-hour-math.test.ts` against the real fixture at reference time equal to the
+source hour, so every figure below is what the code actually computes and asserts.
 
-> These are cross-currency flips, not closed arbitrage loops: they end in Exalted Orb and require an independently observed Exalted→Divine valuation for comparison.
+> **These are cross-currency flips, NOT closed arbitrage loops.** They end in Exalted Orb
+> and are valued back to Divine through an *independent* observation path (see
+> "exact output-valuation path" below). `profitKind = mark-to-market`, never
+> `closed-realized`. **The 533% figure is a mark-to-market ROI on the input capital — it is
+> not, and must not be presented as, guaranteed or fully-realized executable profit.**
 
-## Published row 1
+## Published row 1 (source hour 2026-08-18T22:00Z)
 
-- **Source hour:** 2026-08-18T22:00:00+00:00
-- **Strategy:** two-leg-cross (cross-currency flip; not a closed loop)
-- **Start:** 100 Chaos Orb
-- **End:** 3300 Exalted Orb
+- **Strategy:** `two-leg-cross` (cross-currency flip; not a closed loop)
+- **Start:** 100 Chaos Orb → 10 Divine Orb → end 3300 Exalted Orb
 - **Observed route legs:** 2
 
 ### Raw independent observations
 
-1. **Chaos Orb → Divine Orb**, observation `Metadata/Items/Currency/CurrencyRerollRare|Metadata/Items/Currency/CurrencyModValues`
-   - GGG pair: `Metadata/Items/Currency/CurrencyRerollRare | Metadata/Items/Currency/CurrencyModValues`
-   - Low/high ratio rates in this direction: 0.090909090909 / 0.111111111111; midpoint used: **0.101010101010**
-   - Executed hourly volume basis: **167365**; route receipt: **10**; share: **0.005975%**
-   - Integer playbook: give **100** Chaos Orb, receive **10** Divine Orb
-   - Gold: **10 × 800 = 8000**
-2. **Divine Orb → Exalted Orb**, observation `Metadata/Items/Currency/CurrencyModValues|Metadata/Items/Currency/CurrencyAddModToRare`
-   - GGG pair: `Metadata/Items/Currency/CurrencyModValues | Metadata/Items/Currency/CurrencyAddModToRare`
-   - Low/high ratio rates in this direction: 300.000000000000 / 360.000000000000; midpoint used: **330.000000000000**
-   - Executed hourly volume basis: **1198142**; route receipt: **3300**; share: **0.275426%**
-   - Integer playbook: give **10** Divine Orb, receive **3300** Exalted Orb
-   - Gold: **3300 × 120 = 396000**
+1. **Chaos → Divine**, pair `CurrencyRerollRare | CurrencyModValues`
+   - rates low/high 0.090909091 / 0.111111111; midpoint **0.101010101 Divine/Chaos**
+   - volume_traded: Chaos 167365, Divine 16640
+   - integer playbook: give **100** Chaos, receive **10** Divine; gold 10 × 800 = **8000**
+2. **Divine → Exalted**, pair `CurrencyModValues | CurrencyAddModToRare`
+   - rates low/high 300 / 360; midpoint **330 Exalted/Divine**
+   - volume_traded: Divine 3541, Exalted 1198142
+   - integer playbook: give **10** Divine, receive **3300** Exalted; gold 3300 × 120 = **396000**
 
-### Published calculation reproduction
+### Corrected input valuation (root defect)
 
-- Current engine input valuation: **2.533724340176 Divine Orb** via an alternate path selected after excluding the route edges.
-- Output valuation: **64.960629921260 Divine Orb** via an independently observed path excluding the route edges.
-- Published gross: **62.426905581084 = 64.960629921260 − 2.533724340176**.
-- Published conservative: **62.173533147066**.
-- Published expected: **47.906190819429**.
-- Published ROI: **2453.839676%**.
-- Gold total: **8000 + 396000 = 404000**.
-- Profit/trade: **62.173533147066 ÷ 2 = 31.086766573533**.
-- Profit/1M gold: **62.173533147066 ÷ 404000 × 1,000,000 = 153.894884027391**.
-- Haircut components: ratio range **20% ÷ 2 = 10%**; EWMA/MAD volatility term **0%** for the two-point audit series; market-impact term **0.1 × √0.002754265 × 100 = 0.524811%**; selected haircut **max(10%, 0%, 0.524811%) = 10%**. Confidence **0.770524** is the labeled fill estimate.
+The published defect was an **incorrect input-valuation path**: the old engine excluded the
+route's own first Chaos→Divine leg and searched an unrelated alternate path, valuing 100 Chaos
+at **2.533724 Divine** and inflating ROI to ~2453%. The observed first leg IS itself an
+independent Chaos→Divine conversion at **0.101010101 Divine/Chaos**, so input capital is
+100 × 0.101010101 = **10.101010 Divine**. The engine now values input capital with the first
+observed leg whenever that leg converts directly into the base currency.
 
-### Defect determination and corrected calculation
+### Corrected unit-safe volume share (old vs new)
 
-The displayed **62.17 Divine / 2453.8%** is caused by an incorrect input valuation path: the engine excludes the route’s first Chaos→Divine observation, then finds an unrelated alternate path that values 100 Chaos at **2.533724 Divine**. The actual first Exchange leg is itself an independently observed Chaos→Divine conversion at **0.101010101010 Divine/Chaos**, so the input capital is **10.101010 Divine**.
+The legacy calculation mixed denominations — e.g. leg 1 used `receipt_to = 10` against the
+*from-side* chaos volume, giving **0.005975%**. That is not comparable. The unit-correct share
+of each leg is `max(fromUnits/volumeFrom, toUnits/volumeTo)`, and the route bottleneck is the
+maximum leg share.
 
-Corrected: output **64.960630 Divine** − input **10.101010 Divine** = gross **54.859620 Divine**; movement haircut **10% × 10.101010 = 1.010101**; conservative **53.849519 Divine**; expected (between conservative and gross) **54.081313 Divine**; ROI **533.110236%**.
+| Leg | fromUnits / volumeFrom | toUnits / volumeTo | leg share (max) | old (single-side) |
+|-----|------------------------|--------------------|-----------------|-------------------|
+| 1 Chaos→Divine | 100/167365 = **0.05975%** | 10/16640 = **0.06010%** | **0.060096%** | 0.005975% |
+| 2 Divine→Exalted | 10/3541 = **0.28241%** | 3300/1198142 = **0.27543%** | **0.282406%** | 0.275426% |
 
-## Published row 2
+- **Old bottleneck:** max over the legacy single-side figures = **0.275426%**.
+- **Corrected bottleneck:** max leg share = **0.2824061%** (leg 2's from-denominated share,
+  10 Divine vs 3541 Divine volume). ~0.28%, well under the 20% cap.
 
-- **Source hour:** 2026-08-18T21:00:00+00:00
-- **Strategy:** two-leg-cross (cross-currency flip; not a closed loop)
-- **Start:** 100 Chaos Orb
-- **End:** 2970 Exalted Orb
-- **Observed route legs:** 2
+The legacy **0.005975%** figure was computed against the wrong (mixed-denomination) denominator
+and is **not** retained as any route figure.
 
-### Raw independent observations
+### Corrected expected-profit confidence formula
 
-1. **Chaos Orb → Divine Orb**, observation `Metadata/Items/Currency/CurrencyRerollRare|Metadata/Items/Currency/CurrencyModValues`
-   - GGG pair: `Metadata/Items/Currency/CurrencyRerollRare | Metadata/Items/Currency/CurrencyModValues`
-   - Low/high ratio rates in this direction: 0.090909090909 / 0.100000000000; midpoint used: **0.095454545455**
-   - Executed hourly volume basis: **198325**; route receipt: **9**; share: **0.004538%**
-   - Integer playbook: give **100** Chaos Orb, receive **9** Divine Orb
-   - Gold: **9 × 800 = 7200**
-2. **Divine Orb → Exalted Orb**, observation `Metadata/Items/Currency/CurrencyModValues|Metadata/Items/Currency/CurrencyAddModToRare`
-   - GGG pair: `Metadata/Items/Currency/CurrencyModValues | Metadata/Items/Currency/CurrencyAddModToRare`
-   - Low/high ratio rates in this direction: 300.000000000000 / 360.000000000000; midpoint used: **330.000000000000**
-   - Executed hourly volume basis: **1202662**; route receipt: **2970**; share: **0.246952%**
-   - Integer playbook: give **9** Divine Orb, receive **2970** Exalted Orb
-   - Gold: **2970 × 120 = 356400**
+- **Old (reversed):** `expected = conservative + (gross − conservative) × (1 − confidence)` —
+  low confidence approached gross, high confidence approached conservative.
+- **Corrected (monotone, bounded):** `expected = conservative + (gross − conservative) × confidence`,
+  with `conservative ≤ expected ≤ gross`. Increasing confidence never reduces expected profit
+  (`expectedProfit()` in `src/domain/scoring.ts`; verified in `phase0-release-blockers.test.ts`).
 
-### Published calculation reproduction
+| Field | Divine | note |
+|-------|--------|------|
+| Input capital | 10.101010 | 100 Chaos × 0.101010101 |
+| Output valuation | **64.96062992** | via exact path below |
+| Gross | **54.859619820** | 64.96062992 − 10.10101010 |
+| Movement haircut | 10.000000% | = max(range-half 10%, market impact 0.531%) |
+| Conservative | **53.849518810** | gross − 10% × 10.101010 |
+| Fill confidence | 0.770468 | labeled estimate, not a measured fill probability |
+| Expected | **54.627769339** | monotone formula at confidence 0.770468 |
+| Capital ROI | **533.110236%** | mark-to-market, NOT closed-realized |
 
-- Current engine input valuation: **3.471074380165 Divine Orb** via an alternate path selected after excluding the route edges.
-- Output valuation: **12.063829787234 Divine Orb** via an independently observed path excluding the route edges.
-- Published gross: **8.592755407069 = 12.063829787234 − 3.471074380165**.
-- Published conservative: **8.277203190690**.
-- Published expected: **6.668713251308**.
-- Published ROI: **238.462282%**.
-- Gold total: **7200 + 356400 = 363600**.
-- Profit/trade: **8.277203190690 ÷ 2 = 4.138601595345**.
-- Profit/1M gold: **8.277203190690 ÷ 363600 × 1,000,000 = 22.764585232921**.
-- Haircut components: ratio range **18.181818% ÷ 2 = 9.090909%**; EWMA/MAD volatility term **0%** for the two-point audit series; market-impact term **0.1 × √0.002469522 × 100 = 0.496943%**; selected haircut **max(9.090909%, 0%, 0.496943%) = 9.090909%**. Confidence **0.805672** is the labeled fill estimate.
+### Exact output-valuation path (64.960630 Divine)
 
-### Defect determination and corrected calculation
+The route ends in Exalted, so the engine values the 3300 Exalted back to Divine through an
+**independent** observation path (`valuationPath`, excluding the route's own edges):
 
-The displayed **8.28 Divine / 238.5%** is caused by an incorrect input valuation path: the engine excludes the route’s first Chaos→Divine observation, then finds an unrelated alternate path that values 100 Chaos at **3.471074 Divine**. The actual first Exchange leg is itself an independently observed Chaos→Divine conversion at **0.095454545455 Divine/Chaos**, so the input capital is **9.545455 Divine**.
+1. `CurrencyAddModToRare → ThesisOfExperiments` @ **0.007874016** (Exalted→SoulCore-Thesis)
+2. `ThesisOfExperiments → CurrencyModValues` @ **2.5** (Thesis→Divine)
 
-Corrected: output **12.063830 Divine** − input **9.545455 Divine** = gross **2.518375 Divine**; movement haircut **9.090909% × 9.545455 = 0.867769**; conservative **1.650607 Divine**; expected (between conservative and gross) **1.819238 Divine**; ROI **17.292070%**.
+3300 × 0.007874016 × 2.5 = **64.96062992 Divine**. (Input path: the route's own
+`CurrencyRerollRare → CurrencyModValues` @ 0.101010101 → 100 × 0.101010101 = 10.101010 Divine.)
 
-## Duplicate determination
+### Mark-to-market vs fully-closed realized profit
 
-The two rows are **not sizing variants**: they have identical route currencies and legs but different source hours (21:00Z vs 22:00Z), different observed rates, integer receipts (2,970 vs 3,300), and different profits. They are alternative historical-hour observations of the same route family. The main dashboard must expose only the latest successful hour; historical alternatives belong in a separate history projection.
+- **Mark-to-market (`profitKind = mark-to-market`):** the output is your route's end asset
+  (3300 Exalted) valued to base through an independent path. The route does **not** execute
+  that Exalted→Divine conversion; `returnToBaseIncluded = false`, `returnToBaseLegs = []`,
+  and **no gold for the return-to-base trade is included**. The 533% ROI is this signal.
+- **Closed-realized:** would require an independent *executable* Exalted→Divine conversion leg
+  (priced with its own quantities, gold, movement risk and trade count) that actually closes
+  the loop back to base capital. No such independent executable conversion leg is selected in
+  this phase, so no closed-realized profit is computed or claimed.
+- Because base conversion is excluded, `conservativeProfitBase` is a **cross-currency
+  mark-to-market** haircut — the UI and docs must **not** label it "fully realized
+  base-currency profit". This separation is enforced by the `profitKind` / `valuation`
+  disclosure persisted on every route.
 
-## Proposed safe changes (feature branch only)
+### Movement terms are separate, and temporal movement is unavailable
 
-1. `scoreCandidate()` values input capital with the first observed leg when that leg directly converts into the base currency; it no longer searches an unrelated alternate route and inflates ROI.
-2. Expected profit is defined between conservative and gross: `expected = conservative + (gross - conservative) × (1 - confidence)`.
-3. `validateCalculatedRoute()` rejects structured invariant violations: invalid observations/quantities, missing valuation paths, non-closed loops, non-positive conservative profit, stale rows, volume-cap breaches, profit ordering, ROI, gold, trade-count, and bottleneck mismatches.
-4. `013_latest_hour_view.sql` keeps the security-invoker safe projection but filters each league to `max(source_hour)`. It is not applied remotely in this phase.
-5. `dedupeSizingVariants()` is deterministic and is intended to run within one source-hour set. The two currently published rows are different hours, so they must not be deduplicated as sizes; the latest-hour view removes the older row from the main count.
+- **Ratio-range uncertainty** (`ratioRangeUncertaintyPct = 20.000000%`, halved to a 10% haircut):
+  from the completed-hour low/high spread — this is RANGE UNCERTAINTY, not movement over time.
+- **Estimated market impact** (`estimatedMarketImpactPct = 0.531419%`): separate
+  `coefficient × √volumeShare` term.
+- **Temporal movement** (`temporalMovementPct = null`, `movementStatus = "insufficient-history"`):
+  **unavailable until real hourly history is retained.** No historical price is ever fabricated
+  (the old `ewmaVolatility([rate, rate*0.95])` synthetic second observation was removed).
+  Haircut = `max(range-half, market-impact)`; the null temporal term contributes nothing.
 
-Supabase guidance consulted: [RLS and security-invoker views](https://supabase.com/docs/guides/database/postgres/row-level-security) and [view security](https://supabase.com/docs/guides/database/tables). No Supabase deployment was changed.
+## Other audited rows
 
-## Golden-test coverage added locally
+The second historical-hour observation (21:00Z) of the same route family is handled by the
+**duplicate determination**: it is a different source hour with different observed rates and
+receipts, so it is **not** a sizing variant and is **not** deduplicated by
+`dedupeSizingVariants()`; only the latest successful hour is exposed in the main view, and
+historical alternatives belong in a separate history projection.
 
-- valid cross-currency flip;
-- genuine closed-loop finish requirement;
-- mixed-unit/gross mismatch;
-- inverted/non-positive observed rate;
-- missing base valuation;
-- integer rounding to zero;
-- gold/movement eliminating profit;
-- stale observation;
-- volume above 20% cap;
-- duplicate sizing variants;
-- genuinely different routes sharing currencies;
-- corrected 2026-08-18 22:00 source-hour calculation;
-- actual `opportunity_public` snake_case fixture normalization remains covered by the existing 3 dashboard normalization tests.
+## New deterministic identities & zero-opportunity projection
+
+### Route-family and opportunity identities (deterministic, collision-safe)
+
+- **`routeFamilyId`** = SHA-256 of `family|<strategy>|<canonical ordered observation/path>`.
+  Two historical hours re-observing the same currency path with the same legs share this id,
+  regardless of sizing. Example for this route:
+  `d05b08ee9665b4aa3ab9f25506484fbf9d25c6bae6787cfe8de18c3739a7d5b3`.
+- **`opportunityId`** = SHA-256 of `opp|<familyId>|<league>|<sourceHourUtc>|<startUnits>`.
+  Distinct source hours or distinct execution sizing produce distinct opportunities.
+
+Both use stable SHA-256 over canonical serialization (`src/domain/identity.ts`) — **not**
+shortened currency names, which collide and would block future history charts.
+
+### Zero-opportunity projection behavior (migration 013)
+
+- A successful ingestion hour that yields **zero** opportunities still advances the safe
+  per-league status row (`opportunity_run_status`) to that hour with `candidate_count = 0`, and
+  **deletes the league's prior public rows** — so the dashboard renders
+  **"Completed HH:00 UTC — 0 candidates"** instead of silently falling back to the previous
+  hour's rows.
+- `data_age = now() − source_hour` is computed **live at read time** by the public view; it is
+  never the stored, frozen-at-insert value. Migration 013 exposes exactly **one** `data_age`
+  column and replays idempotently.
+- The public view exposes only the league's latest successful hour; no hour-A/B opportunity can
+  fall back into it after a later zero-opportunity hour.
+- Browser roles (`anon`/`authenticated`) may `SELECT` only `opportunity_public` and the safe
+  `opportunity_run_status` projection; the private run/market/opportunity tables,
+  INSERT/UPDATE/DELETE on the projection, and all administrative functions remain denied
+  (verified by `test/db-safe-status.integration.{sql,sh}`).
+
+## Migration replay + advisor baseline
+
+- Local reset replays migrations 001–013 cleanly; migration 013 re-applies without failure
+  (executable proof in the integration test).
+- Security advisor: 1 WARN — `pg_net` extension installed in the `public` schema. This is the
+  standard Supabase-provided async-networking extension used by the ingestion path; it is not
+  introduced by migration 013. Reported for transparency; moving it to another schema is a
+  hardening item outside this change's scope.
+- Performance advisor: 3 INFO-level "unused index" findings on `market_hours_lookup_idx`,
+  `market_hours_market_idx`, `ingestion_state_last_run_idx`. These back the ingestion query
+  paths and show 0 scans only because the freshly-reset local DB has no real workload; they are
+  not introduced by migration 013 and are retained.
+
+## How to reproduce the corrected figures
+
+```
+npx tsx scripts/generate-math-audit.ts   # audit doc figures
+npm test                                  # current-hour-math asserts gross 54.859620,
+                                          #   conservative 53.849519, ROI 533.110236%
+docker run / bash test/db-safe-status.integration.sh   # DB integration + role matrix
+```

@@ -1,5 +1,6 @@
 import { createHash } from "node:crypto";
 import { parseGggPayload } from "../domain/ggg";
+import { dedupeOpportunityRows } from "../domain/dedupe";
 import type { GggPayload, GggMarket } from "../domain/types";
 
 export interface IngestionSettings {
@@ -118,10 +119,16 @@ export async function ingestCompletedHour(
     const runId = await tx.startRun(settings, payloadSha256);
     try {
       const opportunities = await buildOpportunities(marketRows);
-      await tx.insertOpportunities(runId, opportunities);
+      // Deduplicate sizing variants after scoring and before persistence,
+      // scoped to this single league/source-hour set.
+      const deduped = dedupeOpportunityRows(opportunities, (opp) => {
+        const r = opp.route as { routeFamilyId?: string } | null | undefined;
+        return r?.routeFamilyId ?? `${opp.strategy}|${opp.startCurrency}|${opp.endCurrency}`;
+      }, (opp) => opp.score);
+      await tx.insertOpportunities(runId, deduped);
       await tx.finishRun(runId, "succeeded");
       await tx.updateIngestionState(runId, settings, payloadSha256);
-      return { status: "succeeded", runId, payloadSha256, marketRows: marketRows.length, opportunityRows: opportunities.length };
+      return { status: "succeeded", runId, payloadSha256, marketRows: marketRows.length, opportunityRows: deduped.length };
     } catch (error) {
       const message = error instanceof Error ? error.message : String(error);
       await tx.finishRun(runId, "failed", message);
@@ -129,3 +136,11 @@ export async function ingestCompletedHour(
     }
   });
 }
+
+/**
+ * Deduplicate persisted opportunities within one league/source-hour set.
+ * Groups by the route's deterministic `routeFamilyId` (strategy + canonical
+ * observation identity) and keeps the single lexicographically-best sizing
+ * variant per family. See src/domain/dedupe.ts for the ordering semantics.
+ */
+export const dedupePersisted = dedupeOpportunityRows<PersistedOpportunity>;

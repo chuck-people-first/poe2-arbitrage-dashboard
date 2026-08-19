@@ -34,11 +34,14 @@ export function validateCalculatedRoute(input: MathInvariantInput): MathInvarian
   if (candidate.edges.some((edge) => edge.source !== "ggg-hourly" && edge.source !== "live-confirmed" && edge.source !== "manual-override")) {
     return { code: "INVALID_OBSERVATION", message: "leg has no valid observed source" };
   }
-  if (candidate.edges.some((edge) => !finitePositive(edge.rate) || !finitePositive(edge.hourlyVolume))) {
-    return { code: "INVALID_EDGE", message: "leg contains a missing, zero, NaN, or infinite rate/divisor" };
+  if (candidate.edges.some((edge) => !finitePositive(edge.rate) || !finitePositive(edge.volumeFrom) || !finitePositive(edge.volumeTo))) {
+    return { code: "INVALID_EDGE", message: "leg contains a missing, zero, NaN, or infinite rate/volume denominator" };
   }
   if (evaluated.legs.some((leg) => !positiveInteger(leg.fromUnits) || !positiveInteger(leg.toUnits))) {
     return { code: "INVALID_LEG_QUANTITY", message: "Exchange quantities must be positive integers" };
+  }
+  if (evaluated.legs.some((leg) => !Number.isFinite(leg.volumeShare) || leg.volumeShare < 0)) {
+    return { code: "INVALID_VOLUME_SHARE", message: "leg volume share is missing or negative" };
   }
   if (input.inputValuationPath.length === 0 && candidate.startCurrency !== candidate.settings.baseCurrency) {
     return { code: "MISSING_INPUT_PATH", message: "input currency has no independent base valuation path" };

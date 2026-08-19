@@ -24,6 +24,7 @@ const edges = deriveEdges(roa, HOUR_UTC);
 console.log(`Derived ${edges.length} directed edges from ${roa.length} independent market pairs\n`);
 
 const settings: RunSettings = {
+  league: LEAGUE,
   startCurrency: GGG_HUB_PATHS.CHAOS,
   baseCurrency: GGG_HUB_PATHS.DIVINE,
   capitalUnits: 100, // start with 100 chaos (~10 divine)

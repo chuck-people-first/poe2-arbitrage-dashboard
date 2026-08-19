@@ -25,6 +25,7 @@ function market(pair: [string, string], ratio: [number, number], id = pair.join(
 
 function settings(maxLegs: number): RunSettings {
   return {
+    league: "Test",
     startCurrency: A,
     baseCurrency: B,
     capitalUnits: 100,
@@ -49,7 +50,6 @@ function edge(from: string, to: string, rate: number, key: string): DirectedEdge
     rateHigh: rate,
     volumeFrom: 100_000,
     volumeTo: 100_000,
-    hourlyVolume: 100_000,
     hourUtc: "2026-08-18T03:00:00Z",
     source: "ggg-hourly",
     confidence: null,
