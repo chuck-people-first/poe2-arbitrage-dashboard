@@ -351,6 +351,8 @@ export interface ClosedFlipCycle {
   startCurrency: FlipIdentity;
   startingQuantity: number;
   item: FlipIdentity;
+  /** Currency received when the item is sold on leg two. */
+  sellCurrency: FlipIdentity;
   buyLeg: FlipLeg;
   sellLeg: FlipLeg;
   returnLeg: FlipLeg;

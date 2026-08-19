@@ -2,8 +2,8 @@
 //
 // The Node ingestion pipeline and the Supabase Edge Function must produce the
 // SAME TwoLegFlip projection (route.flip) for the same input. Both runtimes
-// call the shared `projectRoute` (src/domain/opportunity.ts) after identical
-// scoring (`scoreCandidate` -> `toRoute`). This test drives that shared
+// call the shared `scanOpportunityRows` (src/domain/scanner.ts), which owns
+// enumeration, scoring, projection, deduplication and ranking. This test drives the shared
 // projection over a real deterministic input and asserts the exact flip shape
 // so no runtime can silently drift.
 
@@ -96,12 +96,17 @@ describe("production-path parity", () => {
     }
   });
 
-  it("the Edge Function and Node worker resolve to the same module (no duplicate logic)", () => {
-    // Grep-level guard: the Edge Function must import projectRoute (not maintain
-    // a second inline flip builder). This catches re-introduction of drift.
+  it("the Edge Function delegates to the shared automatic scanner (no duplicate logic)", () => {
+    // Grep-level guard: the Edge Function must import scanOpportunityRows
+    // rather than maintaining a second enumeration/scoring implementation.
     const edgeSrc = readFileSync(join(process.cwd(), "supabase", "functions", "poe2-hourly-ingest", "index.ts"), "utf8");
-    expect(edgeSrc).toContain('projectRoute');
+    expect(edgeSrc).toContain('scanOpportunityRows');
+    expect(edgeSrc).toContain('DEFAULT_START_CURRENCIES');
     expect(edgeSrc).not.toContain("toTwoLegFlip"); // Edge no longer hand-builds flips
+    expect(edgeSrc).not.toContain("enumerateTwoLegFlips");
+    const scanner = readFileSync(join(process.cwd(), "src", "domain", "scanner.ts"), "utf8");
+    expect(scanner).toContain("projectRoute");
+    expect(scanner).toContain("candidate.settings");
     const shared = readFileSync(join(process.cwd(), "src", "domain", "opportunity.ts"), "utf8");
     expect(shared).toContain("export function projectRoute");
   });

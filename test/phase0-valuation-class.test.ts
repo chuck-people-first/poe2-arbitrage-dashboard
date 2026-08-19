@@ -85,10 +85,11 @@ describe("item 5: profit classification", () => {
     expect(cls.realizedCurrency).toBe(A);
   });
 
-  it("a route explicitly converted back to base is closed-realized in base", () => {
+  it("a two-leg route ending in display base is still mark-to-market until it returns to start", () => {
     const cls = classifyRoute({ strategy: "two-leg-cross", edges: [], startCurrency: A, endCurrency: B, startUnits: 100, ...base });
-    expect(cls.profitClass).toBe("closed-realized");
-    expect(cls.realizedCurrency).toBe(B);
+    expect(cls.profitClass).toBe("mark-to-market");
+    expect(cls.profitKind).toBe("mark-to-market");
+    expect(cls.realizedCurrency).toBeNull();
   });
 
   it("persisted route carries classification + valuation-risk disclosure", () => {

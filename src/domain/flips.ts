@@ -204,7 +204,8 @@ export function toClosedFlipCycle(route: Route, league: string, sourceHourUtc: s
   if (!leg1 || !leg2 || !leg3 || leg1.to !== leg2.from || leg2.to !== leg3.from || leg3.to !== route.startCurrency) return null;
   const start = resolveIdentity(route.startCurrency);
   const item = resolveIdentity(leg1.to);
-  if (!start || !item) return null;
+  const sellCurrency = resolveIdentity(leg2.to);
+  if (!start || !item || !sellCurrency) return null;
   const legs = [leg1, leg2, leg3];
   if (legs.some(l => ![l.fromUnits, l.toUnits].every(Number.isInteger) || l.fromUnits <= 0 || l.toUnits <= 0)) return null;
   if (legs.some(l => !Number.isFinite(l.goldCost) || l.goldCost < 0 || !Number.isFinite(l.volumeShare) || l.volumeShare <= 0 || l.volumeShare > maxVolumeShare)) return null;
@@ -219,7 +220,7 @@ export function toClosedFlipCycle(route: Route, league: string, sourceHourUtc: s
   const conservativeRatio = route.grossProfitBase > 0 ? Math.max(0, Math.min(1, route.conservativeProfitBase / route.grossProfitBase)) : 0;
   const conservativeRealizedProfitStart = gross * conservativeRatio;
   const toFlipLeg = (l: RouteLeg): FlipLeg => ({ pay: l.fromUnits, receive: l.toUnits, goldCost: l.goldCost, hourlyVolume: l.fromUnits / l.volumeShare });
-  return { id: route.id, familyId: route.routeFamilyId, league, sourceHourUtc, startCurrency: start, startingQuantity: route.startUnits, item,
+  return { id: route.id, familyId: route.routeFamilyId, league, sourceHourUtc, startCurrency: start, startingQuantity: route.startUnits, item, sellCurrency,
     buyLeg: toFlipLeg(leg1), sellLeg: toFlipLeg(leg2), returnLeg: toFlipLeg(leg3), legSourceHours: legs.map(l => l.sourceHourUtc ?? sourceHourUtc),
     finalStartingQuantity, leftoverStartingCurrency: 0, netRealizedProfitStart: gross, realizedProfitDivineEquivalent: route.grossProfitBase, conservativeRealizedProfitStart, conservativeRealizedProfitDivine: route.conservativeProfitBase, totalGold, tradeCount: 3,
     bottleneckVolume, maxVolumeShare: maxShare, movementHaircutPct: Math.max(...legs.map(l => l.movementHaircutPct ?? route.movementHaircutPct)), marketImpactHaircutPct: Math.max(...legs.map(l => l.marketImpactPct ?? route.estimatedMarketImpactPct)),

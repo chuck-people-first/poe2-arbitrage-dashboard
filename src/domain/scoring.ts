@@ -189,11 +189,9 @@ export function classifyRoute(c: RouteCandidate): {
     // closed loop returning to the STARTING currency (may differ from base)
     return { profitClass: "closed-realized", profitKind: "closed-realized", realizedCurrency: c.startCurrency };
   }
-  if (c.endCurrency === c.settings.baseCurrency) {
-    // explicitly converted back to base with return legs included
-    return { profitClass: "closed-realized", profitKind: "closed-realized", realizedCurrency: c.settings.baseCurrency };
-  }
-  // two-leg cross ending in another currency / non-base: mark-to-market
+  // A two-leg cross ending in the display base is still not closed when it
+  // started in another currency. The player must execute an independently
+  // observed return conversion (and pay its gold) before profit is realized.
   return { profitClass: "mark-to-market", profitKind: "mark-to-market", realizedCurrency: null };
 }
 

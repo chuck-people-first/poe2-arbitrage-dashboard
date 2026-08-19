@@ -1,16 +1,13 @@
 import { deriveEdges } from "../../../src/domain/edges.ts";
 import { parseGggPayload } from "../../../src/domain/ggg.ts";
-import { enumerateClosedTriangles, enumerateTwoLegFlips, evaluateCandidate } from "../../../src/domain/routes.ts";
 import { GGG_HUB_PATHS } from "../../../src/domain/mapping.ts";
-import { rankDefault, scoreCandidate, toRoute } from "../../../src/domain/scoring.ts";
-import { projectRoute } from "../../../src/domain/opportunity.ts";
-import { dedupeOpportunityRows } from "../../../src/domain/dedupe.ts";
 import { buildCurrencyRates } from "../../../src/domain/currency-rates.ts";
+import { DEFAULT_START_CURRENCIES, scanOpportunityRows } from "../../../src/domain/scanner.ts";
 import type { RunSettings } from "../../../src/domain/types.ts";
 
 const FUNCTION = "poe2-hourly-ingest";
 const LEAGUE = Deno.env.get("POE2_LEAGUE") ?? "Runes of Aldur";
-const ALGORITHM_VERSION = "phase3-edge-1";
+const ALGORITHM_VERSION = "phase4-all-currencies-1";
 const MAX_ATTEMPTS = 3;
 
 function json(status: number, body: Record<string, unknown>): Response {
@@ -70,24 +67,16 @@ async function rpc(name: string, body: Record<string, unknown>): Promise<unknown
 
 function buildOpportunities(payload: ReturnType<typeof parseGggPayload>, sourceHourUtc: string, settings: RunSettings, hash: string) {
   const markets = payload.markets.filter((market) => market.league === LEAGUE);
-  const edges = deriveEdges(markets.filter((market) => market.league === LEAGUE), sourceHourUtc);
-  const candidates = [...enumerateTwoLegFlips(edges, settings), ...enumerateClosedTriangles(edges, settings)];
-  const rows = candidates.map((candidate) => {
-    const evaluation = evaluateCandidate(candidate);
-    const scoring = scoreCandidate(candidate, evaluation, edges, settings);
-    const route = toRoute(candidate, scoring, evaluation, sourceHourUtc, edges);
-    if (!route || scoring.score === null) return null;
-    // Single shared projection (Edge + Node parity): resolves the two-leg flip
-    // to executable readable identities and embeds it as route.flip. A route
-    // that is not a clean same-item two-leg flip, or that cannot be resolved,
-    // is projected WITHOUT a flip and is dropped from the public dashboard.
-    return projectRoute(route, LEAGUE, sourceHourUtc, hash);
-  }).filter((row): row is NonNullable<typeof row> => row !== null);
-  // Deduplicate sizing variants within this single league/source-hour set.
-  return dedupeOpportunityRows(rows, (r) => {
-    const route = r.route as { routeFamilyId?: string } | null | undefined;
-    return route?.routeFamilyId ?? `${r.strategy}|${r.startCurrency}|${r.endCurrency}`;
-  }, (r) => r.score).sort((a, b) => rankDefault(a.route, b.route));
+  const edges = deriveEdges(markets, sourceHourUtc);
+  return scanOpportunityRows(
+    edges,
+    settings,
+    LEAGUE,
+    sourceHourUtc,
+    hash,
+    Date.now(),
+    DEFAULT_START_CURRENCIES,
+  );
 }
 
 Deno.serve(async (request) => {
@@ -123,7 +112,12 @@ Deno.serve(async (request) => {
       marketId: market.marketId, pairA: market.pair[0], pairB: market.pair[1], volumeTraded: market.volumeTraded,
       lowestStock: market.lowestStock, highestStock: market.highestStock, lowestRatio: market.lowestRatio, highestRatio: market.highestRatio,
     }));
-    const begun = (await rpc("begin_poe2_ingestion", { p_league: LEAGUE, p_source_hour: sourceHourUtc, p_payload_sha256: payloadSha256, p_settings: settings, p_algorithm_version: ALGORITHM_VERSION, p_markets: marketRows })) as Array<{ status: string; run_id: string | null; market_rows: number }>;
+    const persistedSettings = {
+      ...settings,
+      scanStartCurrencies: [...DEFAULT_START_CURRENCIES],
+      currencySelectionRequired: false,
+    };
+    const begun = (await rpc("begin_poe2_ingestion", { p_league: LEAGUE, p_source_hour: sourceHourUtc, p_payload_sha256: payloadSha256, p_settings: persistedSettings, p_algorithm_version: ALGORITHM_VERSION, p_markets: marketRows })) as Array<{ status: string; run_id: string | null; market_rows: number }>;
     const run = begun[0];
     if (!run || run.status === "skipped") return json(200, { status: "skipped", sourceHour: sourceHourUtc, durationMs: Date.now() - startedAt });
     if (!run.run_id) throw new Error("begin RPC returned no run id");

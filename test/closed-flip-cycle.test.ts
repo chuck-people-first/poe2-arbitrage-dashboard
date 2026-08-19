@@ -38,6 +38,7 @@ describe("ClosedFlipCycle", () => {
     const c = toClosedFlipCycle(cycle(), "Runes of Aldur", HOUR, Date.parse("2026-08-18T22:10:00Z"));
     expect(c?.closed).toBe(true); expect(c?.tradeCount).toBe(3);
     expect(c?.returnLeg.pay).toBe(2); expect(c?.returnLeg.receive).toBe(340);
+    expect(c?.sellCurrency.name).toBe("Divine Orb");
     expect(c?.netRealizedProfitStart).toBe(75); expect(c?.totalGold).toBe(47_000);
     expect(c?.finalStartingQuantity).toBeGreaterThan(c!.startingQuantity);
     expect(c?.realizedProfitPer100kGold).toBeCloseTo(.8 / 47_000 * 100_000, 5);
