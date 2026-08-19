@@ -270,7 +270,7 @@ lines.push("// Provenance: cross-validated 2026-08-18 against GGG completed-hour
 lines.push("// (1787022000, league 'Runes of Aldur') and poe.ninja PoE2 economy overview.");
 lines.push("// Verified entries matched within 25% of the poe.ninja implied rate across all");
 lines.push("// observed markets. Quarantined entries failed the check and are NOT added.");
-lines.push("import type { ItemId } from \"./types\";");
+lines.push("import type { ItemId } from \"./types.ts\";");
 lines.push("");
 lines.push("export interface MappingRecord {");
 lines.push("  entry: ItemId;");
