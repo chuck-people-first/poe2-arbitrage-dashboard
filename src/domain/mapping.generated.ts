@@ -3,7 +3,7 @@
 // (1787022000, league 'Runes of Aldur') and poe.ninja PoE2 economy overview.
 // Verified entries matched within 25% of the poe.ninja implied rate across all
 // observed markets. Quarantined entries failed the check and are NOT added.
-import type { ItemId } from "./types";
+import type { ItemId } from "./types.ts";
 
 export interface MappingRecord {
   entry: ItemId;

@@ -19,7 +19,8 @@
 set -u
 cd "$(dirname "$0")/.."
 
-DB_CONTAINER="supabase_db_poe2-arbitrage-dashboard"
+SUPABASE_PROJECT_ID="${SUPABASE_PROJECT_ID:-poe2-arbitrage-dashboard}"
+DB_CONTAINER="supabase_db_${SUPABASE_PROJECT_ID}"
 FAIL=0
 
 echo "==> [1/4] Locating local Supabase stack"
@@ -29,7 +30,7 @@ if ! docker ps --format '{{.Names}}' | grep -qx "$DB_CONTAINER"; then
 fi
 
 echo "==> [1/4] Clean local migration reset"
-if ! npx supabase db reset >/tmp/test-db-reset.log 2>&1; then
+if ! npx --yes supabase@2.115.0 db reset >/tmp/test-db-reset.log 2>&1; then
   echo "ERROR: supabase db reset failed (see /tmp/test-db-reset.log)" >&2
   exit 1
 fi
