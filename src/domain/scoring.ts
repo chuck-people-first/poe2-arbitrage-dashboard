@@ -30,6 +30,8 @@ import { opportunityId, routeFamilyId, disclosureForLegs } from "./identity.ts";
 
 export interface ScoredFields {
   grossProfitBase: number;
+  /** Input value in base currency (start units converted). */
+  inputValueBase: number;
   goldCostTotal: number;
   capitalRoiPct: number;
   movementHaircutPct: number;
@@ -305,8 +307,9 @@ export function scoreCandidate(
   const valuationExecutable = cls.profitClass === "closed-realized";
 
   const fields: ScoredFields = {
-    grossProfitBase,
-    goldCostTotal: ev.goldTotal,
+      grossProfitBase,
+      inputValueBase: startValue,
+      goldCostTotal: ev.goldTotal,
     capitalRoiPct,
     movementHaircutPct,
     ratioRangeUncertaintyPct: ratioRangePct,
@@ -380,18 +383,19 @@ export function routeFromScoring(
     valuationTradeCountIncluded: f.valuationTradeCountIncluded,
   });
   return {
-    id: opportunityId(f.routeFamilyId, league, sourceHourUtc, c.startUnits),
-    routeFamilyId: f.routeFamilyId,
-    strategy: c.strategy,
-    startCurrency: c.startCurrency,
-    endCurrency: c.endCurrency,
-    hubCurrency: c.strategy === "two-leg-cross" ? c.edges[0]!.to : c.startCurrency,
-    legs: ev.legs,
-    startUnits: c.startUnits,
-    endUnits: ev.endUnits,
-    grossProfitBase: f.grossProfitBase,
-    goldCostTotal: f.goldCostTotal,
-    movementHaircutPct: f.movementHaircutPct,
+      id: opportunityId(f.routeFamilyId, league, sourceHourUtc, c.startUnits),
+      routeFamilyId: f.routeFamilyId,
+      strategy: c.strategy,
+      startCurrency: c.startCurrency,
+      endCurrency: c.endCurrency,
+      hubCurrency: c.strategy === "two-leg-cross" ? c.edges[0]!.to : c.startCurrency,
+      legs: ev.legs,
+      startUnits: c.startUnits,
+      endUnits: ev.endUnits,
+      grossProfitBase: f.grossProfitBase,
+      inputValueBase: f.inputValueBase,
+      goldCostTotal: f.goldCostTotal,
+      movementHaircutPct: f.movementHaircutPct,
     ratioRangeUncertaintyPct: f.ratioRangeUncertaintyPct,
     temporalMovementPct: f.temporalMovementPct,
     movementStatus: f.movementStatus,

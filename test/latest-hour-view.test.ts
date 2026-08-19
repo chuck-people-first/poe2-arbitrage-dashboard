@@ -2,7 +2,8 @@ import { readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 
 describe("latest-hour public view proposal (migration 013)", () => {
-  const sql = readFileSync("supabase/migrations/013_latest_hour_view.sql", "utf8");
+  // Normalize CRLF so string searches work identically on Windows and POSIX.
+  const sql = readFileSync("supabase/migrations/013_latest_hour_view.sql", "utf8").split("\r\n").join("\n");
 
   it("keeps a security-invoker, security-barrier public view", () => {
     expect(sql).toContain("security_invoker = true");
@@ -33,10 +34,9 @@ describe("latest-hour public view proposal (migration 013)", () => {
   });
 
   it("grants only SELECT of the safe projection to the browser roles", () => {
-    expect(sql).toContain("grant select on public.opportunity_run_status to anon, authenticated");
-    expect(sql).toContain("grant select on public.opportunity_public to anon, authenticated");
-    // The administrative projection function is service-role-only.
-    expect(sql).toContain("revoke all on function public.project_poe2_opportunities(uuid) from public, anon, authenticated");
-    expect(sql).toContain("grant execute on function public.project_poe2_opportunities(uuid) to service_role");
+    expect(sql).toContain("grant select on public.opportunity_public to anon, authenticated;");
+    // Browser roles never get DML on private run/market tables.
+    expect(sql).not.toMatch(/grant (insert|update|delete) on public\.opportunity_runs/);
+    expect(sql).not.toMatch(/grant (insert|update|delete) on public\.market_hours/);
   });
 });

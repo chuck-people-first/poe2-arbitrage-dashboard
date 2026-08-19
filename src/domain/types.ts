@@ -165,11 +165,13 @@ export interface Route {
   endCurrency: string;
   hubCurrency: string; // intermediate hub for two-leg; null-equivalent for triangle uses start
   legs: RouteLeg[];
-  startUnits: number;
-  endUnits: number;
-  grossProfitBase: number; // in base currency (mark-to-market valuation when not closed in base)
-  goldCostTotal: number;
-  movementHaircutPct: number;
+    startUnits: number;
+    endUnits: number;
+    grossProfitBase: number; // in base currency (mark-to-market valuation when not closed in base)
+    /** Input value in base currency (start units converted), captured for the flip view. */
+    inputValueBase: number;
+    goldCostTotal: number;
+    movementHaircutPct: number;
   /** Completed-hour low/high ratio range (labeled RANGE UNCERTAINTY, not temporal movement). */
   ratioRangeUncertaintyPct: number;
   /** Temporal price movement; null when there is insufficient hourly history. */
@@ -224,4 +226,152 @@ export interface RunSettings {
   minConservativeProfitBase: number;
   maxDataAgeHours: number;
   movementRiskTolerancePct: number; // 0..100
+}
+
+// ---------------------------------------------------------------------------
+// Product-facing two-leg item flip model.
+//
+// A two-leg item flip is the PRIMARY opportunity: buy one specific item with
+// Currency A, then sell that SAME item for Currency B. Both legs are exact
+// executable integer trades. Valuing the input currency in Divine is a
+// supporting calculation — NOT an extra player instruction.
+// ---------------------------------------------------------------------------
+
+/** Resolved display identity for one item or currency (NEVER a raw GGG id). */
+export interface FlipIdentity {
+  /** stable GGG metadata path (item/currency id) */
+  id: string;
+  /** readable display name, e.g. "Chaos Orb", "Tul's Catalyst" */
+  name: string;
+  /** absolute icon URL when available */
+  iconUrl: string | null;
+  /** gold cost per unit received on the Currency Exchange (want side) */
+  goldCostPerUnit: number;
+}
+
+/** One executable leg of the flip. Quantities are exact integers. */
+export interface FlipLeg {
+  /** what the player pays (currency A in leg 1, the item in leg 2) */
+  pay: number;
+  /** what the player receives (the item in leg 1, currency B in leg 2) */
+  receive: number;
+  /** gold charged for this leg = received units x gold cost of received item */
+  goldCost: number;
+  /** hourly executed volume available for this leg, in the leg's own units */
+  hourlyVolume: number;
+}
+
+/**
+ * The complete product record for one two-leg item flip:
+ * buy item X with currency A -> sell that same item X for currency B.
+ */
+export interface TwoLegFlip {
+  /** Deterministic opportunity identity (family + league + source hour + sizing). */
+  id: string;
+  /** Deterministic family identity: same item + buy/sell path across hours. */
+  familyId: string;
+  league: string;
+  sourceHourUtc: string;
+  /** Actual source age in hours (now - source_hour), computed live at render. */
+  sourceAgeHours: number;
+
+  /** The item being flipped (resolved, readable). */
+  item: FlipIdentity;
+  /** Buying currency A (resolved, readable). */
+  buyCurrency: FlipIdentity;
+  /** Selling currency B (resolved, readable). */
+  sellCurrency: FlipIdentity;
+
+  /** Leg 1: pay this many units of A -> receive this many units of X. */
+  buyLeg: FlipLeg;
+  /** Leg 2: pay this many units of X -> receive this many units of B. */
+  sellLeg: FlipLeg;
+
+  /** Gold required for BOTH legs (executable in-game). */
+  goldRequired: number;
+  /** Number of trades to execute the flip (always 2). */
+  tradeCount: 2;
+
+  /** Input value in Divine equivalents (buy amount, supporting conversion). */
+  inputDivineValue: number;
+  /** Output value in Divine equivalents (sell proceeds). */
+  outputDivineValue: number;
+  /** gross profit = output - input (before haircuts). */
+  grossProfitDivine: number;
+  /** conservative net profit after movement/market-impact haircut. */
+  conservativeNetProfitDivine: number;
+  /** Net Divine profit per 100K Gold — the Div/Gold column definition. */
+  divPer100kGold: number;
+
+  /** Highest leg volume share of executed hourly volume (0..1, bottleneck). */
+  volumeShare: number;
+  /** lowest hourly volume across both legs (units of the item per hour). */
+  lowestLegVolume: number;
+  /** Estimated fill risk (0..1). HEURISTIC, explicitly labeled as an estimate. */
+  fillRisk: number;
+  fillRiskLabel: "Low" | "Medium" | "High";
+
+  /** Whether the sell leg closes in the base currency (realized) or not. */
+  profitKind: ProfitKind;
+  /** Full valuation disclosure (input/output paths, rates, observation ids). */
+  valuation: ValuationDisclosure;
+
+  // Advanced metrics — retained for the detail drawer, not the main table.
+  ratioRangePct: number;
+  movementHaircutPct: number;
+  capitalRoiPct: number;
+  expectedProfitDivine: number;
+  confidence: number;
+
+  // Phase B / C fields. Filled from compact hourly history; absent (null)
+  // means "insufficient history" — never fabricated.
+  trend: FlipTrend | null;
+  recommendation: FlipRecommendation | null;
+}
+
+/** Deterministic historical trend features for one flip family. */
+export interface FlipTrend {
+  change1hPct: number | null;
+  change6hPct: number | null;
+  change24hPct: number | null;
+  change7dPct: number | null;
+  rollingMedianDivPer100k: number | null;
+  spreadPersistenceHours: number;
+  volatilityPct: number | null;
+  volumeChange24hPct: number | null;
+  percentileVsHistory: number | null; // 0..100
+  sampleHours: number;
+  seasonalityTrained: boolean; // false until >= 2 weeks of hourly observations
+  currentHourOfDayEt: number | null; // America/New_York hour of the source hour
+  currentWeekdayEt: number | null; // 0=Sun..6=Sat America/New_York
+}
+
+export type RecommendationAction = "TRADE NOW" | "WATCH" | "WAIT" | "AVOID" | "INSUFFICIENT HISTORY";
+
+export interface FlipRecommendation {
+  action: RecommendationAction;
+  /** Plain-English reasons, each tied to a deterministic feature. */
+  reasons: string[];
+  historyWindowHours: number;
+  sampleCount: number;
+  /** 0..1 level of support; seasonal statements are never guaranteed. */
+  confidence: number;
+  seasonalityActive: boolean;
+}
+
+/** One compact hourly observation of a flip family (retained, deterministic). */
+export interface FlipHourlyObservation {
+  familyId: string;
+  league: string;
+  sourceHourUtc: string;
+  divPer100kGold: number;
+  conservativeProfitDivine: number;
+  goldRequired: number;
+  lowestLegVolume: number;
+  volumeShare: number;
+  buyRate: number;
+  sellRate: number;
+  inputDivineValue: number;
+  outputDivineValue: number;
+  payloadSha256: string;
 }
