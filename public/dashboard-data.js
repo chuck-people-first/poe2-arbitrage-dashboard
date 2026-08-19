@@ -1,6 +1,7 @@
 (function (root) {
   function normalizeOpportunityRow(row) {
     const route = row && row.route && typeof row.route === 'object' ? row.route : {};
+    const valuation = route && route.valuation && typeof route.valuation === 'object' ? route.valuation : {};
     return {
       ...route,
       id: row?.id ?? route.id,
@@ -23,7 +24,19 @@
       sourceHour: row?.source_hour ?? route.sourceHour,
       league: row?.league ?? route.league,
       dataAgeHours: route.dataAgeHours ?? 0,
-      legs: Array.isArray(route.legs) ? route.legs : []
+      legs: Array.isArray(route.legs) ? route.legs : [],
+      // item 4: valuation-path risk disclosure
+      valuationBottleneckVolumeShare: Number(row?.valuation_bottleneck_volume_share ?? valuation.valuationBottleneckVolumeShare ?? 0),
+      valuationRangeUncertaintyPct: Number(row?.valuation_range_uncertainty_pct ?? valuation.valuationRangeUncertaintyPct ?? 0),
+      valuationConfidence: Number(row?.valuation_confidence ?? valuation.valuationConfidence ?? 0),
+      valuationExecutable: row?.valuation_executable ?? valuation.valuationExecutable ?? false,
+      valuationGoldIncluded: row?.valuation_gold_included ?? valuation.valuationGoldIncluded ?? false,
+      valuationTradeCountIncluded: Number(row?.valuation_trade_count_included ?? valuation.valuationTradeCountIncluded ?? 0),
+      // item 5: profit classification
+      profitClass: row?.profit_class ?? route.profitClass ?? (row?.strategy === 'closed-triangle' || route.strategy === 'closed-triangle' ? 'closed-realized' : 'mark-to-market'),
+      realizedCurrency: row?.realized_currency ?? route.realizedCurrency ?? null,
+      realizedProfitStart: route.realizedProfitStart ?? null,
+      realizedProfitBase: route.realizedProfitBase ?? null
     };
   }
 

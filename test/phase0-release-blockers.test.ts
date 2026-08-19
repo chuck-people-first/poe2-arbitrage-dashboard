@@ -37,6 +37,8 @@ const settings = (overrides: Partial<RunSettings> = {}): RunSettings => ({
 const valuation = (): ValuationDisclosure => ({
   profitKind: "mark-to-market", inputValuationPath: [], outputValuationPath: [],
   observationIds: [], valuationRates: [], returnToBaseLegs: [], returnToBaseIncluded: false,
+  valuationBottleneckVolumeShare: 0, valuationRangeUncertaintyPct: 0, valuationConfidence: 1,
+  valuationExecutable: false, valuationGoldIncluded: false, valuationTradeCountIncluded: 0,
 });
 
 const leg = (from: string, to: string, give: number, receive: number, gold: number, edgeKey: string): RouteLeg => ({
@@ -62,9 +64,11 @@ describe("expected-profit confidence monotonicity", () => {
 
   it("identical routes differ only in confidence -> higher confidence wins (not reversed)", () => {
     // Two-leg flip A(chaos)->B(divine=base)->C(exalted), end valued via an
-    // independent C->B edge so gross profit is non-zero.
+    // independent C->B edge so gross profit is non-zero. The reference edge is
+    // deep enough that the valuation path passes the 20% liquidity ceiling
+    // (end notional 33,000 exalted vs volFrom 10,000,000 => 0.33% share).
     const legsEdges = [edge(A, B, 0.1, "e1", 100000, 10000), edge(B, C, 330, "e2", 10000, 1_000_000)];
-    const valuationEdge = edge(C, B, 1 / 300, "val", 100000, 10000);
+    const valuationEdge = edge(C, B, 1 / 300, "val", 10_000_000, 100_000);
     const s = settings({ goldBudget: 10_000_000 });
     const c: RouteCandidate = {
       strategy: "two-leg-cross", edges: legsEdges,

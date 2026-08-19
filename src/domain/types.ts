@@ -127,9 +127,33 @@ export interface ValuationDisclosure {
   returnToBaseLegs: ValuationEdge[];
   /** Whether returnToBaseLegs (and their gold/movement/trades) are included in the reported totals. */
   returnToBaseIncluded: boolean;
+  /** Valuation-path liquidity (item 4): unit-safe bottleneck share of the most
+   *  illiquid hop in the combined input+output valuation paths. */
+  valuationBottleneckVolumeShare: number;
+  /** Valuation-path ratio-range uncertainty (max over valuation hops). */
+  valuationRangeUncertaintyPct: number;
+  /** Confidence label derived from valuation-path liquidity/range. */
+  valuationConfidence: number;
+  /** Whether the required reference-path quantities are integer-executable. */
+  valuationExecutable: boolean;
+  /** Whether gold for the return/valuation trades is included in totals. */
+  valuationGoldIncluded: boolean;
+  /** Number of extra trades required to return to base (0 when excluded/mark-to-market). */
+  valuationTradeCountIncluded: number;
 }
 
 export type MovementStatus = "insufficient-history" | "computed";
+
+/**
+ * Profit classification (item 5): a route is classified by what it actually
+ * closes, NOT hardcoded to mark-to-market.
+ *   - two-leg cross ending in another currency            -> mark-to-market
+ *   - route returning to its starting currency            -> closed-realized
+ *     (closes in the STARTING currency; may differ from the display base)
+ *   - route explicitly converted back to base with all of
+ *     its return legs included                            -> closed-realized (base)
+ */
+export type ProfitClass = "mark-to-market" | "closed-realized";
 
 export interface Route {
   /** Deterministic opportunity identity: family + league + source hour + execution sizing. */
@@ -143,7 +167,7 @@ export interface Route {
   legs: RouteLeg[];
   startUnits: number;
   endUnits: number;
-  grossProfitBase: number; // in base currency
+  grossProfitBase: number; // in base currency (mark-to-market valuation when not closed in base)
   goldCostTotal: number;
   movementHaircutPct: number;
   /** Completed-hour low/high ratio range (labeled RANGE UNCERTAINTY, not temporal movement). */
@@ -166,6 +190,17 @@ export interface Route {
   dataAgeHours: number;
   ratioRangePct: number;
   profitKind: ProfitKind;
+  /**
+   * Classification (item 5). `realizedCurrency` is the currency the route truly
+   * closes in, or null for mark-to-market. When a route closes in a currency
+   * that differs from the display base, realizedProfitStart is the closed
+   * profit in that currency and realizedProfitBase is its mark-to-market
+   * Divine-currency equivalent — the two must not be conflated.
+   */
+  profitClass: ProfitClass;
+  realizedCurrency: string | null;
+  realizedProfitStart: number | null;
+  realizedProfitBase: number | null;
   valuation: ValuationDisclosure;
 }
 

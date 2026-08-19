@@ -114,6 +114,9 @@ begin
     r.expected_profit_base, r.gold_cost, r.leg_count, r.bottleneck_volume_share,
     r.ratio_range_pct, r.movement_haircut_pct, r.fill_confidence, r.score,
     r.source_hour, r.league, r.algorithm_version, r.run_status,
+    r.valuation_bottleneck_volume_share, r.valuation_range_uncertainty_pct,
+    r.valuation_confidence, r.valuation_executable, r.valuation_gold_included,
+    r.valuation_trade_count_included, r.profit_class, r.realized_currency,
     (now() - r.source_hour) as data_age
   from public.opportunity_public_rows r
   join public.opportunity_run_status s

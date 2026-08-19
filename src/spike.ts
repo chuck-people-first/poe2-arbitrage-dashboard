@@ -3,12 +3,12 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { parseGggPayload } from "./domain/ggg";
-import { deriveEdges } from "./domain/edges";
-import { enumerateClosedTriangles, enumerateTwoLegFlips, evaluateCandidate } from "./domain/routes";
-import { scoreCandidate, toRoute, rankDefault } from "./domain/scoring";
-import { displayName, GGG_HUB_PATHS, ITEM_MAP } from "./domain/mapping";
-import type { RunSettings } from "./domain/types";
+import { parseGggPayload } from "./domain/ggg.ts";
+import { deriveEdges } from "./domain/edges.ts";
+import { enumerateClosedTriangles, enumerateTwoLegFlips, evaluateCandidate } from "./domain/routes.ts";
+import { scoreCandidate, toRoute, rankDefault } from "./domain/scoring.ts";
+import { displayName, GGG_HUB_PATHS, ITEM_MAP } from "./domain/mapping.ts";
+import type { RunSettings } from "./domain/types.ts";
 
 const LEAGUE = "Runes of Aldur";
 const HOUR_UTC = "2026-08-18T03:00:00Z";

@@ -10,7 +10,7 @@
 //   chaos->exalted GGG 33.5  vs ninja 33.45  (0.2% match)
 //   mirror->divine GGG 4758  vs ninja 4759   (0.02% match)
 
-import type { ItemId } from "./types";
+import type { ItemId } from "./types.ts";
 import { GENERATED_MAPPING } from "./mapping.generated.ts";
 
 export const GGG_HUB_PATHS = {

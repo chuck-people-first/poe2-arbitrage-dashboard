@@ -127,6 +127,7 @@ Deno.serve(async (request) => {
     movementRiskTolerancePct: Number(Deno.env.get("POE2_MOVEMENT_TOLERANCE_PCT") ?? "100"),
   };
 
+  let activeRunId: string | null = null; // set once begin succeeds; drives best-effort fail
   try {
     const raw = await fetchWithRetry(sourceUrl, { headers: { "user-agent": "poe2-arbitrage-dashboard/0.1", accept: "application/json" } });
     const payload = parseGggPayload(raw);
@@ -140,11 +141,27 @@ Deno.serve(async (request) => {
     const run = begun[0];
     if (!run || run.status === "skipped") return json(200, { status: "skipped", sourceHour: sourceHourUtc, durationMs: Date.now() - startedAt });
     if (!run.run_id) throw new Error("begin RPC returned no run id");
+    activeRunId = run.run_id;
+    // ATOMIC completion (item 1): complete_poe2_ingestion now inserts the
+    // opportunities, marks the run successful AND projects the public league
+    // rows + opportunity_run_status in a single database transaction. The
+    // separate project_poe2_opportunities() call is REMOVED — calling it here
+    // would reintroduce the failure window where a private run is committed
+    // successful but the public projection is stale.
     const count = await rpc("complete_poe2_ingestion", { p_run_id: run.run_id, p_league: LEAGUE, p_source_hour: sourceHourUtc, p_payload_sha256: payloadSha256, p_opportunities: opportunities });
-    await rpc("project_poe2_opportunities", { p_run_id: run.run_id });
     console.log(JSON.stringify({ function: FUNCTION, status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: opportunities.length, durationMs: Date.now() - startedAt }));
     return json(200, { status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: count, durationMs: Date.now() - startedAt });
   } catch (error) {
+    // Best-effort failure marker (item 1): a run begun but not atomically
+    // completed must not be left as 'running' forever. If a run id is known,
+    // attempt fail_poe2_ingestion; swallow its errors (best effort only).
+    if (activeRunId) {
+      try {
+        await rpc("fail_poe2_ingestion", { p_run_id: activeRunId, p_error: safeError(error) });
+      } catch (failError) {
+        console.error(JSON.stringify({ function: FUNCTION, status: "fail-marker-errored", runId: activeRunId, error: safeError(failError) }));
+      }
+    }
     const detail = safeError(error);
     console.error(JSON.stringify({ function: FUNCTION, status: "failed", sourceHour: sourceHourUtc, durationMs: Date.now() - startedAt, error: detail }));
     return json(502, { error: "ingestion failed", sourceHour: sourceHourUtc });

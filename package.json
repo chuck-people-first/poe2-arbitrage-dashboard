@@ -12,6 +12,7 @@
     "dashboard:serve": "python -m http.server 4173 --directory public",
     "test": "vitest run",
     "test:watch": "vitest",
+    "test:db": "bash scripts/test-db.sh",
     "typecheck": "tsc --noEmit -p tsconfig.json"
   },
   "dependencies": {

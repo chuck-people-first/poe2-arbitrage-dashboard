@@ -1,6 +1,6 @@
-import { normalizeMarkets, sha256Json } from "./pipeline";
-import { parseGggPayload } from "../domain/ggg";
-import type { IngestionSettings, PersistedOpportunity } from "./pipeline";
+import { normalizeMarkets, sha256Json } from "./pipeline.ts";
+import { parseGggPayload } from "../domain/ggg.ts";
+import type { IngestionSettings, PersistedOpportunity } from "./pipeline.ts";
 
 export interface SupabaseWorkerConfig {
   supabaseUrl: string;

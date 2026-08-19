@@ -1,7 +1,7 @@
 import { createHash } from "node:crypto";
-import { parseGggPayload } from "../domain/ggg";
-import { dedupeOpportunityRows } from "../domain/dedupe";
-import type { GggPayload, GggMarket } from "../domain/types";
+import { parseGggPayload } from "../domain/ggg.ts";
+import { dedupeOpportunityRows } from "../domain/dedupe.ts";
+import type { GggPayload, GggMarket } from "../domain/types.ts";
 
 export interface IngestionSettings {
   league: string;

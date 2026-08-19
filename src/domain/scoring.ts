@@ -12,8 +12,17 @@
 // Expected profit is a monotone function of fill confidence:
 //   expected = conservative + (gross - conservative) * confidence
 // Increasing confidence can never reduce expected profit.
+//
+// Valuation-path risk (item 4): the input and output reference paths that
+// value the route in base currency are independently vetted for liquidity.
+// A valuation path whose unit-safe bottleneck share exceeds the volume ceiling,
+// or that has missing/zero volume or non-finite/non-positive rates, silently
+// inflates value — so the route is REJECTED rather than relied upon.
+//
+// Profit classification (item 5): routes are classified by what they actually
+// close (mark-to-market vs closed-realized), never hardcoded.
 
-import type { DirectedEdge, Route, RouteLeg, RunSettings, ValuationDisclosure } from "./types.ts";
+import type { DirectedEdge, ProfitClass, ProfitKind, Route, RouteLeg, RunSettings, ValuationDisclosure } from "./types.ts";
 import type { EvaluatedRoute, RouteCandidate } from "./routes.ts";
 import { valuationPath } from "./routes.ts";
 import { validateCalculatedRoute } from "./invariants.ts";
@@ -42,6 +51,18 @@ export interface ScoredFields {
   outputValuationPath: DirectedEdge[];
   routeFamilyId: string;
   dataAgeHours: number;
+  // valuation-path risk (item 4)
+  valuationBottleneckVolumeShare: number;
+  valuationRangeUncertaintyPct: number;
+  valuationConfidence: number;
+  valuationExecutable: boolean;
+  valuationGoldIncluded: boolean;
+  valuationTradeCountIncluded: number;
+  // classification (item 5)
+  profitClass: ProfitClass;
+  realizedCurrency: string | null;
+  realizedProfitStart: number | null;
+  realizedProfitBase: number | null;
 }
 
 export interface ScoringResult {
@@ -98,6 +119,82 @@ export function sourceAgeHours(edges: DirectedEdge[], referenceMs: number): numb
   return Math.max(0, (referenceMs - sourceMs) / 3_600_000);
 }
 
+interface ValuationRisk {
+  bottleneckShare: number;
+  rangeUncertaintyPct: number;
+  confidence: number;
+  rejection: string | null;
+}
+
+/**
+ * Unit-safe liquidity/risk of the combined input+output valuation paths.
+ * Every valuation hop is vetted: finite positive rates, present positive
+ * volumes (in both denominations), a unit-correct notional share no greater
+ * than the volume ceiling, and a ratio-range term. A path that cannot support
+ * the required notional (bottleneck share > ceiling) is REJECTED.
+ */
+export function valuationRisk(
+  inputPath: DirectedEdge[],
+  outputPath: DirectedEdge[],
+  startNotional: number,
+  endNotional: number,
+  settings: RunSettings,
+): ValuationRisk {
+  const ceiling = Math.min(settings.maxVolumeSharePct, 20) / 100;
+  const shares: number[] = [];
+  const ranges: number[] = [];
+
+  const walk = (path: DirectedEdge[], notional: number): void => {
+    let value = notional;
+    for (const e of path) {
+      if (!Number.isFinite(e.rate) || e.rate <= 0) throw new Error("valuation path has non-finite or non-positive rate");
+      if (!(e.volumeFrom > 0) || !(e.volumeTo > 0)) throw new Error("valuation path reference market has missing or zero volume");
+      const fromShare = value / e.volumeFrom;
+      const toShare = (value * e.rate) / e.volumeTo;
+      shares.push(Math.max(fromShare, toShare));
+      ranges.push(e.rate > 0 ? ((e.rateHigh - e.rateLow) / e.rate) * 100 : 0);
+      value *= e.rate;
+    }
+  };
+
+  walk(inputPath, startNotional);
+  walk(outputPath, endNotional);
+
+  if (shares.length === 0) {
+    return { bottleneckShare: 0, rangeUncertaintyPct: 0, confidence: 1, rejection: null };
+  }
+  const bottleneckShare = Math.max(...shares);
+  const rangeUncertaintyPct = Math.max(...ranges, 0);
+  if (bottleneckShare > ceiling) {
+    return {
+      bottleneckShare,
+      rangeUncertaintyPct,
+      confidence: 0,
+      rejection: `valuation path bottleneck volume share ${(bottleneckShare * 100).toFixed(1)}% > cap ${(ceiling * 100).toFixed(0)}%`,
+    };
+  }
+  const confidence = Math.max(0.05, Math.min(0.95, 0.9 - bottleneckShare * 0.8 - rangeUncertaintyPct / 300));
+  return { bottleneckShare, rangeUncertaintyPct, confidence, rejection: null };
+}
+
+/** Classify a route by what it actually closes (item 5). */
+export function classifyRoute(c: RouteCandidate): {
+  profitClass: ProfitClass;
+  profitKind: ProfitKind;
+  realizedCurrency: string | null;
+} {
+  if (c.endCurrency === c.startCurrency) {
+    // closed loop returning to the STARTING currency (may differ from base)
+    return { profitClass: "closed-realized", profitKind: "closed-realized", realizedCurrency: c.startCurrency };
+  }
+  if (c.endCurrency === c.settings.baseCurrency) {
+    // explicitly converted back to base with return legs included
+    return { profitClass: "closed-realized", profitKind: "closed-realized", realizedCurrency: c.settings.baseCurrency };
+  }
+  // two-leg cross ending in another currency / non-base: mark-to-market
+  return { profitClass: "mark-to-market", profitKind: "mark-to-market", realizedCurrency: null };
+}
+
 /**
  * Evaluate + score a candidate route. Returns null score with a structured
  * rejection reason when any hard filter fails. `referenceTimeMs` is the
@@ -129,6 +226,17 @@ export function scoreCandidate(
     : outputPath.reduce((value, edge) => value * edge.rate, ev.endUnits);
   if (endValue === null) {
     return { route: c, score: null, fields: null, rejection: "end currency not valued in base" };
+  }
+
+  // Valuation-path liquidity vetted BEFORE treating the reference as reliable.
+  let valRisk: ValuationRisk;
+  try {
+    valRisk = valuationRisk(inputPath ?? [], outputPath ?? [], c.startUnits, ev.endUnits, settings);
+  } catch (error) {
+    return { route: c, score: null, fields: null, rejection: error instanceof Error ? error.message : String(error) };
+  }
+  if (valRisk.rejection) {
+    return { route: c, score: null, fields: null, rejection: valRisk.rejection };
   }
 
   const grossProfitBase = endValue - startValue;
@@ -181,6 +289,21 @@ export function scoreCandidate(
   const score = (expectedProfitBase / denominator) * freshnessFactor * persistenceFactor;
 
   const familyId = routeFamilyId(c.strategy, c.edges);
+
+  // Classification (item 5).
+  const cls = classifyRoute(c);
+  let realizedProfitStart: number | null = null;
+  let realizedProfitBase: number | null = null;
+  if (cls.realizedCurrency && cls.realizedCurrency === c.startCurrency && c.startCurrency !== settings.baseCurrency) {
+    // closed in the STARTING currency, which differs from the display base:
+    // expose the closed profit in start units AND its mark-to-market base equiv.
+    realizedProfitStart = ev.endUnits - c.startUnits;
+    realizedProfitBase = grossProfitBase;
+  }
+
+  const valuationTradeCountIncluded = 0; // Phase 0: no separate return-to-base conversion legs selected
+  const valuationExecutable = cls.profitClass === "closed-realized";
+
   const fields: ScoredFields = {
     grossProfitBase,
     goldCostTotal: ev.goldTotal,
@@ -203,6 +326,16 @@ export function scoreCandidate(
     outputValuationPath: outputPath ?? [],
     routeFamilyId: familyId,
     dataAgeHours,
+    valuationBottleneckVolumeShare: valRisk.bottleneckShare,
+    valuationRangeUncertaintyPct: valRisk.rangeUncertaintyPct,
+    valuationConfidence: valRisk.confidence,
+    valuationExecutable,
+    valuationGoldIncluded: false,
+    valuationTradeCountIncluded,
+    profitClass: cls.profitClass,
+    realizedCurrency: cls.realizedCurrency,
+    realizedProfitStart,
+    realizedProfitBase,
   };
 
   const calculatedRoute = routeFromScoring(c, ev, fields, c.edges, settings, score, referenceTimeMs);
@@ -237,7 +370,15 @@ export function routeFromScoring(
   const outputPath = valuationPath(c.endCurrency, settings.baseCurrency, allEdges, used) ?? [];
   const league = settings.league;
   const sourceHourUtc = c.edges[0]?.hourUtc ?? "";
-  const valuation = disclosureForLegs(inputPath, outputPath, [], false);
+  const cls = classifyRoute(c);
+  const returnToBaseLegs: DirectedEdge[] = [];
+  const valuation = disclosureForLegs(inputPath, outputPath, returnToBaseLegs, false, cls.profitKind, {
+    valuationBottleneckVolumeShare: f.valuationBottleneckVolumeShare,
+    valuationRangeUncertaintyPct: f.valuationRangeUncertaintyPct,
+    valuationConfidence: f.valuationConfidence,
+    valuationExecutable: f.valuationExecutable,
+    valuationTradeCountIncluded: f.valuationTradeCountIncluded,
+  });
   return {
     id: opportunityId(f.routeFamilyId, league, sourceHourUtc, c.startUnits),
     routeFamilyId: f.routeFamilyId,
@@ -266,7 +407,11 @@ export function routeFromScoring(
     bottleneckEdgeKey: f.bottleneckEdgeKey,
     dataAgeHours: f.dataAgeHours,
     ratioRangePct: f.ratioRangePct,
-    profitKind: valuation.profitKind,
+    profitKind: cls.profitKind,
+    profitClass: cls.profitClass,
+    realizedCurrency: cls.realizedCurrency,
+    realizedProfitStart: f.realizedProfitStart,
+    realizedProfitBase: f.realizedProfitBase,
     valuation,
   };
 }
