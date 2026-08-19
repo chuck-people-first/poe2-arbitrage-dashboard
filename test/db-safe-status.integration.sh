@@ -67,10 +67,14 @@ for ROLE in anon authenticated; do
   # Allowed
   run_allowed "$ROLE" "SELECT opportunity_public"       "select count(*) from public.opportunity_public;"
   run_allowed "$ROLE" "SELECT safe run-status projection" "select league, candidate_count from public.opportunity_run_status;"
+  run_allowed "$ROLE" "SELECT currency rates projection" "select count(*) from public.currency_rates_public;"
+  run_allowed "$ROLE" "SELECT signal history projection" "select count(*) from public.signal_history_public;"
   # Denied: private run/market/opportunity tables
   run_denied  "$ROLE" "SELECT private opportunity_runs" "select * from public.opportunity_runs;"
   run_denied  "$ROLE" "SELECT private opportunities"    "select * from public.opportunities;"
   run_denied  "$ROLE" "SELECT private market_hours"     "select * from public.market_hours;"
+  run_denied  "$ROLE" "SELECT compact currency history" "select * from private.currency_rate_hourly;"
+  run_denied  "$ROLE" "SELECT compact signal history"   "select * from private.flip_hourly_observations;"
   # Denied: writes on the public projection tables
   run_denied  "$ROLE" "INSERT public projection rows"   "insert into public.opportunity_run_status(league, latest_successful_source_hour, candidate_count, algorithm_version, run_status) values ('HACK','2026-01-01T00:00:00Z',1,'v','running');"
   run_denied  "$ROLE" "UPDATE public projection rows"   "update public.opportunity_run_status set candidate_count=999 where league='Runes of Aldur';"

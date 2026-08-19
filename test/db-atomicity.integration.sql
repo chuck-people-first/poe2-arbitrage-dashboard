@@ -88,4 +88,33 @@ begin
   raise notice 'ATOMICITY FAILURE-INJECTION TEST PASSED';
 end $$;
 
+-- History-write failure injection: a malformed closed-cycle observation must
+-- roll back the rate rows, opportunity rows and run completion together.
+do $$
+declare
+  run_c uuid := 'bbbbbbbb-0000-0000-0000-00000000000c';
+  hour_c timestamptz := '2026-08-18T23:00:00Z';
+  v_status text;
+begin
+  delete from private.flip_hourly_observations where family_id = 'atomic-history-family';
+  delete from private.currency_rate_hourly where league = 'Runes of Aldur' and source_hour = hour_c;
+  delete from public.opportunities where run_id = run_c;
+  delete from public.opportunity_runs where run_id = run_c;
+  insert into public.opportunity_runs(run_id, league, source_hour, source_payload_sha256, settings, algorithm_version, status, started_at)
+    values (run_c, 'Runes of Aldur', hour_c, 'sha-C', '{}'::jsonb, 'atomicity-v1', 'running', now());
+  begin
+    perform public.complete_poe2_ingestion(run_c, 'Runes of Aldur', hour_c, 'sha-C',
+      '[{"strategy":"closed-triangle","playbook":[],"startCurrency":"Metadata/Items/Currency/CurrencyModValues","endCurrency":"Metadata/Items/Currency/CurrencyModValues","startUnits":100,"endUnits":105,"grossProfitBase":1,"conservativeProfitBase":1,"expectedProfitBase":1,"goldCost":3,"legCount":3,"bottleneckVolumeShare":0.01,"ratioRangePct":1,"movementHaircutPct":1,"fillConfidence":0.8,"score":1,"route":{"routeFamilyId":"atomic-history-family","profitClass":"closed-realized","startCurrency":"Metadata/Items/Currency/CurrencyModValues","endCurrency":"Metadata/Items/Currency/CurrencyModValues","startUnits":100,"endUnits":105,"grossProfitBase":1,"conservativeProfitBase":1,"expectedProfitBase":1,"goldCost":3,"legCount":3,"bottleneckVolumeShare":0.01,"ratioRangePct":1,"movementHaircutPct":1,"fillConfidence":0.8,"score":1,"valuation":{"valuationBottleneckVolumeShare":0.01,"valuationRangeUncertaintyPct":1,"valuationConfidence":0.8,"valuationExecutable":true,"valuationGoldIncluded":true,"valuationTradeCountIncluded":3},"legs":[{"fromUnits":100,"toUnits":500,"rate":5,"volumeFrom":1000,"volumeTo":5000},{"fromUnits":500,"toUnits":4900,"rate":9.8,"volumeFrom":5000,"volumeTo":49000},{"fromUnits":4900,"toUnits":105,"rate":0.0214,"volumeFrom":49000,"volumeTo":1000}]},"cycle":{"closed":true,"executable":true,"familyId":"atomic-history-family","realizedProfitPer100kGold":"not-a-number","conservativeRealizedProfitDivine":1,"totalGold":3,"bottleneckVolume":1000,"maxVolumeShare":0.01,"realizedProfitDivineEquivalent":1,"finalStartingQuantity":105,"buyLeg":{"pay":100,"receive":500,"goldCost":1},"sellLeg":{"pay":500,"receive":4900,"goldCost":1},"returnLeg":{"pay":4900,"receive":105,"goldCost":1}}}]',
+      '[{"direction":"exalted-to-chaos","from_currency":"exalted","to_currency":"chaos","market_id":"m","rate":5,"rate_low":5,"rate_high":5,"pay_units":100,"receive_units":500,"gold_cost":1,"from_volume":1000,"to_volume":5000,"volume_share":0.1,"fill_risk_pct":10,"executable":true,"reason":null}]');
+    raise exception 'FAIL: malformed history should have raised';
+  exception when others then
+    if sqlerrm not like '%numeric%' then raise; end if;
+  end;
+  select status into v_status from public.opportunity_runs where run_id = run_c;
+  if v_status <> 'running' then raise exception 'FAIL: history failure changed run status to %', v_status; end if;
+  if exists (select 1 from private.flip_hourly_observations where family_id = 'atomic-history-family') then raise exception 'FAIL: history row survived rollback'; end if;
+  if exists (select 1 from private.currency_rate_hourly where league = 'Runes of Aldur' and source_hour = hour_c) then raise exception 'FAIL: rate row survived rollback'; end if;
+  raise notice 'ATOMIC HISTORY FAILURE-INJECTION PASSED';
+end $$;
+
 commit;

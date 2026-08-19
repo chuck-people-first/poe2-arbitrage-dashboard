@@ -93,6 +93,27 @@ footer code { background: var(--panel-2); border: 1px solid var(--border); paddi
 .drawer-sec.playbook ol { margin: 0 0 6px; padding-left: 20px; }
 .drawer-sec.playbook li { margin-bottom: 10px; }
 .drawer-note { color: var(--muted); font-size: 13px; margin: 6px 0; }
+.rates-panel { margin-top: 16px; }
+.rates-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.rate-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: rgba(255,255,255,.02); }
+.rate-card.rate-unavailable { opacity: .62; }
+.rate-head, .rate-meta, .history-status { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.rate-head { font-size: 12px; }
+.rate-head span { color: var(--accent-2); font-size: 10px; letter-spacing: .06em; }
+.rate-main { display: flex; flex-direction: column; gap: 3px; padding: 12px 0 8px; }
+.rate-main b { font-size: 18px; }
+.rate-main small, .rate-meta, .rate-source, .history-grid span { color: var(--muted); font-size: 11px; }
+.rate-meta { border-top: 1px solid var(--border); padding-top: 8px; }
+.rate-source { display: block; margin-top: 8px; }
+.history-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
+.history-grid div { border: 1px solid var(--border); border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 3px; }
+.history-grid small { color: var(--muted); font-size: 10px; text-transform: uppercase; }
+.history-grid b { font-size: 16px; }
+.sparkline { display: block; width: 100%; height: 54px; background: rgba(255,255,255,.025); border-radius: 6px; margin: 10px 0; }
+.sparkline polyline { fill: none; stroke: var(--accent); stroke-width: 1.8; vector-effect: non-scaling-stroke; }
+.muted { color: var(--muted); }
+@media (max-width: 900px) { .rates-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } .history-grid { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 560px) { .rates-grid { grid-template-columns: 1fr; } }
 table.detail { width: 100%; }
 table.detail tr { border: none; }
 table.detail td { border: none; padding: 5px 0; font-size: 13px; }

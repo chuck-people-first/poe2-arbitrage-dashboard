@@ -26,9 +26,11 @@ try {
   await connect(); await cdp("Page.enable"); await cdp("Runtime.enable"); await cdp("Log.enable"); await cdp("Network.enable");
   await nav(`${root}/demo.html`); await sleep(500);
   result.demo.rowCount = await js("document.querySelectorAll('#routes tr.clickable').length");
+  result.demo.ratesPanel = await js("document.querySelector('#ratesTitle')?.textContent === 'Currency Rates' && document.querySelector('#currencyRates') !== null");
   result.demo.demoBanner = await js("document.body.innerText.includes('DEMO DATA')");
   console.log('demo diagnostics', await js("({ready:document.readyState, body:document.body.innerText.slice(0,500), rows:document.querySelectorAll('#routes tr').length, clickable:document.querySelectorAll('#routes tr.clickable').length, scripts:[...document.scripts].map(s=>s.src)})"));
   await click("#routes tr.clickable"); await sleep(150); result.demo.mouseState = await js("({aria:document.querySelector('#drawer').getAttribute('aria-hidden'), cls:document.querySelector('#drawer').className, active:document.activeElement?.tagName, rect:(()=>{const r=document.querySelector('#routes tr.clickable').getBoundingClientRect();return [r.x,r.y,r.width,r.height]})(), hit:(()=>{const r=document.querySelector('#routes tr.clickable').getBoundingClientRect();return document.elementFromPoint(r.x+r.width/2,r.y+r.height/2)?.tagName})()})"); result.demo.mouseActivation = await js("document.querySelector('#drawer').getAttribute('aria-hidden') === 'false'");
+  result.demo.historySection = await js("document.querySelector('#drawer .history') !== null");
   await screenshot("closed-cycle-drawer.png");
   await key("Escape","Escape",27); result.demo.escapeClose = await js("document.querySelector('#drawer').getAttribute('aria-hidden') === 'true'");
   await js("document.querySelector('#routes tr.clickable').focus()"); await key("Enter","Enter",13); result.demo.keyboardActivation = await js("document.querySelector('#drawer').getAttribute('aria-hidden') === 'false'");
@@ -41,11 +43,12 @@ try {
   const eventStart = events.length; await nav(`${root}/index.html`); await sleep(500);
   result.live.rowCount = await js("document.querySelectorAll('#routes tr.clickable').length");
   result.live.demoBanner = await js("document.body.innerText.includes('DEMO DATA')");
+  result.live.ratesPanel = await js("document.querySelector('#ratesTitle')?.textContent === 'Currency Rates' && document.querySelector('#currencyRates') !== null");
   const liveEvents = events.slice(eventStart);
   result.live.demoRequests = liveEvents.filter(e=>e.method==='Network.requestWillBeSent' && /demo|fixture/i.test(e.params.request.url)).map(e=>e.params.request.url);
   result.live.consoleErrors = liveEvents.filter(e=>e.method==='Runtime.consoleAPICalled' && e.params.type==='error').map(e=>e.params.args.map(a=>a.value ?? a.description ?? '').join(' '));
   result.live.failedRequests = liveEvents.filter(e=>e.method==='Network.loadingFailed' && !e.params.canceled).map(e=>e.params.errorText);
   await screenshot("live-zero-candidate.png");
   console.log(JSON.stringify(result,null,2));
-  if (!result.demo.mouseActivation || !result.demo.keyboardActivation || !result.demo.escapeClose || !result.demo.closeButton || !result.demo.mobile || result.live.demoBanner || result.live.demoRequests.length || result.live.consoleErrors.length || result.live.failedRequests.length) process.exitCode=1;
+  if (!result.demo.mouseActivation || !result.demo.keyboardActivation || !result.demo.escapeClose || !result.demo.closeButton || !result.demo.mobile || !result.demo.historySection || !result.live.ratesPanel || result.live.demoBanner || result.live.demoRequests.length || result.live.consoleErrors.length || result.live.failedRequests.length) process.exitCode=1;
 } catch (e) { console.error(e.stack); process.exitCode=1; } finally { edge.kill(); }

@@ -5,6 +5,7 @@ import { GGG_HUB_PATHS } from "../../../src/domain/mapping.ts";
 import { rankDefault, scoreCandidate, toRoute } from "../../../src/domain/scoring.ts";
 import { projectRoute } from "../../../src/domain/opportunity.ts";
 import { dedupeOpportunityRows } from "../../../src/domain/dedupe.ts";
+import { buildCurrencyRates } from "../../../src/domain/currency-rates.ts";
 import type { RunSettings } from "../../../src/domain/types.ts";
 
 const FUNCTION = "poe2-hourly-ingest";
@@ -127,13 +128,21 @@ Deno.serve(async (request) => {
     if (!run || run.status === "skipped") return json(200, { status: "skipped", sourceHour: sourceHourUtc, durationMs: Date.now() - startedAt });
     if (!run.run_id) throw new Error("begin RPC returned no run id");
     activeRunId = run.run_id;
-    // ATOMIC completion (item 1): complete_poe2_ingestion now inserts the
-    // opportunities, marks the run successful AND projects the public league
-    // rows + opportunity_run_status in a single database transaction. The
-    // separate project_poe2_opportunities() call is REMOVED — calling it here
-    // would reintroduce the failure window where a private run is committed
-    // successful but the public projection is stale.
-    const count = await rpc("complete_poe2_ingestion", { p_run_id: run.run_id, p_league: LEAGUE, p_source_hour: sourceHourUtc, p_payload_sha256: payloadSha256, p_opportunities: opportunities });
+    const currencyRates = buildCurrencyRates(payload.markets.filter((market) => market.league === LEAGUE), sourceHourUtc, settings.capitalUnits);
+    // One RPC is the completion boundary: opportunities, six directional
+    // rates, closed-cycle history, safe projections, ingestion state and the
+    // succeeded run status commit or roll back together.
+    const count = await rpc("complete_poe2_ingestion", {
+      p_run_id: run.run_id, p_league: LEAGUE, p_source_hour: sourceHourUtc,
+      p_payload_sha256: payloadSha256, p_opportunities: opportunities,
+      p_rates: currencyRates.map((rate) => ({
+        direction: rate.direction, from_currency: rate.from.id, to_currency: rate.to.id,
+        market_id: rate.marketId, rate: rate.rate, rate_low: rate.rateLow, rate_high: rate.rateHigh,
+        pay_units: rate.payUnits, receive_units: rate.receiveUnits, gold_cost: rate.goldCost,
+        from_volume: rate.fromVolume, to_volume: rate.toVolume, volume_share: rate.volumeShare,
+        fill_risk_pct: rate.fillRiskPct, executable: rate.executable, reason: rate.reason,
+      })),
+    });
     console.log(JSON.stringify({ function: FUNCTION, status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: opportunities.length, durationMs: Date.now() - startedAt }));
     return json(200, { status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: count, durationMs: Date.now() - startedAt });
   } catch (error) {

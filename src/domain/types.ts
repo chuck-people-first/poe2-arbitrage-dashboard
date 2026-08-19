@@ -80,6 +80,12 @@ export interface RouteLeg {
   to: string;
   fromUnits: number;
   toUnits: number;
+  /** Direct observed midpoint rate used to plan this leg (to units per from unit). */
+  rate?: number;
+  /** Independently observed hourly volume in the leg's pay currency. */
+  volumeFrom?: number;
+  /** Independently observed hourly volume in the leg's receive currency. */
+  volumeTo?: number;
   /** integer ratio as the in-game order will use it: give fromUnits, receive toUnits */
   playbook: { give: number; pay: string; receive: number; want: string };
   goldCost: number; // integer units received × received item gold cost
@@ -408,8 +414,29 @@ export interface FlipHourlyObservation {
   goldRequired: number;
   lowestLegVolume: number;
   volumeShare: number;
+  /** Direct observed rate for the first closed-cycle leg. */
   buyRate: number;
+  /** Direct observed rate for the second closed-cycle leg. */
   sellRate: number;
+  /** Direct observed rate for the independently observed return leg. */
+  returnRate: number;
+  /** Ordered [buy, sell, return] rates retained for complete-cycle history. */
+  legRates: [number, number, number];
+  buyPayUnits?: number;
+  buyReceiveUnits?: number;
+  sellPayUnits?: number;
+  sellReceiveUnits?: number;
+  returnPayUnits?: number;
+  returnReceiveUnits?: number;
+  buyGold?: number;
+  sellGold?: number;
+  returnGold?: number;
+  buyVolumeFrom?: number;
+  buyVolumeTo?: number;
+  sellVolumeFrom?: number;
+  sellVolumeTo?: number;
+  returnVolumeFrom?: number;
+  returnVolumeTo?: number;
   inputDivineValue: number;
   outputDivineValue: number;
   payloadSha256: string;
