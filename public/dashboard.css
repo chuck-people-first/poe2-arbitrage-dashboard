@@ -268,3 +268,10 @@ td.red, .red { color: var(--red); }
   .preset-group { width: 100%; justify-content: space-between; }
   td.cell-item { max-width: 200px; }
 }
+
+/* Empty state that explains itself. A blank scanner is alarming, so it says
+   what is missing and why, not just that there is nothing here. */
+.empty-notice { max-width: 620px; margin: 0 auto; text-align: left; display: flex; flex-direction: column; gap: 7px; }
+.empty-notice b { color: var(--fg); font-size: 15px; }
+.empty-notice span { color: var(--muted); font-size: 13px; line-height: 1.6; }
+.empty-notice code { font-family: var(--font-mono); font-size: 12px; padding: 1px 6px; border: 1px solid var(--border); border-radius: 5px; background: var(--panel-2); color: var(--fg-dim, var(--fg)); }

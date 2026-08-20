@@ -129,6 +129,19 @@ describe("currency reference UI model", () => {
     expect(chain).toContain("no order size closes this loop");
   });
 
+  it("explains an empty scanner instead of claiming a recalculation is running", () => {
+    // A blank dashboard reads as broken. When every stored row predates this
+    // build, the page must say so — and must never imply work is in progress
+    // when nothing is running.
+    const dashboard = readFileSync(new URL("../public/dashboard.js", import.meta.url), "utf8");
+    expect(dashboard).not.toContain("Recalculating this completed hour");
+    expect(dashboard).toContain("Waiting on the next hourly ingest");
+    expect(dashboard).toContain("staleVersion");
+    // The reason the rows are hidden is still stated: old percentages are not
+    // comparable, so they stay out rather than being mixed in.
+    expect(dashboard).toMatch(/stay hidden rather than being shown/);
+  });
+
   it("never ranks or headlines a row on the favorable-boundary compound", () => {
     // targetBidPotentialPct may only appear in the drawer's labeled figure
     // table. If it reaches a comparator or a main-row cell, three unrelated

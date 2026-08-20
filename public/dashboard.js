@@ -262,8 +262,15 @@ function render() {
   if (flowBar) flowBar.hidden = tab !== 'scanner';
   renderHeader();
   const rs = rows();
-  const oldScannerRowsHidden = tab === 'scanner' && !window.POE2_DEMO_DATA && (run?.routes || []).some(r => r.discovery && !hasPriceModel(r));
-  $('#routes').innerHTML = rs.length ? rs.map(r => tab === 'scanner' ? scannerRowHtml(r) : tab === 'closed' ? closedRowHtml(r) : mtmRowHtml(r)).join('') : `<tr><td colspan="${tab === 'scanner' ? SCANNER_COLSPAN : 9}" class="empty">${oldScannerRowsHidden ? 'Recalculating this completed hour with the separated spread / return-confirmed model. The invalid best-case percentages are hidden.' : tab === 'scanner' ? `No ${esc((FLOW_PRESETS[flowPreset] || FLOW_PRESETS.all).label)} signals match these filters. Switch to All paths, or lower Min spread / Min volume.` : tab === 'closed' ? 'No fully verified closed cycles this hour. Check Market Scanner for paths that need a live gold-fee check.' : 'No executable mark-to-market flips this hour.'}</td></tr>`;
+  // Rows produced before this build carry no priceModel and cannot be rendered
+  // in the round-trip model. Say plainly that the data predates the dashboard
+  // rather than implying a recalculation is under way — nothing is running.
+  const staleRows = tab === 'scanner' && !window.POE2_DEMO_DATA
+    ? (run?.routes || []).filter(r => r.discovery && !hasPriceModel(r))
+    : [];
+  const staleVersion = staleRows[0]?.algorithmVersion || run?.status?.algorithm_version || null;
+  const staleNotice = `<b>Waiting on the next hourly ingest.</b><span>This dashboard reads the round-trip model, and the ${staleRows.length} stored ${staleRows.length === 1 ? 'signal was' : 'signals were'} produced by the previous scanner${staleVersion ? ` (<code>${esc(staleVersion)}</code>)` : ''}. Nothing is wrong with the data — the hourly ingestion just has not run with this version yet. Old best-case percentages stay hidden rather than being shown as if they were comparable.</span>`;
+  $('#routes').innerHTML = rs.length ? rs.map(r => tab === 'scanner' ? scannerRowHtml(r) : tab === 'closed' ? closedRowHtml(r) : mtmRowHtml(r)).join('') : `<tr><td colspan="${tab === 'scanner' ? SCANNER_COLSPAN : 9}" class="empty">${staleRows.length ? `<div class="empty-notice">${staleNotice}</div>` : tab === 'scanner' ? `No ${esc((FLOW_PRESETS[flowPreset] || FLOW_PRESETS.all).label)} signals match these filters. Switch to All paths, or lower Min spread / Min volume.` : tab === 'closed' ? 'No fully verified closed cycles this hour. Check Market Scanner for paths that need a live gold-fee check.' : 'No executable mark-to-market flips this hour.'}</td></tr>`;
   $('#count').textContent = String(rs.length);
   $('#verifiedCount').textContent = String(rs.filter(r => tab === 'scanner' ? isConfirmed(r.discovery) : tab === 'closed').length);
   $('#unknownCount').textContent = String(rs.filter(r => tab === 'scanner' && !r.discovery?.goldVerified).length);
