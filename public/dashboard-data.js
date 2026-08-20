@@ -53,6 +53,8 @@
   // raw last-segment is shown so the operator sees why it was not promoted.
   function name(path) {
     if (typeof path !== 'string' || !path.trim()) return 'Unknown currency';
+    const hubName = root.POE2CurrencyRates?.currencyName(path);
+    if (hubName) return hubName;
     const x = path.split('/').filter(Boolean).pop() || path;
     return x.replaceAll('-', ' ').replaceAll('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
   }

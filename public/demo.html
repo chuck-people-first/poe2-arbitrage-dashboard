@@ -25,7 +25,7 @@
       <article><span>Run status</span><strong id="runStatus">—</strong><small>succeeded / failed / running</small></article>
       <article><span>Algorithm</span><strong id="algorithmVersion">—</strong><small>Version of this run</small></article>
     </section>
-    <section class="rates-panel panel" aria-labelledby="ratesTitle"><div class="panel-head"><div><h2 id="ratesTitle">Currency Rates</h2><p>Direct GGG completed-hour observations · hourly resolution</p></div><span class="pill">6 DIRECTIONS</span></div><div id="currencyRates" class="rates-grid"><div class="empty">No completed-hour direct rate observations yet.</div></div></section>
+    <section class="rates-panel panel" aria-labelledby="ratesTitle"><div class="panel-head"><div><h2 id="ratesTitle">Quick Currency Reference</h2><p>Latest completed-hour exchange ratios. These are reference rates, not arbitrage recommendations.</p></div><span class="pill">3 PAIRS</span></div><div id="currencyRates" class="rate-reference"><div class="empty">No completed-hour currency observations yet.</div></div></section>
     <nav class="tabs" aria-label="Opportunity type"><button class="active" data-tab="closed">Closed Cycles</button><button data-tab="mtm">Mark-to-Market</button></nav>
     <section class="panel">
       <div class="panel-head"><div><h2 id="tabTitle">Closed Cycles</h2><p id="tabHint">Executable three-trade cycles only.</p></div><span class="pill">SOURCE: GGG COMPLETED HOUR</span></div>
@@ -36,6 +36,8 @@
   <aside class="drawer" id="drawer" aria-hidden="true"><div class="drawer-inner" id="drawerInner"></div></aside>
   <div class="scrim" id="scrim" hidden></div>
   <script src="/dashboard-demo.js"></script>
+  <script src="/dashboard-rates-demo.js"></script>
+  <script src="/currency-rates.js"></script>
   <script src="/dashboard-data.js"></script>
   <script src="/dashboard.js"></script>
 </body>

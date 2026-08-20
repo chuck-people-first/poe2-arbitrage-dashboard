@@ -13,8 +13,13 @@ const risk = label => `<span class="risk ${String(label || '').toLowerCase()}">$
 const rateFmt = n => n == null ? '—' : Number(n).toLocaleString('en-US', { maximumFractionDigits: 6 });
 function renderCurrencyRates() {
   const el = $('#currencyRates'); if (!el) return;
-  if (!currencyRates.length) { el.innerHTML = '<div class="empty">No completed-hour direct rate observations yet.</div>'; return; }
-  el.innerHTML = currencyRates.map(r => `<article class="rate-card ${r.executable ? '' : 'rate-unavailable'}"><div class="rate-head"><strong>${esc(window.POE2Dashboard.name(r.from_currency))} → ${esc(window.POE2Dashboard.name(r.to_currency))}</strong><span>${r.executable ? 'EXECUTABLE' : 'UNAVAILABLE'}</span></div><div class="rate-main">${r.executable ? `<b>${rateFmt(r.pay_units)} → ${rateFmt(r.receive_units)}</b><small>rate ${rateFmt(r.rate)}</small>` : `<b>—</b><small>${esc(r.reason || 'No direct observation')}</small>`}</div><div class="rate-meta"><span>Gold ${fmtInt(r.gold_cost)}</span><span>Vol ${r.volume_share == null ? '—' : pct(r.volume_share)}</span><span>Risk ${r.fill_risk_pct == null ? '—' : `${rateFmt(r.fill_risk_pct)}%`}</span></div><small class="rate-source">${esc(r.source_hour || '')} · ${r.source_age == null ? '—' : `${rateFmt(Number(r.source_age) / 3600)}h old`} · hourly</small></article>`).join('');
+  const model = window.POE2CurrencyRates.pairModels(currencyRates);
+  const line = (from, to, value) => `<div class="rate-line"><span>1 ${esc(from.name)}</span><strong>${value == null ? 'Not observed' : `≈ ${rateFmt(value)} ${esc(to.name)}`}</strong></div>`;
+  const cards = model.pairs.map(pair => `<article class="rate-card"><div class="rate-pair-title"><strong>${esc(pair.left.short)} ↔ ${esc(pair.right.short)}</strong><span>DIRECT</span></div>${line(pair.left, pair.right, pair.leftToRight)}${line(pair.right, pair.left, pair.rightToLeft)}</article>`).join('');
+  const source = model.sourceHour
+    ? `Latest completed hour: ${new Date(model.sourceHour).toLocaleString('en-US', { timeZone: 'UTC', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit', hour12: false })} UTC · ${window.POE2CurrencyRates.ageLabel(model.sourceHour)}`
+    : 'No completed-hour currency observations yet.';
+  el.innerHTML = `<div class="rates-grid">${cards}</div><div class="rates-note"><span>${esc(source)}</span><span>Reference ratios only. Trade sizing, gold fees, and fill risk are evaluated in the opportunities below.</span></div>`;
 }
 function historyFor(row) { const family = row?.routeFamilyId || row?.cycle?.familyId || row?.route?.routeFamilyId; return historyRows.filter(h => h.family_id === family).sort((a,b) => String(a.source_hour).localeCompare(String(b.source_hour))); }
 function chartPoints(rows, hours) {

@@ -99,15 +99,15 @@ footer code { background: var(--panel-2); border: 1px solid var(--border); paddi
 .rates-panel { margin-top: 16px; }
 .rates-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .rate-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: rgba(255,255,255,.02); }
-.rate-card.rate-unavailable { opacity: .62; }
-.rate-head, .rate-meta, .history-status { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
-.rate-head { font-size: 12px; }
-.rate-head span { color: var(--accent-2); font-size: 10px; letter-spacing: .06em; }
-.rate-main { display: flex; flex-direction: column; gap: 3px; padding: 12px 0 8px; }
-.rate-main b { font-size: 18px; }
-.rate-main small, .rate-meta, .rate-source, .history-grid span { color: var(--muted); font-size: 11px; }
-.rate-meta { border-top: 1px solid var(--border); padding-top: 8px; }
-.rate-source { display: block; margin-top: 8px; }
+.rate-pair-title, .history-status { display: flex; justify-content: space-between; gap: 8px; align-items: center; }
+.rate-pair-title { padding-bottom: 9px; border-bottom: 1px solid var(--border); }
+.rate-pair-title strong { font-size: 14px; }
+.rate-pair-title span { color: var(--accent-2); font-size: 10px; letter-spacing: .06em; }
+.rate-line { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding-top: 10px; }
+.rate-line span { color: var(--muted); font-size: 12px; }
+.rate-line strong { font-size: 13px; text-align: right; }
+.rates-note { display: flex; justify-content: space-between; gap: 14px; color: var(--muted); font-size: 11px; padding-top: 10px; }
+.history-grid span { color: var(--muted); font-size: 11px; }
 .history-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin: 10px 0; }
 .history-grid div { border: 1px solid var(--border); border-radius: 8px; padding: 8px; display: flex; flex-direction: column; gap: 3px; }
 .history-grid small { color: var(--muted); font-size: 10px; text-transform: uppercase; }
@@ -120,6 +120,7 @@ footer code { background: var(--panel-2); border: 1px solid var(--border); paddi
   .topbar { flex-direction: column; }
   .source-badge { width: 100%; min-width: 0; }
   .rates-grid { grid-template-columns: 1fr; }
+  .rates-note { flex-direction: column; }
 }
 table.detail { width: 100%; }
 table.detail tr { border: none; }

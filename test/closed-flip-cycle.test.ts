@@ -57,7 +57,7 @@ describe("ClosedFlipCycle", () => {
     expect(toClosedFlipCycle(cycle({ endUnits: 200, legs: [leg(EX, TUL, 265, 62, 43_400), leg(TUL, DIV, 62, 2, 1_600), leg(DIV, EX, 2, 200, 2_000)] }), "Runes of Aldur", HOUR)).toBeNull();
   });
   it("keeps gold separate from starting-currency profit", () => {
-    const c = toClosedFlipCycle(cycle({ legs: [leg(EX, TUL, 265, 62, 4_340), leg(TUL, DIV, 62, 2, 160_000), leg(DIV, EX, 2, 340, 200_000)] }), "Runes of Aldur", HOUR)!;
+    const c = toClosedFlipCycle(cycle({ legs: [leg(EX, TUL, 265, 62, 4_340), leg(TUL, DIV, 62, 2, 160_000), leg(DIV, EX, 2, 340, 200_000)] }), "Runes of Aldur", HOUR, Date.parse("2026-08-18T22:10:00Z"))!;
     expect(c.netRealizedProfitStart).toBe(75); expect(c.totalGold).toBe(364_340);
   });
 });
