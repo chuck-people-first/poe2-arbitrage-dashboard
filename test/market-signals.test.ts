@@ -87,6 +87,28 @@ describe("broad market signals", () => {
     }
   });
 
+  it("lists exactly the two real GGG hourly ratio boundaries without inventing ladder tiers", () => {
+    for (const row of rows) {
+      const signal = row.route.discovery!;
+      const legs = [
+        [signal.buyRatioRange, signal.buyRatio],
+        [signal.sellRatioRange, signal.sellRatio],
+        [signal.returnRatioRange, signal.returnRatio],
+      ] as const;
+      for (const [range, conservative] of legs) {
+        expect(range).not.toBeNull();
+        expect(range!.source).toBe("ggg-completed-hour-boundaries");
+        expect(Object.keys(range!).sort()).toEqual(["conservative", "favorable", "source"]);
+        expect(range!.conservative).toEqual(conservative);
+        expect(range!.conservative.side).toBe("conservative-hourly");
+        expect(range!.favorable.side).toBe("favorable-hourly");
+        for (const ratio of [range!.favorable, range!.conservative]) {
+          expect(Math.min(ratio.want, ratio.have)).toBe(1);
+        }
+      }
+    }
+  });
+
   it("does not combine the three best hourly extremes into a fabricated Bauble cycle", () => {
     const bauble = "Metadata/Items/Currency/CurrencyFlaskQuality";
     const mk = (
@@ -122,6 +144,11 @@ describe("broad market signals", () => {
     );
     const signal = screenshotRows.find((row) => row.route.discovery?.item.id === bauble)?.route.discovery;
     expect(signal?.buyRatio).toEqual({ want: 1, have: 3, side: "conservative-hourly" });
+    expect(signal?.buyRatioRange).toEqual({
+      favorable: { want: 2, have: 1, side: "favorable-hourly" },
+      conservative: { want: 1, have: 3, side: "conservative-hourly" },
+      source: "ggg-completed-hour-boundaries",
+    });
     expect(signal?.closedCycleProfitPct).toBeLessThan(25);
   });
 });

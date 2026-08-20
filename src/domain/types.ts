@@ -74,6 +74,24 @@ export interface DirectedEdge {
   confidence: number | null;
 }
 
+/** One Currency Exchange quote, written exactly as the game shows I WANT : I HAVE. */
+export interface InGameRatio {
+  want: number;
+  have: number;
+  side: "conservative-hourly" | "favorable-hourly";
+}
+
+/**
+ * The two price boundaries exposed by GGG's completed-hour aggregate.
+ * This is deliberately not called an order book: the official feed does not
+ * expose the live ladder or any intermediate price levels.
+ */
+export interface InGameRatioRange {
+  favorable: InGameRatio;
+  conservative: InGameRatio;
+  source: "ggg-completed-hour-boundaries";
+}
+
 export interface RouteLeg {
   edgeKey: string;
   from: string;
@@ -359,9 +377,13 @@ export interface MarketSignal {
   sellLeg: FlipLeg & { goldVerified: boolean };
   returnLeg: (FlipLeg & { goldVerified: boolean }) | null;
   /** Ratios entered in game, always expressed as I WANT : I HAVE. */
-  buyRatio: { want: number; have: number; side: "conservative-hourly" };
-  sellRatio: { want: number; have: number; side: "conservative-hourly" };
-  returnRatio: { want: number; have: number; side: "conservative-hourly" } | null;
+  buyRatio: InGameRatio & { side: "conservative-hourly" };
+  sellRatio: InGameRatio & { side: "conservative-hourly" };
+  returnRatio: (InGameRatio & { side: "conservative-hourly" }) | null;
+  /** Both completed-hour price boundaries, with no fabricated intermediate levels. */
+  buyRatioRange: InGameRatioRange;
+  sellRatioRange: InGameRatioRange;
+  returnRatioRange: InGameRatioRange | null;
   /** Potential two-leg spread after valuing the sell currency back in start currency. */
   twoLegProfitPct: number;
   /** Exact integer three-leg result, when an independent direct return market exists. */

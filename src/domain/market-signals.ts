@@ -11,7 +11,7 @@ import { estimateFillRisk, fillRiskLabel, resolveIdentity } from "./flips.ts";
 import { sha256Hex } from "./identity.ts";
 import { estimatedGoldCostPerUnit, GGG_HUB_PATHS, goldCostPerUnit } from "./mapping.ts";
 import type { OpportunityRow } from "./opportunity.ts";
-import type { DirectedEdge, MarketSignal, Route, RouteLeg, RunSettings, ValuationDisclosure } from "./types.ts";
+import type { DirectedEdge, InGameRatio, InGameRatioRange, MarketSignal, Route, RouteLeg, RunSettings, ValuationDisclosure } from "./types.ts";
 
 const OUTPUT_TARGETS = [1, 2, 5, 10, 25, 50, 100, 250, 500] as const;
 
@@ -39,12 +39,25 @@ function planningRate(edge: DirectedEdge): number {
   return edge.rateLow;
 }
 
-/** Normalize to the Currency Exchange's visible I WANT : I HAVE form. */
-function inGameRatio(edge: DirectedEdge) {
-  const rate = planningRate(edge);
+/** Normalize one rate to the Currency Exchange's visible I WANT : I HAVE form. */
+function ratioForRate(rate: number, side: InGameRatio["side"]): InGameRatio {
   return rate >= 1
-    ? { want: rate, have: 1, side: "conservative-hourly" as const }
-    : { want: 1, have: 1 / rate, side: "conservative-hourly" as const };
+    ? { want: rate, have: 1, side }
+    : { want: 1, have: 1 / rate, side };
+}
+
+/** The two real boundaries GGG publishes; never interpolate a fake ladder. */
+function inGameRatioRange(edge: DirectedEdge): InGameRatioRange {
+  return {
+    favorable: ratioForRate(edge.rateHigh, "favorable-hourly"),
+    conservative: ratioForRate(edge.rateLow, "conservative-hourly"),
+    source: "ggg-completed-hour-boundaries",
+  };
+}
+
+function inGameRatio(edge: DirectedEdge): MarketSignal["buyRatio"] {
+  const ratio = inGameRatioRange(edge).conservative;
+  return { want: ratio.want, have: ratio.have, side: "conservative-hourly" };
 }
 
 function flipLeg(edge: DirectedEdge, pay: number, receive: number) {
@@ -189,6 +202,9 @@ export function buildMarketSignalRows(
           id, familyId, league, sourceHourUtc, item, buyCurrency: startIdentity,
           sellCurrency: sellIdentity, buyLeg, sellLeg, returnLeg,
           buyRatio: inGameRatio(buy), sellRatio: inGameRatio(sell), returnRatio: inGameRatio(back),
+          buyRatioRange: inGameRatioRange(buy),
+          sellRatioRange: inGameRatioRange(sell),
+          returnRatioRange: inGameRatioRange(back),
           twoLegProfitPct, closedCycleProfitPct, startingQuantity: startUnits,
           finalStartingQuantity: final, totalGold, goldVerified, estimatedTotalGold,
           estimatedGoldPerUnknownUnit: unknownFee?.cost ?? null,

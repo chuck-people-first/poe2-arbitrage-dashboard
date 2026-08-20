@@ -10,9 +10,24 @@
     buyLeg: { ...cycle.buyLeg, goldVerified: false },
     sellLeg: { ...cycle.sellLeg, goldVerified: true },
     returnLeg: { ...cycle.returnLeg, goldVerified: true },
-    buyRatio: { want: 1.25, have: 1, side: 'favorable-limit' },
-    sellRatio: { want: 1, have: 31, side: 'favorable-limit' },
-    returnRatio: { want: 170, have: 1, side: 'favorable-limit' },
+    buyRatio: { want: 1, have: 53, side: 'conservative-hourly' },
+    sellRatio: { want: 1, have: 31, side: 'conservative-hourly' },
+    returnRatio: { want: 170, have: 1, side: 'conservative-hourly' },
+    buyRatioRange: {
+      favorable: { want: 1, have: 28, side: 'favorable-hourly' },
+      conservative: { want: 1, have: 53, side: 'conservative-hourly' },
+      source: 'ggg-completed-hour-boundaries'
+    },
+    sellRatioRange: {
+      favorable: { want: 1, have: 28, side: 'favorable-hourly' },
+      conservative: { want: 1, have: 31, side: 'conservative-hourly' },
+      source: 'ggg-completed-hour-boundaries'
+    },
+    returnRatioRange: {
+      favorable: { want: 180, have: 1, side: 'favorable-hourly' },
+      conservative: { want: 170, have: 1, side: 'conservative-hourly' },
+      source: 'ggg-completed-hour-boundaries'
+    },
     twoLegProfitPct: 50.6, closedCycleProfitPct: (340 / 265 - 1) * 100,
     startingQuantity: 265, finalStartingQuantity: 340, totalGold: null,
     estimatedTotalGold: 19100, estimatedGoldPerUnknownUnit: 250,

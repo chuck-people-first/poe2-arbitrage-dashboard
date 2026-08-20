@@ -75,6 +75,14 @@ td .small, td small { display: block; color: var(--muted); font-size: 12px; font
 .path .mnem { color: var(--muted); font-size: 12px; margin-top: 2px; }
 .path b { color: var(--fg); }
 .ratio-path b { color: var(--accent-2); }
+.ratio-leg { display: grid; grid-template-columns: minmax(66px,auto) 1fr; align-items: baseline; gap: 2px 10px; margin-bottom: 8px; }
+.ratio-leg > b { grid-row: 1 / span 3; }
+.ratio-leg > small { color: var(--muted); font-size: 10px; letter-spacing: .04em; }
+.ratio-bound { display: flex; gap: 8px; align-items: baseline; }
+.ratio-bound em { min-width: 82px; color: var(--muted); font-size: 10px; font-style: normal; text-transform: uppercase; }
+.ratio-bound.target { color: var(--gold); font-weight: 700; }
+.ratio-bound.target em { color: var(--accent-2); }
+.ratio-bound.planning { color: var(--fg); }
 .ratio-entry { display: flex; flex-direction: column; gap: 2px; margin: 5px 0 2px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: rgba(88,166,255,.06); }
 .ratio-entry small { color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
 .ratio-entry strong { color: var(--gold); font-size: 15px; }
