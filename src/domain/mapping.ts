@@ -21,6 +21,32 @@ export const GGG_HUB_PATHS = {
 
 const verified = "checked-in-verified" as const;
 
+// Public PoE2 wiki Currency Exchange table, checked 2026-08-20.
+// Fees are per unit received on the I WANT side.
+// https://www.poe2wiki.net/wiki/Currency_exchange
+const VERIFIED_GOLD_BY_NAME: Record<string, number> = {
+  "Orb of Annulment": 1000,
+  "Artificer's Shard": 100,
+  "Glassblower's Bauble": 750,
+  "Lesser Jeweller's Orb": 200,
+  "Greater Jeweller's Orb": 600,
+  "Perfect Jeweller's Orb": 1000,
+  "Orb of Chance": 1000,
+  "Vaal Orb": 160,
+  "Arcanist's Etcher": 500,
+  "Blacksmith's Whetstone": 500,
+};
+
+const ESTIMATED_GOLD_BY_CATEGORY: Record<string, number> = {
+  Currency: 1000,
+  Breach: 250,
+  Ritual: 500,
+  Vaal: 1000,
+  Expedition: 1000,
+  SoulCore: 1000,
+  Gem: 9000,
+};
+
 /** Manually curated entries (merged over generated ones for gold-cost fixes). */
 const MANUAL_OVERRIDES: Record<string, ItemId> = {
   [GGG_HUB_PATHS.DIVINE]: {
@@ -69,6 +95,11 @@ for (const [path, rec] of Object.entries(AUTHORITATIVE_IDENTITY_MAPPING)) {
   ITEM_MAP[path] = { ...rec.entry, mappingSource: verified };
 }
 
+for (const item of Object.values(ITEM_MAP)) {
+  const fee = VERIFIED_GOLD_BY_NAME[item.displayName];
+  if (fee !== undefined) item.goldCostPerUnit = fee;
+}
+
 // Apply manual overrides (gold costs from the poe2wiki exchange table).
 for (const [path, item] of Object.entries(MANUAL_OVERRIDES)) {
   ITEM_MAP[path] = item;
@@ -93,4 +124,14 @@ export function goldCostPerUnit(gggPath: string): { cost: number; verified: bool
     return { cost: 0, verified: false };
   }
   return { cost: item.goldCostPerUnit, verified: true };
+}
+
+/** Product-only fallback for research signals; it remains explicitly unverified. */
+export function estimatedGoldCostPerUnit(gggPath: string): { cost: number; verified: boolean; basis: string } {
+  const exact = goldCostPerUnit(gggPath);
+  if (exact.verified) return { ...exact, basis: "verified item fee" };
+  const item = lookupItem(gggPath);
+  const category = item?.category ?? "unmapped item";
+  const cost = ESTIMATED_GOLD_BY_CATEGORY[category] ?? 1000;
+  return { cost, verified: false, basis: `${category} fallback: ${cost.toLocaleString("en-US")} gold per unit received` };
 }

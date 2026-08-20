@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { deriveEdges } from "../src/domain/edges.ts";
 import { parseGggPayload } from "../src/domain/ggg.ts";
 import { buildMarketSignalRows } from "../src/domain/market-signals.ts";
-import { GGG_HUB_PATHS } from "../src/domain/mapping.ts";
+import { GGG_HUB_PATHS, goldCostPerUnit } from "../src/domain/mapping.ts";
 import type { RunSettings } from "../src/domain/types.ts";
 
 const LEAGUE = "Runes of Aldur";
@@ -37,6 +37,10 @@ describe("broad market signals", () => {
     [GGG_HUB_PATHS.EXALTED, GGG_HUB_PATHS.CHAOS, GGG_HUB_PATHS.DIVINE],
   );
 
+  it("uses the verified current Glassblower fee instead of an estimate", () => {
+    expect(goldCostPerUnit("Metadata/Items/Currency/CurrencyFlaskQuality")).toEqual({ cost: 750, verified: true });
+  });
+
   it("surfaces a broad named scanner instead of only fee-verified routes", () => {
     expect(rows.length).toBeGreaterThan(10);
     expect(rows.every((row) => row.route.discovery?.item.name && !row.route.discovery.item.name.startsWith("Metadata/"))).toBe(true);
@@ -57,9 +61,27 @@ describe("broad market signals", () => {
 
   it("never converts an unknown fee into zero-cost executable profit", () => {
     for (const row of rows.filter((candidate) => !candidate.route.discovery!.goldVerified)) {
-      expect(row.route.discovery!.totalGold).toBeNull();
-      expect(row.route.discovery!.recommendation).not.toBe("TRADE NOW");
-      expect(row.route.discovery!.warning).toMatch(/gold fee is not verified/i);
+      const signal = row.route.discovery!;
+      expect(signal.totalGold).toBeNull();
+      expect(signal.estimatedTotalGold).toBeGreaterThan(0);
+      expect(signal.estimatedGoldPerUnknownUnit).toBeGreaterThan(0);
+      expect(signal.goldEstimateBasis).toMatch(/fallback/i);
+      expect(signal.estimatedDivPer100kGold).toBeGreaterThan(0);
+      expect(signal.recommendation).not.toBe("TRADE NOW");
+      expect(signal.warning).toMatch(/gold fee is not verified/i);
+    }
+  });
+
+  it("publishes the favorable limit-order ratios in I WANT : I HAVE form", () => {
+    for (const row of rows) {
+      const signal = row.route.discovery!;
+      for (const ratio of [signal.buyRatio, signal.sellRatio, signal.returnRatio]) {
+        expect(ratio).not.toBeNull();
+        expect(ratio!.want).toBeGreaterThan(0);
+        expect(ratio!.have).toBeGreaterThan(0);
+        expect(ratio!.side).toBe("favorable-limit");
+        expect(Math.min(ratio!.want, ratio!.have)).toBe(1);
+      }
     }
   });
 });

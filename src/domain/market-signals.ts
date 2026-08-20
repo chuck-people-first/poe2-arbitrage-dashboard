@@ -9,7 +9,7 @@
 import { conflictsWith } from "./edges.ts";
 import { estimateFillRisk, fillRiskLabel, resolveIdentity } from "./flips.ts";
 import { sha256Hex } from "./identity.ts";
-import { goldCostPerUnit } from "./mapping.ts";
+import { estimatedGoldCostPerUnit, GGG_HUB_PATHS, goldCostPerUnit } from "./mapping.ts";
 import type { OpportunityRow } from "./opportunity.ts";
 import type { DirectedEdge, MarketSignal, Route, RouteLeg, RunSettings, ValuationDisclosure } from "./types.ts";
 
@@ -23,6 +23,18 @@ function share(edge: DirectedEdge, fromUnits: number, toUnits: number): number {
 
 function rangePct(edge: DirectedEdge): number {
   return edge.rate > 0 ? Math.abs(edge.rateHigh - edge.rateLow) / edge.rate * 100 : 100;
+}
+
+function favorableRate(edge: DirectedEdge): number {
+  return edge.rateHigh;
+}
+
+/** Normalize to the Currency Exchange's visible I WANT : I HAVE form. */
+function inGameRatio(edge: DirectedEdge) {
+  const rate = favorableRate(edge);
+  return rate >= 1
+    ? { want: rate, have: 1, side: "favorable-limit" as const }
+    : { want: 1, have: 1 / rate, side: "favorable-limit" as const };
 }
 
 function flipLeg(edge: DirectedEdge, pay: number, receive: number) {
@@ -45,7 +57,7 @@ function routeLeg(edge: DirectedEdge, pay: number, receive: number): RouteLeg {
     to: edge.to,
     fromUnits: pay,
     toUnits: receive,
-    rate: edge.rate,
+    rate: favorableRate(edge),
     volumeFrom: edge.volumeFrom,
     volumeTo: edge.volumeTo,
     playbook: { give: pay, pay: edge.from, receive, want: edge.to },
@@ -60,13 +72,13 @@ function routeLeg(edge: DirectedEdge, pay: number, receive: number): RouteLeg {
 
 function chooseSizing(buy: DirectedEdge, sell: DirectedEdge, back: DirectedEdge | null) {
   const choices = OUTPUT_TARGETS.map((target) => {
-    const itemNeeded = Math.max(1, Math.ceil(target / sell.rate));
-    const start = Math.max(1, Math.ceil(itemNeeded / buy.rate));
-    const item = Math.floor(start * buy.rate);
-    const end = Math.floor(item * sell.rate);
-    const final = back ? Math.floor(end * back.rate) : null;
+    const itemNeeded = Math.max(1, Math.ceil(target / favorableRate(sell)));
+    const start = Math.max(1, Math.ceil(itemNeeded / favorableRate(buy)));
+    const item = Math.floor(start * favorableRate(buy));
+    const end = Math.floor(item * favorableRate(sell));
+    const final = back ? Math.floor(end * favorableRate(back)) : null;
     if (item <= 0 || end <= 0) return null;
-    const twoLegProfitPct = (end * (back?.rate ?? 0) / start - 1) * 100;
+    const twoLegProfitPct = (end * (back ? favorableRate(back) : 0) / start - 1) * 100;
     const closedCycleProfitPct = final === null ? null : (final / start - 1) * 100;
     const shares = [share(buy, start, item), share(sell, item, end)];
     if (back && final !== null) shares.push(share(back, end, final));
@@ -130,11 +142,29 @@ export function buildMarketSignalRows(
         const returnLeg = flipLeg(back, endUnits, final);
         const goldVerified = buyLeg.goldVerified && sellLeg.goldVerified && returnLeg.goldVerified;
         const totalGold = goldVerified ? buyLeg.goldCost + sellLeg.goldCost + returnLeg.goldCost : null;
+        const estimatedFees = [
+          { edge: buy, receive: itemUnits, leg: buyLeg },
+          { edge: sell, receive: endUnits, leg: sellLeg },
+          { edge: back, receive: final, leg: returnLeg },
+        ].map(({ edge, receive, leg }) => {
+          const estimate = estimatedGoldCostPerUnit(edge.to);
+          return { gold: leg.goldVerified ? leg.goldCost : receive * estimate.cost, estimate };
+        });
+        const estimatedTotalGold = estimatedFees.reduce((sum, fee) => sum + fee.gold, 0);
+        const unknownFee = estimatedFees.find((fee) => !fee.estimate.verified)?.estimate ?? null;
         const maxRange = Math.max(rangePct(buy), rangePct(sell), rangePct(back));
         const itemHourlyVolume = Math.min(buy.volumeTo, sell.volumeFrom);
         const riskValue = estimateFillRisk(maxShare, maxRange, itemHourlyVolume);
         const familyId = sha256Hex(`market-signal|${start}|${buy.to}|${sell.to}`);
         const id = sha256Hex(`market-signal|${familyId}|${league}|${sourceHourUtc}|${startUnits}`);
+        const profitStart = final - startUnits;
+        const toDivineRate = start === GGG_HUB_PATHS.DIVINE
+          ? 1
+          : edges.find((edge) => edge.from === start && edge.to === GGG_HUB_PATHS.DIVINE)?.rateHigh ?? null;
+        const estimatedProfitDivine = toDivineRate === null ? null : profitStart * toDivineRate;
+        const estimatedDivPer100kGold = estimatedProfitDivine === null || estimatedTotalGold <= 0
+          ? null
+          : estimatedProfitDivine / estimatedTotalGold * 100_000;
         const warning = !goldVerified
           ? "Item gold fee is not verified; check the in-game fee before trading."
           : maxShare > settings.maxVolumeSharePct / 100
@@ -148,19 +178,22 @@ export function buildMarketSignalRows(
         const signal: MarketSignal = {
           id, familyId, league, sourceHourUtc, item, buyCurrency: startIdentity,
           sellCurrency: sellIdentity, buyLeg, sellLeg, returnLeg,
+          buyRatio: inGameRatio(buy), sellRatio: inGameRatio(sell), returnRatio: inGameRatio(back),
           twoLegProfitPct, closedCycleProfitPct, startingQuantity: startUnits,
-          finalStartingQuantity: final, totalGold, goldVerified, itemHourlyVolume,
+          finalStartingQuantity: final, totalGold, goldVerified, estimatedTotalGold,
+          estimatedGoldPerUnknownUnit: unknownFee?.cost ?? null,
+          goldEstimateBasis: unknownFee?.basis ?? null,
+          estimatedProfitDivine, estimatedDivPer100kGold, itemHourlyVolume,
           maxVolumeShare: maxShare, fillRisk: riskValue, fillRiskLabel: fillRiskLabel(riskValue),
           ratioRangePct: maxRange, recommendation, warning,
         };
 
         const routeLegs = [routeLeg(buy, startUnits, itemUnits), routeLeg(sell, itemUnits, endUnits)];
-        const profitStart = final - startUnits;
         const valuation: ValuationDisclosure = {
           profitKind: "mark-to-market", inputValuationPath: [], outputValuationPath: [],
           observationIds: [buy.observationId, sell.observationId, back.observationId],
-          valuationRates: [buy.rate, sell.rate, back.rate],
-          returnToBaseLegs: [{ observationId: back.observationId, from: back.from, to: back.to, rate: back.rate }],
+          valuationRates: [favorableRate(buy), favorableRate(sell), favorableRate(back)],
+          returnToBaseLegs: [{ observationId: back.observationId, from: back.from, to: back.to, rate: favorableRate(back) }],
           returnToBaseIncluded: false, valuationBottleneckVolumeShare: maxShare,
           valuationRangeUncertaintyPct: maxRange, valuationConfidence: Math.max(0, 1 - riskValue),
           valuationExecutable: true, valuationGoldIncluded: false, valuationTradeCountIncluded: 0,

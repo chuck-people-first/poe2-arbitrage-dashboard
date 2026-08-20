@@ -38,7 +38,7 @@
       <article><span>Data age</span><strong id="age">—</strong><small>Since the latest completed market hour</small></article>
       <article><span>Market signals</span><strong id="count">—</strong><small>Current filtered completed-hour paths</small></article>
       <article><span>Gold fully known</span><strong id="verifiedCount">—</strong><small>All three fees are verified</small></article>
-      <article><span>Needs fee check</span><strong id="unknownCount">—</strong><small>Rate signal is visible; gold is not guessed</small></article>
+      <article><span>Needs fee check</span><strong id="unknownCount">—</strong><small>Estimated until OCR/manual confirmation</small></article>
     </section>
 
     <section class="rates-panel panel" aria-labelledby="ratesTitle">
@@ -63,7 +63,7 @@
         <table>
           <thead>
             <tr>
-              <th>Item</th><th>Path</th><th>Cycle P&amp;L</th><th>Start → Final</th><th>Volume</th><th>Fill risk</th><th>Gold</th><th>Recommendation</th>
+              <th>Item</th><th>In-game ratios</th><th>Cycle P&amp;L</th><th>Est. Div / 100K Gold</th><th>Start → Final</th><th>Volume</th><th>Gold</th><th>Recommendation</th>
             </tr>
           </thead>
           <tbody id="routes"></tbody>
@@ -73,7 +73,7 @@
 
     <footer>
       <span>ⓘ Market Scanner P&amp;L includes the direct return conversion to the starting currency.</span>
-      <span>Unknown gold is never estimated as zero. Fill risk is an estimate from completed-hour volume and ratio range—not a guarantee.</span>
+      <span>Unknown gold uses a clearly labeled category estimate and can be replaced with OCR/manual in-game fee input. Fill risk is not a guarantee.</span>
     </footer>
   </main>
 
@@ -85,6 +85,7 @@
 
   <script src="/config.js"></script>
   <script src="/currency-rates.js"></script>
+  <script src="/ocr-gold.js"></script>
   <script src="/dashboard-data.js"></script>
   <script src="/dashboard.js"></script>
 </body>

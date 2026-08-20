@@ -358,6 +358,10 @@ export interface MarketSignal {
   buyLeg: FlipLeg & { goldVerified: boolean };
   sellLeg: FlipLeg & { goldVerified: boolean };
   returnLeg: (FlipLeg & { goldVerified: boolean }) | null;
+  /** Ratios entered in game, always expressed as I WANT : I HAVE. */
+  buyRatio: { want: number; have: number; side: "favorable-limit" };
+  sellRatio: { want: number; have: number; side: "favorable-limit" };
+  returnRatio: { want: number; have: number; side: "favorable-limit" } | null;
   /** Potential two-leg spread after valuing the sell currency back in start currency. */
   twoLegProfitPct: number;
   /** Exact integer three-leg result, when an independent direct return market exists. */
@@ -366,6 +370,13 @@ export interface MarketSignal {
   finalStartingQuantity: number | null;
   totalGold: number | null;
   goldVerified: boolean;
+  /** Known fees plus an explicitly disclosed fallback for unknown want-side fees. */
+  estimatedTotalGold: number;
+  estimatedGoldPerUnknownUnit: number | null;
+  goldEstimateBasis: string | null;
+  /** Closed-cycle profit converted with the completed-hour direct Divine quote. */
+  estimatedProfitDivine: number | null;
+  estimatedDivPer100kGold: number | null;
   itemHourlyVolume: number;
   maxVolumeShare: number;
   fillRisk: number;

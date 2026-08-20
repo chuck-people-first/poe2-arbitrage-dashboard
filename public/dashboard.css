@@ -74,6 +74,10 @@ td .small, td small { display: block; color: var(--muted); font-size: 12px; font
 .path { display: flex; flex-direction: column; gap: 2px; }
 .path .mnem { color: var(--muted); font-size: 12px; margin-top: 2px; }
 .path b { color: var(--fg); }
+.ratio-path b { color: var(--accent-2); }
+.ratio-entry { display: flex; flex-direction: column; gap: 2px; margin: 5px 0 2px; padding: 8px 10px; border: 1px solid var(--border); border-radius: 8px; background: rgba(88,166,255,.06); }
+.ratio-entry small { color: var(--muted); text-transform: uppercase; letter-spacing: .05em; }
+.ratio-entry strong { color: var(--gold); font-size: 15px; }
 
 .risk { display: inline-block; border-radius: 6px; padding: 2px 8px; font-size: 12px; font-weight: 700; }
 .risk.low { background: rgba(74,222,128,.14); color: var(--green); }
@@ -98,6 +102,14 @@ footer code { background: var(--panel-2); border: 1px solid var(--border); paddi
 .drawer-sec.playbook ol { margin: 0 0 6px; padding-left: 20px; }
 .drawer-sec.playbook li { margin-bottom: 10px; }
 .drawer-note { color: var(--muted); font-size: 13px; margin: 6px 0; }
+.gold-ocr { border: 1px solid var(--border); border-radius: 10px; padding: 12px; }
+.gold-ocr input[type="file"] { width: 100%; color: var(--muted); margin: 6px 0; }
+.gold-ocr label { display: flex; flex-direction: column; gap: 5px; color: var(--muted); font-size: 12px; margin: 10px 0; }
+.gold-ocr input[type="number"] { background: var(--panel-2); color: var(--fg); border: 1px solid var(--border); border-radius: 7px; padding: 8px; }
+.gold-ocr button { background: var(--panel-2); color: var(--fg); border: 1px solid var(--border); border-radius: 7px; padding: 7px 10px; cursor: pointer; margin: 3px 5px 3px 0; }
+.gold-ocr .ocr-apply { background: var(--accent-2); color: #06121f; font-weight: 700; }
+.ocr-status, .ocr-result { font-size: 12px; margin-top: 7px; }
+.ocr-result { color: var(--accent); }
 .rates-panel { margin-top: 16px; }
 .rates-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
 .rate-card { border: 1px solid var(--border); border-radius: 10px; padding: 12px; background: rgba(255,255,255,.02); }
