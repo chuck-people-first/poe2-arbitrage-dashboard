@@ -4,6 +4,7 @@ let tab = 'scanner';
 let lastFocusedRow = null;
 let currencyRates = [];
 let historyRows = [];
+const REQUIRED_SCANNER_ALGORITHM = 'phase5-conservative-hourly-2';
 const { normalizeOpportunityRow } = window.POE2Dashboard;
 const fmt = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Number(n || 0));
 const fmtInt = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Number(n || 0));
@@ -53,6 +54,7 @@ function scannerRows() {
   const minPnl = Number($('#minPnl')?.value || 0);
   const maxGold = Number($('#maxGold')?.value || 0);
   return (run?.routes || []).filter(r => r.discovery).filter(r => {
+    if (!window.POE2_DEMO_DATA && r.algorithmVersion !== REQUIRED_SCANNER_ALGORITHM) return false;
     const s = r.discovery;
     if (Number(s.itemHourlyVolume || 0) < minVolume) return false;
     if (Number(s.closedCycleProfitPct ?? -Infinity) < minPnl) return false;
@@ -101,7 +103,8 @@ function render() {
   if (!run) return;
   renderHeader();
   const rs = rows();
-  $('#routes').innerHTML = rs.length ? rs.map(r => tab === 'scanner' ? scannerRowHtml(r) : tab === 'closed' ? closedRowHtml(r) : mtmRowHtml(r)).join('') : `<tr><td colspan="9" class="empty">${tab === 'scanner' ? 'No signals match these filters. Lower Min cycle P&L or Min volume to see more completed-hour paths.' : tab === 'closed' ? 'No fully verified closed cycles this hour. Check Market Scanner for paths that need a live gold-fee check.' : 'No executable mark-to-market flips this hour.'}</td></tr>`;
+  const oldScannerRowsHidden = tab === 'scanner' && !window.POE2_DEMO_DATA && (run?.routes || []).some(r => r.discovery && r.algorithmVersion !== REQUIRED_SCANNER_ALGORITHM);
+  $('#routes').innerHTML = rs.length ? rs.map(r => tab === 'scanner' ? scannerRowHtml(r) : tab === 'closed' ? closedRowHtml(r) : mtmRowHtml(r)).join('') : `<tr><td colspan="9" class="empty">${oldScannerRowsHidden ? 'Recalculating this completed hour with conservative in-game ratios. The invalid best-case percentages are hidden.' : tab === 'scanner' ? 'No signals match these filters. Lower Min cycle P&L or Min volume to see more completed-hour paths.' : tab === 'closed' ? 'No fully verified closed cycles this hour. Check Market Scanner for paths that need a live gold-fee check.' : 'No executable mark-to-market flips this hour.'}</td></tr>`;
   $('#count').textContent = String(rs.length);
   $('#verifiedCount').textContent = String(rs.filter(r => tab === 'scanner' ? r.discovery?.goldVerified : tab === 'closed').length);
   $('#unknownCount').textContent = String(rs.filter(r => tab === 'scanner' && !r.discovery?.goldVerified).length);

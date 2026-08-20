@@ -23,6 +23,7 @@
       score: Number(row?.score ?? route.score ?? 0),
       sourceHour: row?.source_hour ?? route.sourceHour,
       league: row?.league ?? route.league,
+      algorithmVersion: row?.algorithm_version ?? route.algorithmVersion ?? null,
       dataAgeHours: route.dataAgeHours ?? 0,
       dataAgeIntervalHours: row?.data_age
         ? (typeof row.data_age === 'number' ? row.data_age / 3600 : 0)
