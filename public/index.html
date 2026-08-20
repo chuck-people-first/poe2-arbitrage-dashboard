@@ -13,7 +13,7 @@
       <div>
         <p class="eyebrow">POE2 CURRENCY EXCHANGE</p>
         <h1>Market scanner</h1>
-        <p class="subhead">All profitable Exalted, Chaos, and Divine item paths—ranked with the return conversion included. Verify every completed-hour quote in Exchange before posting.</p>
+        <p class="subhead">Every readable item mispriced across the Exalted, Chaos, and Divine markets, ranked best to worst. Each row shows the bids you type in the Exchange and how far the round trip has actually been proven.</p>
       </div>
       <div class="source-badge">
         <span class="dot"></span>
@@ -29,15 +29,16 @@
       <label>League<select id="league"><option>Runes of Aldur</option></select></label>
       <div class="scan-scope"><span>Automatic scanner</span><strong>Exalted · Chaos · Divine</strong><small>No starting-currency selection required</small></div>
       <label>Min volume/hr<input id="minVolume" type="number" min="0" step="1" value="10"></label>
-      <label>Min cycle P&amp;L<input id="minPnl" type="number" min="0" step="1" value="25"><small>%</small></label>
-      <label>Max verified gold<input id="maxGold" type="number" min="0" step="1000" value="100000"></label>
+      <label>Min spread<input id="minSpread" type="number" min="0" step="1" value="0"><small>%</small></label>
+      <label>Max verified gold<input id="maxGold" type="number" min="0" step="10000" value="500000"><small>0 = no cap</small></label>
+      <label class="toggle"><input id="hideHighRisk" type="checkbox">Hide high risk</label>
       <button id="refresh">Refresh live data</button>
     </section>
 
     <section class="cards">
       <article><span>Data age</span><strong id="age">—</strong><small>Since the latest completed market hour</small></article>
       <article><span>Market signals</span><strong id="count">—</strong><small>Current filtered completed-hour paths</small></article>
-      <article><span>Gold fully known</span><strong id="verifiedCount">—</strong><small>All three fees are verified</small></article>
+      <article><span>Return confirmed</span><strong id="verifiedCount">—</strong><small>Closed cycle survives the least-favorable boundary with every fee verified</small></article>
       <article><span>Needs fee check</span><strong id="unknownCount">—</strong><small>Estimated until OCR/manual confirmation</small></article>
     </section>
 
@@ -55,15 +56,16 @@
       <div class="panel-head">
         <div>
           <h2 id="tabTitle">Cross-currency flips</h2>
-          <p id="tabHint">Potential three-trade cycles. The independent return conversion is included; unknown gold fees are labeled.</p>
+          <p id="tabHint">Same item, priced differently in two currency markets. Every row is measured back to the currency you started in.</p>
         </div>
         <span class="pill">SOURCE: GGG COMPLETED HOUR</span>
       </div>
+      <p class="section-warning">Prices are the <strong>last completed hour</strong>, not the live book. GGG's API does not publish the Competing Trades ladder, so the ratios below are references to confirm in game before you post. <strong>Spread</strong> is midpoint mispricing; only <strong>Return confirmed</strong> means the round trip survived the least-favorable boundary with every gold fee verified.</p>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Item</th><th>In-game ratios</th><th>Cycle P&amp;L</th><th>Est. Div / 100K Gold</th><th>Start → Final</th><th>Volume</th><th>Gold</th><th>Recommendation</th>
+              <th>Item</th><th>Buy bid<small>I want : I have</small></th><th>Sell bid<small>I want : I have</small></th><th>Return<small>I want : I have</small></th><th>Spread</th><th>Div / 100K</th><th>Volume<small>per hour</small></th><th>Gold</th><th>Status</th>
             </tr>
           </thead>
           <tbody id="routes"></tbody>
@@ -72,7 +74,7 @@
     </section>
 
     <footer>
-      <span>ⓘ Market Scanner P&amp;L includes the direct return conversion to the starting currency.</span>
+      <span>ⓘ Click any row for the full playbook: target vs. plan boundaries, batch quantities, per-leg gold, volume share, history and the OCR fee correction.</span>
       <span>Unknown gold uses a clearly labeled category estimate and can be replaced with OCR/manual in-game fee input. Fill risk is not a guarantee.</span>
     </footer>
   </main>

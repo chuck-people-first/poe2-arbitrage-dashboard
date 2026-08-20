@@ -361,6 +361,68 @@ export interface TwoLegFlip {
 }
 
 /**
+ * How much of the equation a signal has actually proven.
+ *
+ * These are ordered by strength and are NOT interchangeable:
+ *   - "return-confirmed"       every leg + the independent return conversion
+ *                              is priced at its least-favorable completed-hour
+ *                              boundary, every gold fee is verified, and the
+ *                              closed cycle is still positive. Only this may be
+ *                              described as a closed cycle.
+ *   - "fee-check-needed"       the closed cycle is positive but at least one
+ *                              item gold fee is a category estimate.
+ *   - "return-quote-available" a direct return market exists and is priced, but
+ *                              the conservative closed cycle is not positive.
+ *                              The spread is real; the round trip is not proven.
+ *   - "two-leg-spread"         item mispricing between two currency markets
+ *                              only. No independent return market was observed.
+ *   - "high-risk"              the sizing needed to act consumes an abnormal
+ *                              share of the observed hourly market. Overrides
+ *                              the others because liquidity, not price, is the
+ *                              binding constraint.
+ */
+export type SignalClassification =
+  | "return-confirmed"
+  | "fee-check-needed"
+  | "return-quote-available"
+  | "two-leg-spread"
+  | "high-risk";
+
+/**
+ * The three figures the product must keep separate. Collapsing them is how a
+ * scanner ends up advertising +25,900%: three favorable hourly boundaries from
+ * three different markets may have occurred at three different moments and may
+ * never have been simultaneously executable.
+ */
+export interface SignalPriceModel {
+  /**
+   * DISCOVERY metric. The item's price in the starting currency taken from the
+   * buy market, versus its price implied by (sell market -> return market),
+   * with every leg at that market's completed-hour MIDPOINT. Gold is excluded.
+   * This is the broad "same item, mispriced across two currencies" number.
+   */
+  twoLegSpreadPct: number;
+  /**
+   * POTENTIAL only. What the same path would return if every favorable posted
+   * bid filled. Never executable profit, never used for ranking, and never
+   * shown without its label. Present so the size of the hourly range is
+   * visible, not so it can be multiplied into a headline.
+   */
+  targetBidPotentialPct: number;
+  /**
+   * The only figure that may be called a closed cycle: exact integer sizing at
+   * the least-favorable observed boundary on all three legs, with all three
+   * gold fees. Null when no independent return market was observed or no
+   * integer sizing fits inside the observed hourly liquidity.
+   */
+  returnConfirmedCyclePct: number | null;
+  /** Which price boundary produced `twoLegSpreadPct`. */
+  discoveryBasis: "ggg-completed-hour-midpoint";
+  /** True when returnConfirmedCyclePct came from an independently observed return market. */
+  returnObserved: boolean;
+}
+
+/**
  * Broad completed-hour market signal. Unlike `TwoLegFlip`, this record may
  * carry an unverified item gold fee. It is therefore a research/verification
  * signal, never an automatic TRADE NOW instruction.
@@ -388,6 +450,19 @@ export interface MarketSignal {
   twoLegProfitPct: number;
   /** Exact integer three-leg result, when an independent direct return market exists. */
   closedCycleProfitPct: number | null;
+  /** The three separated figures. `priceModel` is authoritative; the two fields
+   *  above are the conservative subset retained for existing consumers. */
+  priceModel: SignalPriceModel;
+  /** How much of the equation this row has proven (see SignalClassification). */
+  classification: SignalClassification;
+  /** Human-readable form of `classification`, rendered verbatim in the Status column. */
+  classificationLabel: string;
+  /** Midpoint-model Divine profit for the same starting quantity and gold basis. */
+  spreadProfitDivine: number | null;
+  /** Midpoint-model Divine profit per 100K gold. The single ranking metric. */
+  spreadDivPer100kGold: number | null;
+  /** Conservative closed-cycle Divine profit per 100K gold; null unless return-confirmed. */
+  returnConfirmedDivPer100kGold: number | null;
   startingQuantity: number;
   finalStartingQuantity: number | null;
   totalGold: number | null;

@@ -84,11 +84,29 @@ describe("currency reference UI model", () => {
     expect(dashboard).not.toContain("Number(r.source_age)");
   });
 
-  it("ranks scanner results by Divine profit per gold before percentage ROI", () => {
+  it("ranks scanner results by proof, then gold efficiency, then liquidity footprint", () => {
     const dashboard = readFileSync(new URL("../public/dashboard.js", import.meta.url), "utf8");
-    const efficiencySort = dashboard.indexOf("b.discovery.estimatedDivPer100kGold");
-    const percentageTieBreak = dashboard.indexOf("b.discovery.closedCycleProfitPct", efficiencySort);
-    expect(efficiencySort).toBeGreaterThan(-1);
-    expect(percentageTieBreak).toBeGreaterThan(efficiencySort);
+    const comparator = dashboard.slice(dashboard.indexOf("const SCANNER_SORTS"), dashboard.indexOf("function scannerRows"));
+    const proof = comparator.indexOf("isConfirmed(b.discovery)");
+    const efficiency = comparator.indexOf("divGoldOf(b.discovery)", proof);
+    const share = comparator.indexOf("maxVolumeShare", efficiency);
+    const spread = comparator.indexOf("spreadOf(b.discovery)", share);
+    expect(proof).toBeGreaterThan(-1);
+    expect(efficiency).toBeGreaterThan(proof);
+    expect(share).toBeGreaterThan(efficiency);
+    expect(spread).toBeGreaterThan(share);
+  });
+
+  it("never ranks or headlines a row on the favorable-boundary compound", () => {
+    // targetBidPotentialPct may only appear in the drawer's labeled figure
+    // table. If it reaches a comparator or a main-row cell, three unrelated
+    // best-case hourly extremes are being advertised as one executable number.
+    const dashboard = readFileSync(new URL("../public/dashboard.js", import.meta.url), "utf8");
+    const sorts = dashboard.slice(dashboard.indexOf("const SCANNER_SORTS"), dashboard.indexOf("function scannerRows"));
+    const mainRow = dashboard.slice(dashboard.indexOf("function scannerRowHtml"), dashboard.indexOf("function closedRowHtml"));
+    expect(sorts).not.toContain("targetBidPotentialPct");
+    expect(mainRow).not.toContain("targetBidPotentialPct");
+    expect(dashboard).toContain("targetBidPotentialPct");
+    expect(dashboard).toContain("POTENTIAL, not executable profit");
   });
 });

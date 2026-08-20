@@ -42,35 +42,50 @@ describe("broad market signals", () => {
   });
 
   it("surfaces a broad named scanner instead of only fee-verified routes", () => {
-    // The conservative completed-hour boundary intentionally removes ideas
-    // that only work when unrelated best-case extremes are multiplied.
-    expect(rows.length).toBeGreaterThan(5);
+    // Discovery lists every readable item mispriced at the completed-hour
+    // midpoint. Proving the round trip is a separate, stricter question that
+    // `classification` answers per row — it is not an entry requirement.
+    expect(rows.length).toBeGreaterThan(40);
     expect(rows.every((row) => row.route.discovery?.item.name && !row.route.discovery.item.name.startsWith("Metadata/"))).toBe(true);
     expect(rows.some((row) => row.route.discovery?.goldVerified === false)).toBe(true);
   });
 
-  it("includes the entire equation with an independently observed return leg", () => {
+  it("prices every listed row against an independently observed return market", () => {
     for (const row of rows) {
       const signal = row.route.discovery!;
       expect(signal.returnLeg).not.toBeNull();
-      expect(signal.finalStartingQuantity).not.toBeNull();
-      expect(signal.closedCycleProfitPct).not.toBeNull();
+      expect(signal.returnRatio).not.toBeNull();
+      expect(signal.priceModel.returnObserved).toBe(true);
       expect(signal.buyLeg.receive).toBe(signal.sellLeg.pay);
       expect(signal.sellLeg.receive).toBe(signal.returnLeg!.pay);
-      expect(signal.maxVolumeShare).toBeLessThanOrEqual(1);
+      // A closed-cycle number exists only where an integer sizing actually
+      // closed inside the observed hourly liquidity. Where none did, the row
+      // still lists (the mispricing is real) but must say so as HIGH RISK
+      // rather than persist an impossible liquidity ratio as a plan.
+      if (signal.closedCycleProfitPct === null) {
+        expect(signal.classification).toBe("high-risk");
+        expect(signal.recommendation).toBe("HIGH RISK");
+      } else {
+        expect(signal.maxVolumeShare).toBeLessThanOrEqual(1);
+        expect(signal.finalStartingQuantity).toBeGreaterThanOrEqual(1);
+      }
     }
   });
 
   it("never converts an unknown fee into zero-cost executable profit", () => {
-    for (const row of rows.filter((candidate) => !candidate.route.discovery!.goldVerified)) {
+    const unverified = rows.filter((candidate) => !candidate.route.discovery!.goldVerified);
+    expect(unverified.length).toBeGreaterThan(0);
+    for (const row of unverified) {
       const signal = row.route.discovery!;
       expect(signal.totalGold).toBeNull();
       expect(signal.estimatedTotalGold).toBeGreaterThan(0);
       expect(signal.estimatedGoldPerUnknownUnit).toBeGreaterThan(0);
       expect(signal.goldEstimateBasis).toMatch(/fallback/i);
-      expect(signal.estimatedDivPer100kGold).toBeGreaterThan(0);
       expect(signal.recommendation).not.toBe("TRADE NOW");
-      expect(signal.warning).toMatch(/gold fee is not verified/i);
+      // An unverified fee can never be the strongest classification, and the
+      // row always says why it is not actionable.
+      expect(signal.classification).not.toBe("return-confirmed");
+      expect(signal.warning).toMatch(/gold fee is not verified|fits inside the observed hourly volume|least-favorable boundary/i);
     }
   });
 
@@ -150,5 +165,6 @@ describe("broad market signals", () => {
       source: "ggg-completed-hour-boundaries",
     });
     expect(signal?.closedCycleProfitPct).toBeLessThan(25);
+    expect(signal?.priceModel.returnConfirmedCyclePct ?? 0).toBeLessThan(25);
   });
 });
