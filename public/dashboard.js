@@ -55,7 +55,11 @@ function scannerRows() {
     if (Number(s.closedCycleProfitPct ?? -Infinity) < minPnl) return false;
     if (s.goldVerified && maxGold > 0 && Number(s.totalGold || 0) > maxGold) return false;
     return true;
-  }).sort((a,b) => Number(b.discovery.closedCycleProfitPct || 0) - Number(a.discovery.closedCycleProfitPct || 0));
+  }).sort((a,b) =>
+    Number(b.discovery.estimatedDivPer100kGold ?? -Infinity) - Number(a.discovery.estimatedDivPer100kGold ?? -Infinity)
+    || Number(a.discovery.maxVolumeShare ?? Infinity) - Number(b.discovery.maxVolumeShare ?? Infinity)
+    || Number(b.discovery.closedCycleProfitPct || 0) - Number(a.discovery.closedCycleProfitPct || 0)
+  );
 }
 function rows() { return tab === 'scanner' ? scannerRows() : tab === 'closed' ? cycleRows() : mtmRows(); }
 function renderHeader() {

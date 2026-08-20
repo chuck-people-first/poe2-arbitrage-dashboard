@@ -83,4 +83,12 @@ describe("currency reference UI model", () => {
     expect(dashboard).not.toContain("r.pay_units");
     expect(dashboard).not.toContain("Number(r.source_age)");
   });
+
+  it("ranks scanner results by Divine profit per gold before percentage ROI", () => {
+    const dashboard = readFileSync(new URL("../public/dashboard.js", import.meta.url), "utf8");
+    const efficiencySort = dashboard.indexOf("b.discovery.estimatedDivPer100kGold");
+    const percentageTieBreak = dashboard.indexOf("b.discovery.closedCycleProfitPct", efficiencySort);
+    expect(efficiencySort).toBeGreaterThan(-1);
+    expect(percentageTieBreak).toBeGreaterThan(efficiencySort);
+  });
 });
