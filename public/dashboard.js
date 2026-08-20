@@ -1,6 +1,6 @@
 const $ = s => document.querySelector(s);
 let run = null;
-let tab = 'closed';
+let tab = 'scanner';
 let lastFocusedRow = null;
 let currencyRates = [];
 let historyRows = [];
@@ -41,16 +41,37 @@ function historySection(rows) {
 }
 function cycleRows() { return (run?.routes || []).filter(r => r.cycle?.closed && r.cycle?.executable); }
 function mtmRows() { return (run?.routes || []).filter(r => r.flip && r.strategy === 'two-leg-cross'); }
-function rows() { return tab === 'closed' ? cycleRows() : mtmRows(); }
+function scannerRows() {
+  const minVolume = Number($('#minVolume')?.value || 0);
+  const minPnl = Number($('#minPnl')?.value || 0);
+  const maxGold = Number($('#maxGold')?.value || 0);
+  return (run?.routes || []).filter(r => r.discovery).filter(r => {
+    const s = r.discovery;
+    if (Number(s.itemHourlyVolume || 0) < minVolume) return false;
+    if (Number(s.closedCycleProfitPct ?? -Infinity) < minPnl) return false;
+    if (s.goldVerified && maxGold > 0 && Number(s.totalGold || 0) > maxGold) return false;
+    return true;
+  }).sort((a,b) => Number(b.discovery.closedCycleProfitPct || 0) - Number(a.discovery.closedCycleProfitPct || 0));
+}
+function rows() { return tab === 'scanner' ? scannerRows() : tab === 'closed' ? cycleRows() : mtmRows(); }
 function renderHeader() {
-  $('#tabTitle').textContent = tab === 'closed' ? 'Closed Cycles' : 'Mark-to-Market Flips';
-  $('#tabHint').textContent = tab === 'closed'
-    ? 'Executable three-trade cycles only. The return conversion is independently observed and included.'
-    : 'Ends in another currency — return conversion not included.';
-  const head = tab === 'closed'
+  $('#tabTitle').textContent = tab === 'scanner' ? 'Cross-currency flips' : tab === 'closed' ? 'Verified Closed Cycles' : 'Mark-to-Market Flips';
+  $('#tabHint').textContent = tab === 'scanner'
+    ? 'Buy with Exalted, Chaos, or Divine; sell into another hub; then convert back. Unknown item gold fees stay visible and clearly marked.'
+    : tab === 'closed' ? 'Fully fee-verified, executable three-trade cycles only.' : 'Two-leg reference only—the return conversion is not included.';
+  const head = tab === 'scanner'
+    ? ['Item', 'Complete path', 'Cycle P&L', 'Start → Final', 'Item volume', 'Fill risk', 'Gold', 'Recommendation']
+    : tab === 'closed'
     ? ['Trade cycle', 'Start → Final', 'Realized profit', 'Div / 100K Gold', 'Trades', 'Bottleneck', 'Total gold', 'Recommendation']
     : ['Item', 'Buy With / Path', 'Conservative P&L', 'Div / 100K Gold', 'Volume', 'Fill Risk', 'Gold', 'Trend', 'Recommendation'];
   document.querySelector('thead tr').innerHTML = head.map((h, i) => `<th class="${i === 3 ? 'sort-dg' : ''}">${h}</th>`).join('');
+}
+function scannerRowHtml(r) {
+  const s = r.discovery;
+  const ret = s.returnLeg;
+  const path = `<div class="path"><span><b>BUY</b> ${fmtInt(s.buyLeg.pay)} ${esc(s.buyCurrency.name)} → ${fmtInt(s.buyLeg.receive)} ${esc(s.item.name)}</span><span><b>SELL</b> ${fmtInt(s.sellLeg.pay)} ${esc(s.item.name)} → ${fmtInt(s.sellLeg.receive)} ${esc(s.sellCurrency.name)}</span><span><b>RETURN</b> ${fmtInt(ret.pay)} ${esc(s.sellCurrency.name)} → ${fmtInt(ret.receive)} ${esc(s.buyCurrency.name)}</span></div>`;
+  const gold = s.goldVerified ? fmtInt(s.totalGold) : '<b class="warn">VERIFY FEE</b>';
+  return `<tr class="clickable" data-id="${esc(r.id)}"><td><b>${esc(s.item.name)}</b><small>${esc(s.buyCurrency.name)} → ${esc(s.sellCurrency.name)}</small></td><td>${path}</td><td class="green"><strong>+${fmt(s.closedCycleProfitPct)}%</strong><small>after return conversion</small></td><td><b>${fmtInt(s.startingQuantity)} → ${fmtInt(s.finalStartingQuantity)}</b><small>${esc(s.buyCurrency.name)}</small></td><td>${fmt(s.itemHourlyVolume)} / hr<small>${pct(s.maxVolumeShare)} max share</small></td><td>${risk(s.fillRiskLabel)}</td><td>${gold}</td><td><b>${esc(s.recommendation)}</b><small>${esc(s.warning || 'Check the live order book')}</small></td></tr>`;
 }
 function closedRowHtml(r) {
   const c = r.cycle;
@@ -68,13 +89,21 @@ function render() {
   if (!run) return;
   renderHeader();
   const rs = rows();
-  $('#routes').innerHTML = rs.length ? rs.map(r => tab === 'closed' ? closedRowHtml(r) : mtmRowHtml(r)).join('') : `<tr><td colspan="9" class="empty">${tab === 'closed' ? 'No executable closed cycles this hour. Mark-to-market flips do not appear here.' : 'No executable mark-to-market flips this hour.'}</td></tr>`;
+  $('#routes').innerHTML = rs.length ? rs.map(r => tab === 'scanner' ? scannerRowHtml(r) : tab === 'closed' ? closedRowHtml(r) : mtmRowHtml(r)).join('') : `<tr><td colspan="9" class="empty">${tab === 'scanner' ? 'No signals match these filters. Lower Min cycle P&L or Min volume to see more completed-hour paths.' : tab === 'closed' ? 'No fully verified closed cycles this hour. Check Market Scanner for paths that need a live gold-fee check.' : 'No executable mark-to-market flips this hour.'}</td></tr>`;
+  $('#count').textContent = String(rs.length);
+  $('#verifiedCount').textContent = String(rs.filter(r => tab === 'scanner' ? r.discovery?.goldVerified : tab === 'closed').length);
+  $('#unknownCount').textContent = String(rs.filter(r => tab === 'scanner' && !r.discovery?.goldVerified).length);
   document.querySelectorAll('#routes tr.clickable').forEach(tr => {
     tr.tabIndex = 0; tr.setAttribute('role', 'button');
     const activate = () => { lastFocusedRow = tr; openDrawer(rs.find(x => String(x.id) === String(tr.dataset.id))); };
     tr.onclick = activate;
     tr.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); } };
   });
+}
+function scannerDrawer(s) {
+  const ret = s.returnLeg;
+  const fee = leg => leg.goldVerified ? fmtInt(leg.goldCost) : 'Unknown—verify in game';
+  return `<header class="drawer-head"><div class="item-lockup"><strong>${esc(s.item.name)}</strong><small>${esc(s.buyCurrency.name)} → ${esc(s.sellCurrency.name)} → ${esc(s.buyCurrency.name)}</small></div><button class="close" aria-label="Close">×</button></header><section class="drawer-sec playbook"><h3>Complete three-step equation</h3><ol><li><b>Buy ${esc(s.item.name)}</b><br>Pay <strong>${fmtInt(s.buyLeg.pay)}</strong> ${esc(s.buyCurrency.name)} → receive <strong>${fmtInt(s.buyLeg.receive)}</strong> ${esc(s.item.name)}<br>Gold: ${fee(s.buyLeg)}</li><li><b>Sell for ${esc(s.sellCurrency.name)}</b><br>Pay <strong>${fmtInt(s.sellLeg.pay)}</strong> ${esc(s.item.name)} → receive <strong>${fmtInt(s.sellLeg.receive)}</strong> ${esc(s.sellCurrency.name)}<br>Gold: ${fee(s.sellLeg)}</li><li><b>Return to ${esc(s.buyCurrency.name)}</b><br>Pay <strong>${fmtInt(ret.pay)}</strong> ${esc(s.sellCurrency.name)} → receive <strong>${fmtInt(ret.receive)}</strong> ${esc(s.buyCurrency.name)}<br>Gold: ${fee(ret)}</li></ol></section><section class="drawer-sec"><h3>What the signal means</h3><table class="detail"><tr><td>Two-leg potential spread</td><td>${fmt(s.twoLegProfitPct)}%</td></tr><tr><td>Exact closed-cycle P&amp;L</td><td class="green">${fmt(s.closedCycleProfitPct)}%</td></tr><tr><td>Start → final</td><td>${fmtInt(s.startingQuantity)} → ${fmtInt(s.finalStartingQuantity)} ${esc(s.buyCurrency.name)}</td></tr><tr><td>Total gold</td><td>${s.goldVerified ? fmtInt(s.totalGold) : 'Unknown—item fee not verified'}</td></tr><tr><td>Item volume</td><td>${fmt(s.itemHourlyVolume)} / hr</td></tr><tr><td>Maximum volume share</td><td>${pct(s.maxVolumeShare)}</td></tr><tr><td>Ratio-range uncertainty</td><td>${fmt(s.ratioRangePct)}%</td></tr><tr><td>Source hour</td><td>${esc(s.sourceHourUtc)}</td></tr></table><p class="drawer-note"><strong>${esc(s.recommendation)}.</strong> ${esc(s.warning || 'Re-enter all three ratios in the live Exchange before placing orders; this is completed-hour data.')}</p></section>`;
 }
 function cycleDrawer(c) {
   const sellName = c.sellCurrency?.name || 'Divine Orb';
@@ -84,9 +113,10 @@ function cycleDrawer(c) {
 function mtmDrawer(f) {
   return `<header class="drawer-head"><div class="item-lockup"><strong>${esc(f.item.name)}</strong><small>${esc(f.buyCurrency.name)} → ${esc(f.sellCurrency.name)}</small></div><button class="close" aria-label="Close">×</button></header><section class="drawer-sec playbook"><h3>Mark-to-market playbook</h3><ol><li>Pay ${fmtInt(f.buyLeg.pay)} ${esc(f.buyCurrency.name)} → receive ${fmtInt(f.buyLeg.receive)} ${esc(f.item.name)}. Gold: ${fmtInt(f.buyLeg.goldCost)}</li><li>Pay ${fmtInt(f.sellLeg.pay)} ${esc(f.item.name)} → receive ${fmtInt(f.sellLeg.receive)} ${esc(f.sellCurrency.name)}. Gold: ${fmtInt(f.sellLeg.goldCost)}</li></ol><p class="drawer-note"><strong>Ends in another currency — return conversion not included.</strong> This is not realized profit and cannot receive TRADE NOW.</p></section><section class="drawer-sec"><table class="detail"><tr><td>Conservative Divine-equivalent profit</td><td>${fmt(f.conservativeNetProfitDivine)} Div</td></tr><tr><td>Div / 100K Gold</td><td>${fmt(f.divPer100kGold)}</td></tr><tr><td>Total gold</td><td>${fmtInt(f.goldRequired)}</td></tr></table></section>`;
 }
-function openDrawer(r) { const body = $('#drawerInner'); body.innerHTML = (tab === 'closed' ? cycleDrawer(r.cycle) : mtmDrawer(r.flip)) + historySection(historyFor(r)); $('#drawer').classList.add('open'); $('#drawer').setAttribute('aria-hidden','false'); $('#scrim').hidden = false; body.querySelector('.close').onclick = closeDrawer; body.querySelectorAll('[data-history-hours]').forEach(btn => btn.onclick = () => { const history = historyFor(r); body.querySelector('.history-chart').innerHTML = chartPoints(history, Number(btn.dataset.historyHours)); body.querySelectorAll('[data-history-hours]').forEach(x => x.classList.toggle('active', x === btn)); }); }
+function openDrawer(r) { const body = $('#drawerInner'); body.innerHTML = (tab === 'scanner' ? scannerDrawer(r.discovery) : tab === 'closed' ? cycleDrawer(r.cycle) : mtmDrawer(r.flip)) + historySection(historyFor(r)); $('#drawer').classList.add('open'); $('#drawer').setAttribute('aria-hidden','false'); $('#scrim').hidden = false; body.querySelector('.close').onclick = closeDrawer; body.querySelectorAll('[data-history-hours]').forEach(btn => btn.onclick = () => { const history = historyFor(r); body.querySelector('.history-chart').innerHTML = chartPoints(history, Number(btn.dataset.historyHours)); body.querySelectorAll('[data-history-hours]').forEach(x => x.classList.toggle('active', x === btn)); }); }
 function closeDrawer() { $('#drawer').classList.remove('open'); $('#drawer').setAttribute('aria-hidden','true'); $('#scrim').hidden = true; if (lastFocusedRow) lastFocusedRow.focus(); }
-function renderStatus(status) { $('#sourceAge').textContent = status?.latest_successful_source_hour ? `Completed ${status.latest_successful_source_hour.replace('T',' ').slice(0,16)} UTC` : 'No completed ingestion yet'; $('#age').textContent = status?.latest_successful_source_hour?.slice(0,10) || '—'; $('#count').textContent = String(status?.candidate_count ?? 0); $('#completedAt').textContent = status?.completed_at ? `Completed ${String(status.completed_at).replace('T',' ').slice(0,16)} UTC` : '—'; $('#algorithmVersion').textContent = status?.algorithm_version ?? '—'; $('#runStatus').textContent = status?.run_status ?? '—'; }
+function renderStatus(status) { const hour = status?.latest_successful_source_hour; $('#sourceAge').textContent = hour ? `Market hour ${hour.replace('T',' ').slice(0,16)} UTC` : 'No completed ingestion yet'; $('#age').textContent = hour ? window.POE2CurrencyRates.ageLabel(hour) : '—'; $('#completedAt').textContent = status?.completed_at ? `Fetched ${String(status.completed_at).replace('T',' ').slice(0,16)} UTC` : '—'; }
 async function load() { if (window.POE2_DEMO_DATA) { run = { routes: (window.POE2_DEMO_DATA.routes || []).map(normalizeOpportunityRow), status: window.POE2_DEMO_DATA.status }; currencyRates = window.POE2_DEMO_DATA.currencyRates || []; historyRows = window.POE2_DEMO_DATA.history || []; renderStatus(run.status); renderCurrencyRates(); render(); return; } const url = window.POE2_SUPABASE_URL || ''; const key = window.POE2_SUPABASE_PUBLISHABLE_KEY || ''; if (!url || !key) { run = { routes: [], status: null }; currencyRates = []; historyRows = []; renderStatus(null); renderCurrencyRates(); render(); return; } const headers = { apikey: key, Authorization: `Bearer ${key}` }; const [s, o, rates, history] = await Promise.all([fetch(`${url}/rest/v1/opportunity_run_status?select=*`,{headers}), fetch(`${url}/rest/v1/opportunity_public?select=*&order=score.desc`,{headers}), fetch(`${url}/rest/v1/currency_rates_public?select=*&order=source_hour.desc`,{headers}), fetch(`${url}/rest/v1/signal_history_public?select=*&order=source_hour.asc`,{headers})]); const statusRows = s.ok ? await s.json() : []; const rowsResp = o.ok ? await o.json() : []; currencyRates = rates.ok ? await rates.json() : []; historyRows = history.ok ? await history.json() : []; run = { routes: (Array.isArray(rowsResp) ? rowsResp : []).map(normalizeOpportunityRow), status: statusRows[0] || null }; renderStatus(run.status); renderCurrencyRates(); render(); }
 document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { tab = b.dataset.tab; document.querySelectorAll('[data-tab]').forEach(x => x.classList.toggle('active', x === b)); closeDrawer(); render(); });
+['minVolume','minPnl','maxGold'].forEach(id => document.getElementById(id)?.addEventListener('input', render));
 const refresh = $('#refresh'); if (refresh) refresh.onclick = load; $('#scrim').onclick = closeDrawer; document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); }); load();

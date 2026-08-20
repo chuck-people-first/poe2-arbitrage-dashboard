@@ -13,6 +13,7 @@ import {
 } from "./routes.ts";
 import { rankDefault, scoreCandidate, toRoute } from "./scoring.ts";
 import type { DirectedEdge, RunSettings } from "./types.ts";
+import { buildMarketSignalRows } from "./market-signals.ts";
 
 /** All liquid hub currencies are scanned automatically; order is product priority. */
 export const DEFAULT_START_CURRENCIES = [
@@ -88,9 +89,18 @@ export function scanOpportunityRows(
     })
     .filter((row): row is OpportunityRow => row !== null);
 
-  return dedupeOpportunityRows(
+  const actionable = dedupeOpportunityRows(
     rows,
     (row) => row.route.routeFamilyId,
     (row) => row.score,
   ).sort((a, b) => rankDefault(a.route, b.route));
+
+  // The broad Market Scanner is deliberately additive. These rows expose
+  // readable, positive completed-hour cross-market signals even when the item
+  // gold fee is not yet verified. They are marked WATCH/HIGH RISK and never
+  // inherit the actionable TRADE NOW classification.
+  const discovery = buildMarketSignalRows(
+    edges, settings, league, sourceHourUtc, payloadSha256, startCurrencies,
+  );
+  return [...actionable, ...discovery];
 }

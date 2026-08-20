@@ -44,6 +44,7 @@
       // route.flip. Where present it is the authoritative product projection.
       cycle: route.cycle || row?.cycle || null,
       flip: route.flip || null,
+      discovery: route.discovery || null,
     };
   }
 

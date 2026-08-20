@@ -4,6 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PoE2 Arbitrage Dashboard</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/dashboard.css">
 </head>
 <body>
@@ -11,13 +12,13 @@
     <header class="topbar">
       <div>
         <p class="eyebrow">POE2 CURRENCY EXCHANGE</p>
-        <h1>Actionable flips</h1>
-        <p class="subhead">Buy a specific item with one currency, then sell that same item for another. Exact integer quantities. Verify every quote in Exchange before posting.</p>
+        <h1>Market scanner</h1>
+        <p class="subhead">All profitable Exalted, Chaos, and Divine item paths—ranked with the return conversion included. Verify every completed-hour quote in Exchange before posting.</p>
       </div>
       <div class="source-badge">
         <span class="dot"></span>
         <div>
-          <strong>Hourly status</strong>
+          <strong>Hourly data</strong>
           <small id="sourceAge">Loading source…</small>
           <small id="completedAt">—</small>
         </div>
@@ -27,14 +28,17 @@
     <section class="controls">
       <label>League<select id="league"><option>Runes of Aldur</option></select></label>
       <div class="scan-scope"><span>Automatic scanner</span><strong>Exalted · Chaos · Divine</strong><small>No starting-currency selection required</small></div>
+      <label>Min volume/hr<input id="minVolume" type="number" min="0" step="1" value="10"></label>
+      <label>Min cycle P&amp;L<input id="minPnl" type="number" min="0" step="1" value="25"><small>%</small></label>
+      <label>Max verified gold<input id="maxGold" type="number" min="0" step="1000" value="100000"></label>
       <button id="refresh">Refresh live data</button>
     </section>
 
     <section class="cards">
-      <article><span>Source age</span><strong id="age">—</strong><small>Completed UTC hour</small></article>
-      <article><span>Executable opportunities</span><strong id="count">—</strong><small>Closed cycles + mark-to-market</small></article>
-      <article><span>Run status</span><strong id="runStatus">—</strong><small>succeeded / failed / running</small></article>
-      <article><span>Algorithm</span><strong id="algorithmVersion">—</strong><small>Version of this run</small></article>
+      <article><span>Data age</span><strong id="age">—</strong><small>Since the latest completed market hour</small></article>
+      <article><span>Market signals</span><strong id="count">—</strong><small>Current filtered completed-hour paths</small></article>
+      <article><span>Gold fully known</span><strong id="verifiedCount">—</strong><small>All three fees are verified</small></article>
+      <article><span>Needs fee check</span><strong id="unknownCount">—</strong><small>Rate signal is visible; gold is not guessed</small></article>
     </section>
 
     <section class="rates-panel panel" aria-labelledby="ratesTitle">
@@ -43,14 +47,15 @@
     </section>
 
     <nav class="tabs" aria-label="Opportunity type">
-      <button class="active" data-tab="closed">Closed Cycles</button>
+      <button class="active" data-tab="scanner">Market Scanner</button>
+      <button data-tab="closed">Verified Closed Cycles</button>
       <button data-tab="mtm">Mark-to-Market</button>
     </nav>
     <section class="panel">
       <div class="panel-head">
         <div>
-          <h2 id="tabTitle">Closed Cycles</h2>
-          <p id="tabHint">Executable three-trade cycles only. The return conversion is independently observed and included.</p>
+          <h2 id="tabTitle">Cross-currency flips</h2>
+          <p id="tabHint">Potential three-trade cycles. The independent return conversion is included; unknown gold fees are labeled.</p>
         </div>
         <span class="pill">SOURCE: GGG COMPLETED HOUR</span>
       </div>
@@ -58,7 +63,7 @@
         <table>
           <thead>
             <tr>
-              <th>Trade cycle</th><th>Start → Final</th><th>Realized profit</th><th>Div / 100K Gold</th><th>Trades</th><th>Bottleneck</th><th>Total gold</th><th>Recommendation</th>
+              <th>Item</th><th>Path</th><th>Cycle P&amp;L</th><th>Start → Final</th><th>Volume</th><th>Fill risk</th><th>Gold</th><th>Recommendation</th>
             </tr>
           </thead>
           <tbody id="routes"></tbody>
@@ -67,8 +72,8 @@
     </section>
 
     <footer>
-      <span>ⓘ Div / 100K Gold = conservative realized Divine-equivalent profit ÷ total gold across every leg × 100,000.</span>
-      <span>Fill risk is an estimate from hourly volume and spread — never a guarantee. Mark-to-market edges are not closed realized loops.</span>
+      <span>ⓘ Market Scanner P&amp;L includes the direct return conversion to the starting currency.</span>
+      <span>Unknown gold is never estimated as zero. Fill risk is an estimate from completed-hour volume and ratio range—not a guarantee.</span>
     </footer>
   </main>
 

@@ -115,6 +115,31 @@ const closedDemoRoute: Route = {
 
 const row = projectRoute(demoRoute, LEAGUE, HOUR, HASH, REF)!;
 const closedRow = projectRoute(closedDemoRoute, LEAGUE, HOUR, HASH, REF)!;
+closedRow.route.discovery = {
+  id: "demo-market-signal",
+  familyId: "fam-tul-market-demo",
+  league: LEAGUE,
+  sourceHourUtc: HOUR,
+  item: closedRow.cycle!.item,
+  buyCurrency: closedRow.cycle!.startCurrency,
+  sellCurrency: closedRow.cycle!.sellCurrency,
+  buyLeg: { ...closedRow.cycle!.buyLeg, goldVerified: false },
+  sellLeg: { ...closedRow.cycle!.sellLeg, goldVerified: true },
+  returnLeg: { ...closedRow.cycle!.returnLeg, goldVerified: true },
+  twoLegProfitPct: 50.6,
+  closedCycleProfitPct: (340 / 265 - 1) * 100,
+  startingQuantity: 265,
+  finalStartingQuantity: 340,
+  totalGold: null,
+  goldVerified: false,
+  itemHourlyVolume: 413,
+  maxVolumeShare: 0.01,
+  fillRisk: 0.08,
+  fillRiskLabel: "Low",
+  ratioRangePct: 4,
+  recommendation: "WATCH",
+  warning: "Item gold fee is not verified; check the in-game fee before trading.",
+};
 const fixture = {
   _demo: true,
   _note: "DEMO DATA — NOT LIVE OR EXECUTABLE. Synthetic demonstration of the product model (real Tul's Catalyst identity, controlled quantities). Never a live fallback.",

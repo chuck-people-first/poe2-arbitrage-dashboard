@@ -342,6 +342,39 @@ export interface TwoLegFlip {
   recommendation: FlipRecommendation | null;
 }
 
+/**
+ * Broad completed-hour market signal. Unlike `TwoLegFlip`, this record may
+ * carry an unverified item gold fee. It is therefore a research/verification
+ * signal, never an automatic TRADE NOW instruction.
+ */
+export interface MarketSignal {
+  id: string;
+  familyId: string;
+  league: string;
+  sourceHourUtc: string;
+  item: FlipIdentity;
+  buyCurrency: FlipIdentity;
+  sellCurrency: FlipIdentity;
+  buyLeg: FlipLeg & { goldVerified: boolean };
+  sellLeg: FlipLeg & { goldVerified: boolean };
+  returnLeg: (FlipLeg & { goldVerified: boolean }) | null;
+  /** Potential two-leg spread after valuing the sell currency back in start currency. */
+  twoLegProfitPct: number;
+  /** Exact integer three-leg result, when an independent direct return market exists. */
+  closedCycleProfitPct: number | null;
+  startingQuantity: number;
+  finalStartingQuantity: number | null;
+  totalGold: number | null;
+  goldVerified: boolean;
+  itemHourlyVolume: number;
+  maxVolumeShare: number;
+  fillRisk: number;
+  fillRiskLabel: "Low" | "Medium" | "High";
+  ratioRangePct: number;
+  recommendation: "VERIFY NOW" | "WATCH" | "HIGH RISK";
+  warning: string | null;
+}
+
 /** A fully executable closed cycle: two item legs plus an observed return leg. */
 export interface ClosedFlipCycle {
   id: string;

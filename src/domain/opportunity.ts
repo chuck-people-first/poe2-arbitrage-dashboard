@@ -15,13 +15,13 @@
 //   - Phase B/C fields (trend, recommendation) are always absent (null/undefined)
 //     until deterministic hourly history exists — never fabricated.
 
-import type { Route } from "./types.ts";
+import type { MarketSignal, Route } from "./types.ts";
 import { toTwoLegFlip, toClosedFlipCycle } from "./flips.ts";
 
 /** The persisted opportunity row (ProjectView) shared by Edge + Node. */
 export interface OpportunityRow {
   strategy: Route["strategy"];
-  route: Route & { flip?: ReturnType<typeof toTwoLegFlip> };
+  route: Route & { flip?: ReturnType<typeof toTwoLegFlip>; discovery?: MarketSignal };
   cycle?: ReturnType<typeof toClosedFlipCycle>;
   playbook: unknown[];
   startCurrency: string;
