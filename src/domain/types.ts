@@ -423,6 +423,46 @@ export interface SignalPriceModel {
 }
 
 /**
+ * One executed step of the round trip, in the Exchange's own vocabulary:
+ * you HAVE one thing and you WANT another. Quantities are exact integers.
+ */
+export interface SignalFlowStep {
+  /** buy the item, sell it into the other hub, or convert back to the start. */
+  action: "buy" | "sell" | "convert";
+  haveUnits: number;
+  haveCurrency: string;
+  wantUnits: number;
+  wantCurrency: string;
+  /** Gold charged for this step, or null when the received item's fee is unverified. */
+  goldCost: number | null;
+}
+
+/**
+ * The complete round trip: start currency -> item -> other hub -> start
+ * currency. This is the whole point of the product — a two-leg spread that
+ * never converts back has not made anyone any Exalted — so the chain is
+ * computed once here rather than reassembled by each consumer.
+ *
+ * `closesInStartCurrency` is false when no integer sizing closed the loop
+ * inside the observed hourly liquidity. The steps still describe the path;
+ * they just do not describe a completed trip, and net figures are null.
+ */
+export interface SignalFlow {
+  steps: SignalFlowStep[];
+  startCurrency: string;
+  startUnits: number;
+  finalUnits: number | null;
+  /** finalUnits - startUnits, in the starting currency. The number that matters. */
+  netUnits: number | null;
+  netPct: number | null;
+  /** Total gold across all three steps; null when any fee is unverified. */
+  totalGold: number | null;
+  /** Same total using the labeled category fallback for unverified fees. */
+  estimatedTotalGold: number;
+  closesInStartCurrency: boolean;
+}
+
+/**
  * Broad completed-hour market signal. Unlike `TwoLegFlip`, this record may
  * carry an unverified item gold fee. It is therefore a research/verification
  * signal, never an automatic TRADE NOW instruction.
@@ -457,6 +497,10 @@ export interface MarketSignal {
   classification: SignalClassification;
   /** Human-readable form of `classification`, rendered verbatim in the Status column. */
   classificationLabel: string;
+  /** The complete round trip as executable quantities, start currency to start currency. */
+  flow: SignalFlow;
+  /** Liquidity band from the order's share of the observed hour: <=5% / <=20% / above. */
+  liquidityLabel: "Low" | "Medium" | "High";
   /** Midpoint-model Divine profit for the same starting quantity and gold basis. */
   spreadProfitDivine: number | null;
   /** Midpoint-model Divine profit per 100K gold. The single ranking metric. */

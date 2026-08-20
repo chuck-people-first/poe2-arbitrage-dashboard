@@ -60,12 +60,16 @@
         </div>
         <span class="pill">SOURCE: GGG COMPLETED HOUR</span>
       </div>
-      <p class="section-warning">Prices are the <strong>last completed hour</strong>, not the live book. GGG's API does not publish the Competing Trades ladder, so the ratios below are references to confirm in game before you post. <strong>Spread</strong> is midpoint mispricing; only <strong>Return confirmed</strong> means the round trip survived the least-favorable boundary with every gold fee verified.</p>
+      <div class="flow-bar" id="flowBar">
+        <div class="flow-bar-head"><span class="label">Flow</span><div class="preset-group" id="flowPresets" role="group" aria-label="Currency flow"></div></div>
+        <small id="flowHint"></small>
+      </div>
+      <p class="section-warning">Prices are the <strong>last completed hour</strong>, not the live book. GGG's API does not publish the Competing Trades ladder, so the bids below are references to confirm in game before you post. <strong>Net</strong> is what you actually end up with after converting back; <strong>Spread</strong> is midpoint mispricing before the round trip is proven.</p>
       <div class="table-wrap">
         <table>
           <thead>
             <tr>
-              <th>Item</th><th>Buy bid<small>I want : I have</small></th><th>Sell bid<small>I want : I have</small></th><th>Return<small>I want : I have</small></th><th>Spread</th><th>Div / 100K</th><th>Volume<small>per hour</small></th><th>Gold</th><th>Status</th>
+              <th>Item</th><th>Round trip<small>start → item → sell → back</small></th><th>Net</th><th>Spread</th><th>Div / 100K</th><th>Volume<small>per hour</small></th><th>Gold</th><th>Status</th>
             </tr>
           </thead>
           <tbody id="routes"></tbody>
@@ -74,7 +78,7 @@
     </section>
 
     <footer>
-      <span>ⓘ Click any row for the full playbook: target vs. plan boundaries, batch quantities, per-leg gold, volume share, history and the OCR fee correction.</span>
+      <span>ⓘ Click any row for the full round trip: numbered steps, target vs. plan boundaries, per-step gold, volume share, history and the OCR fee correction.</span>
       <span>Unknown gold uses a clearly labeled category estimate and can be replaced with OCR/manual in-game fee input. Fill risk is not a guarantee.</span>
     </footer>
   </main>

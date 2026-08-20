@@ -109,3 +109,53 @@ row — the conservative boundaries the player was told to type — alongside th
 midpoint metric the list is ranked on, so the series is comparable hour over
 hour. Before this, no scanner family had any history and every drawer read
 INSUFFICIENT HISTORY forever.
+
+## The round trip is the product
+
+The flow the player actually runs is three trades, not two:
+
+```
+pay Exalted or Chaos  →  hold the item  →  sell for Divine  →  convert Divine back
+```
+
+A two-leg spread that stops at "you now hold Divine" has not produced any of
+the currency the player started with. So `MarketSignal.flow` (`SignalFlow`)
+carries the whole chain as executable quantities — each step in the Exchange's
+own vocabulary, *you HAVE this, you WANT that* — and it is the closing step
+that decides whether a net figure exists at all:
+
+- `closesInStartCurrency` is false when no integer order size closes the loop
+  inside the observed hourly volume. `finalUnits`, `netUnits` and `netPct` are
+  then null. The steps still describe the path; they do not describe a
+  completed trip, and the row says so rather than implying one.
+- `netUnits` is the number that matters: what the player ends with minus what
+  they started with, in the currency they started with.
+
+`test/signal-flow.test.ts` pins the chain: each step's WANT is the next step's
+HAVE (both currency and quantity), the first HAVE is the starting currency, the
+last WANT is the starting currency again, and a net figure never appears for a
+loop that did not close.
+
+### Flow presets
+
+The scanner opens on **My flow** — buy with Exalted or Chaos, sell for Divine,
+convert back — because that is what gets run most of the time. **Exalted only**
+narrows to `Exalted → item → Divine → Exalted`; **All paths** restores every hub
+pair, including Divine-funded routes. On the fixture hour: 23 / 11 / 49 rows.
+
+### Ranking
+
+Default order is: return-confirmed first, then loops that actually close in
+profit, then Div / 100K gold, then the lighter liquidity footprint, then depth,
+then the raw spread. The gold-efficiency metric is measured on the *midpoint
+spread*, so ranking on it alone floats rows whose real loop loses money to the
+top — the closed-and-profitable tier exists to stop that.
+
+### Liquidity band
+
+`liquidityBand()` reads only the order's share of the observed hour: ≤5% Low,
+≤20% Medium, above that High. The shared `estimateFillRisk` blends in the
+hourly ratio range, which is wide for nearly every GGG completed-hour market,
+so its label saturates at High and stops distinguishing anything. That heuristic
+still drives the other tabs and the drawer, where the share and range that
+produced it are on screen beside it.

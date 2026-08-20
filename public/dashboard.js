@@ -10,6 +10,28 @@ let historyRows = [];
 // and the Edge Function to be redeployed in lockstep.
 const hasPriceModel = r => Boolean(r?.discovery?.priceModel);
 let scannerSort = 'default';
+
+const DIVINE = 'Metadata/Items/Currency/CurrencyModValues';
+const EXALTED = 'Metadata/Items/Currency/CurrencyAddModToRare';
+const CHAOS = 'Metadata/Items/Currency/CurrencyRerollRare';
+
+// The flow the player actually runs: pay Exalted or Chaos for an item, sell it
+// for Divine, convert the Divine back. Everything else is available but is not
+// what the scanner opens on.
+const FLOW_PRESETS = {
+  mine: {
+    label: 'My flow',
+    hint: 'Buy with Exalted or Chaos → sell for Divine → convert back',
+    match: s => s.sellCurrency?.id === DIVINE && (s.buyCurrency?.id === EXALTED || s.buyCurrency?.id === CHAOS),
+  },
+  exalted: {
+    label: 'Exalted only',
+    hint: 'Exalted → item → Divine → Exalted',
+    match: s => s.sellCurrency?.id === DIVINE && s.buyCurrency?.id === EXALTED,
+  },
+  all: { label: 'All paths', hint: 'Every hub pair, including Divine-funded routes', match: () => true },
+};
+let flowPreset = 'mine';
 const { normalizeOpportunityRow } = window.POE2Dashboard;
 const fmt = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Number(n || 0));
 const fmtInt = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Number(n || 0));
@@ -83,13 +105,17 @@ const isConfirmed = s => s?.classification === 'return-confirmed';
 // Default order, in the product's words: return-confirmed and profitable first,
 // then gold efficiency, then the lighter liquidity footprint, then depth, then
 // the raw spread. Ranking never reads targetBidPotentialPct.
+const closesUp = s => Number(s?.flow?.netUnits ?? -Infinity) > 0;
+
 const SCANNER_SORTS = {
   default: (a, b) =>
     (isConfirmed(b.discovery) ? 1 : 0) - (isConfirmed(a.discovery) ? 1 : 0)
+    || (closesUp(b.discovery) ? 1 : 0) - (closesUp(a.discovery) ? 1 : 0)
     || divGoldOf(b.discovery) - divGoldOf(a.discovery)
     || Number(a.discovery.maxVolumeShare ?? Infinity) - Number(b.discovery.maxVolumeShare ?? Infinity)
     || Number(b.discovery.itemHourlyVolume || 0) - Number(a.discovery.itemHourlyVolume || 0)
     || spreadOf(b.discovery) - spreadOf(a.discovery),
+  net: (a, b) => Number(b.discovery.flow?.netPct ?? -Infinity) - Number(a.discovery.flow?.netPct ?? -Infinity),
   spread: (a, b) => spreadOf(b.discovery) - spreadOf(a.discovery),
   divgold: (a, b) => divGoldOf(b.discovery) - divGoldOf(a.discovery),
   volume: (a, b) => Number(b.discovery.itemHourlyVolume || 0) - Number(a.discovery.itemHourlyVolume || 0),
@@ -102,9 +128,11 @@ function scannerRows() {
   const minSpread = Number($('#minSpread')?.value || 0);
   const maxGold = Number($('#maxGold')?.value || 0);
   const hideHighRisk = Boolean($('#hideHighRisk')?.checked);
+  const preset = FLOW_PRESETS[flowPreset] || FLOW_PRESETS.all;
   return (run?.routes || []).filter(r => r.discovery).filter(r => {
     if (!window.POE2_DEMO_DATA && !hasPriceModel(r)) return false;
     const s = r.discovery;
+    if (!preset.match(s)) return false;
     if (Number(s.itemHourlyVolume || 0) < minVolume) return false;
     if (spreadOf(s) < minSpread) return false;
     if (hideHighRisk && s.classification === 'high-risk') return false;
@@ -115,11 +143,22 @@ function scannerRows() {
 function rows() { return tab === 'scanner' ? scannerRows() : tab === 'closed' ? cycleRows() : mtmRows(); }
 // Scanner headers are sortable; the key is the SCANNER_SORTS entry to apply.
 const SCANNER_HEAD = [
-  ['Item', null], ['Buy bid<small>I want : I have</small>', null],
-  ['Sell bid<small>I want : I have</small>', null], ['Return<small>I want : I have</small>', null],
-  ['Spread', 'spread'], ['Div / 100K', 'divgold'], ['Volume<small>per hour</small>', 'volume'],
-  ['Gold', 'gold'], ['Status', null],
+  ['Item', null],
+  ['Round trip<small>start → item → sell → back</small>', null],
+  ['Net', 'net'], ['Spread', 'spread'], ['Div / 100K', 'divgold'],
+  ['Volume<small>per hour</small>', 'volume'], ['Gold', 'gold'], ['Status', null],
 ];
+const SCANNER_COLSPAN = SCANNER_HEAD.length;
+function renderFlowPresets() {
+  const host = $('#flowPresets'); if (!host) return;
+  host.innerHTML = Object.entries(FLOW_PRESETS).map(([key, preset]) =>
+    `<button type="button" class="${key === flowPreset ? 'active' : ''}" data-flow="${key}">${esc(preset.label)}</button>`).join('');
+  host.querySelectorAll('[data-flow]').forEach(btn => btn.onclick = () => {
+    flowPreset = btn.dataset.flow; closeDrawer(); renderFlowPresets(); render();
+  });
+  const hint = $('#flowHint');
+  if (hint) hint.textContent = (FLOW_PRESETS[flowPreset] || FLOW_PRESETS.all).hint;
+}
 function renderHeader() {
   $('#tabTitle').textContent = tab === 'scanner' ? 'Cross-currency flips' : tab === 'closed' ? 'Verified Closed Cycles' : 'Mark-to-Market Flips';
   $('#tabHint').textContent = tab === 'scanner'
@@ -142,19 +181,49 @@ function renderHeader() {
     : ['Item', 'Buy With / Path', 'Conservative P&L', 'Div / 100K Gold', 'Volume', 'Fill Risk', 'Gold', 'Trend', 'Recommendation'];
   headRow.innerHTML = head.map((h, i) => `<th class="${i === 3 ? 'sort-dg' : ''}">${h}</th>`).join('');
 }
-// A CDN icon that fails to load degrades to the neutral placeholder rather
-// than a broken-image glyph; the row's identity is the name, not the picture.
+// The round trip, in one line, in the quantities the player will actually
+// hold: 200 Ex -> 1,000 item -> 1 Div -> 300 Ex. The closing hop is drawn
+// differently from the rest because converting back is the step people skip.
+function flowChainHtml(s) {
+  const flow = s.flow;
+  if (!flow) return '';
+  const hop = (units, name, cls) =>
+    `<span class="hop ${cls}"><b>${fmtInt(units)}</b> ${esc(shortName(name))}</span>`;
+  const parts = [hop(flow.startUnits, flow.startCurrency, 'start')];
+  flow.steps.forEach((step, i) => {
+    const last = i === flow.steps.length - 1;
+    // Arrow and hop travel together; a line break must not strand an arrow.
+    parts.push(`<span class="link"><i class="arrow" aria-hidden="true">→</i>`
+      + hop(step.wantUnits, step.wantCurrency, last ? 'back' : 'mid') + `</span>`);
+  });
+  const open = !flow.closesInStartCurrency
+    ? '<small class="warn">no order size closes this loop inside the hour\u2019s volume</small>'
+    : '';
+  return `<div class="flow">${parts.join('')}</div>${open}`;
+}
+
+// The three bids exactly as they are typed into the Exchange. They sit on
+// their own line so the round trip above can stay one uninterrupted chain.
+function bidStripHtml(s) {
+  const bid = (label, range, fallback, wantName, haveName) =>
+    `<span class="bid"><em>${label}</em>${compactRatio(range, fallback, wantName, haveName)}</span>`;
+  return `<div class="bid-strip"><span class="bid-lead">Type in Exchange · I want : I have</span>`
+    + bid('Buy', s.buyRatioRange, s.buyRatio, s.item.name, s.buyCurrency.name)
+    + bid('Sell', s.sellRatioRange, s.sellRatio, s.sellCurrency.name, s.item.name)
+    + bid('Back', s.returnRatioRange, s.returnRatio, s.buyCurrency.name, s.sellCurrency.name)
+    + `</div>`;
+}
+
 const ICON = item => item?.iconUrl
-  ? `<img class="item-icon" src="${esc(item.iconUrl)}" alt="" loading="lazy" width="28" height="28" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'item-icon placeholder'}))">`
+  ? `<img class="item-icon" src="${esc(item.iconUrl)}" alt="" loading="lazy" width="30" height="30" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'item-icon placeholder'}))">`
   : '<span class="item-icon placeholder" aria-hidden="true"></span>';
 
-// The return figure is the only one allowed to say "cycle". Everything else is
-// a spread or a potential, and says so in the row itself.
-function returnSummary(s) {
-  const model = s.priceModel || {};
-  if (model.returnConfirmedCyclePct == null) return '<small class="warn">round trip not proven</small>';
-  const value = Number(model.returnConfirmedCyclePct);
-  return `<small class="${value > 0 ? 'ok' : 'warn'}">round trip ${value > 0 ? '+' : ''}${fmt(value)}%</small>`;
+function netCellHtml(s) {
+  const flow = s.flow || {};
+  if (flow.netUnits == null) return '<td class="num muted"><strong>—</strong><small>loop not closed</small></td>';
+  const up = flow.netUnits > 0;
+  return `<td class="num ${up ? 'green' : 'red'}"><strong>${up ? '+' : ''}${fmtInt(flow.netUnits)}</strong>`
+    + `<small>${esc(shortName(flow.startCurrency))} · ${up ? '+' : ''}${fmt(flow.netPct)}%</small></td>`;
 }
 
 function scannerRowHtml(r) {
@@ -163,17 +232,18 @@ function scannerRowHtml(r) {
   const divGold = s.spreadDivPer100kGold == null ? '—' : fmt(s.spreadDivPer100kGold);
   const gold = s.goldVerified ? `<b>${fmtInt(s.totalGold)}</b><small>verified</small>` : `<b>~${fmtInt(s.estimatedTotalGold)}</b><small class="warn">estimated</small>`;
   const status = `<span class="status ${esc(s.classification || 'two-leg-spread')}">${esc(s.classificationLabel || s.recommendation)}</span>`;
-  return `<tr class="clickable" data-id="${esc(r.id)}">`
+  return `<tr class="clickable lead" data-id="${esc(r.id)}">`
     + `<td class="cell-item">${ICON(s.item)}<span><b>${esc(s.item.name)}</b><small>${esc(shortName(s.buyCurrency.name))} → ${esc(shortName(s.sellCurrency.name))} → ${esc(shortName(s.buyCurrency.name))}</small></span></td>`
-    + `<td class="cell-ratio">${compactRatio(s.buyRatioRange,s.buyRatio,s.item.name,s.buyCurrency.name)}</td>`
-    + `<td class="cell-ratio">${compactRatio(s.sellRatioRange,s.sellRatio,s.sellCurrency.name,s.item.name)}</td>`
-    + `<td class="cell-ratio">${compactRatio(s.returnRatioRange,s.returnRatio,s.buyCurrency.name,s.sellCurrency.name)}</td>`
-    + `<td class="${spread > 0 ? 'green' : ''}"><strong>${spread > 0 ? '+' : ''}${fmt(spread)}%</strong>${returnSummary(s)}</td>`
-    + `<td class="dg"><strong>${divGold}</strong><small>${s.goldVerified ? 'verified fees' : 'estimated fees'}</small></td>`
-    + `<td class="num">${fmt(s.itemHourlyVolume)}<small${s.closedCycleProfitPct == null ? ' class="warn"' : ''}>${s.closedCycleProfitPct == null ? 'no size fits' : `${pct(s.maxVolumeShare)} of volume`}</small></td>`
-    + `<td>${gold}</td>`
-    + `<td>${status}</td></tr>`;
+    + `<td class="cell-flow">${flowChainHtml(s)}</td>`
+    + netCellHtml(s)
+    + `<td class="num ${spread > 0 ? 'green' : ''}"><strong>${spread > 0 ? '+' : ''}${fmt(spread)}%</strong><small>midpoint</small></td>`
+    + `<td class="num dg"><strong>${divGold}</strong><small>${s.goldVerified ? 'verified fees' : 'estimated fees'}</small></td>`
+    + `<td class="num">${fmt(s.itemHourlyVolume)}<small class="${s.liquidityLabel === 'High' ? 'warn' : ''}">${pct(s.maxVolumeShare, 0)} share · ${esc(s.liquidityLabel || '—')}</small></td>`
+    + `<td class="num">${gold}</td>`
+    + `<td>${status}</td></tr>`
+    + `<tr class="clickable bids" data-id="${esc(r.id)}"><td colspan="${SCANNER_COLSPAN}">${bidStripHtml(s)}</td></tr>`;
 }
+
 function closedRowHtml(r) {
   const c = r.cycle;
   const sellName = c.sellCurrency?.name || 'Divine Orb';
@@ -188,34 +258,71 @@ function mtmRowHtml(r) {
 }
 function render() {
   if (!run) return;
+  const flowBar = $('#flowBar');
+  if (flowBar) flowBar.hidden = tab !== 'scanner';
   renderHeader();
   const rs = rows();
   const oldScannerRowsHidden = tab === 'scanner' && !window.POE2_DEMO_DATA && (run?.routes || []).some(r => r.discovery && !hasPriceModel(r));
-  $('#routes').innerHTML = rs.length ? rs.map(r => tab === 'scanner' ? scannerRowHtml(r) : tab === 'closed' ? closedRowHtml(r) : mtmRowHtml(r)).join('') : `<tr><td colspan="9" class="empty">${oldScannerRowsHidden ? 'Recalculating this completed hour with the separated spread / return-confirmed model. The invalid best-case percentages are hidden.' : tab === 'scanner' ? 'No signals match these filters. Lower Min spread or Min volume to see more completed-hour paths.' : tab === 'closed' ? 'No fully verified closed cycles this hour. Check Market Scanner for paths that need a live gold-fee check.' : 'No executable mark-to-market flips this hour.'}</td></tr>`;
+  $('#routes').innerHTML = rs.length ? rs.map(r => tab === 'scanner' ? scannerRowHtml(r) : tab === 'closed' ? closedRowHtml(r) : mtmRowHtml(r)).join('') : `<tr><td colspan="${tab === 'scanner' ? SCANNER_COLSPAN : 9}" class="empty">${oldScannerRowsHidden ? 'Recalculating this completed hour with the separated spread / return-confirmed model. The invalid best-case percentages are hidden.' : tab === 'scanner' ? `No ${esc((FLOW_PRESETS[flowPreset] || FLOW_PRESETS.all).label)} signals match these filters. Switch to All paths, or lower Min spread / Min volume.` : tab === 'closed' ? 'No fully verified closed cycles this hour. Check Market Scanner for paths that need a live gold-fee check.' : 'No executable mark-to-market flips this hour.'}</td></tr>`;
   $('#count').textContent = String(rs.length);
   $('#verifiedCount').textContent = String(rs.filter(r => tab === 'scanner' ? isConfirmed(r.discovery) : tab === 'closed').length);
   $('#unknownCount').textContent = String(rs.filter(r => tab === 'scanner' && !r.discovery?.goldVerified).length);
   document.querySelectorAll('#routes tr.clickable').forEach(tr => {
-    tr.tabIndex = 0; tr.setAttribute('role', 'button');
-    const activate = () => { lastFocusedRow = tr; openDrawer(rs.find(x => String(x.id) === String(tr.dataset.id))); };
+    // Scanner opportunities render as a lead row plus a bid strip. Only the
+    // lead row takes focus, so tabbing moves one stop per opportunity.
+    const isStrip = tr.classList.contains('bids');
+    if (!isStrip) { tr.tabIndex = 0; tr.setAttribute('role', 'button'); }
+    const activate = () => {
+      lastFocusedRow = isStrip ? tr.previousElementSibling : tr;
+      openDrawer(rs.find(x => String(x.id) === String(tr.dataset.id)));
+    };
     tr.onclick = activate;
-    tr.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); } };
+    if (!isStrip) tr.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); activate(); } };
   });
 }
 function scannerDrawer(s) {
   const ret = s.returnLeg;
   const fee = leg => leg.goldVerified ? fmtInt(leg.goldCost) : 'Unknown—verify in game';
-  const ratioStep = (title, range, ratio, wantName, haveName, batch) => `<li><b>${title}</b><div class="ratio-entry">${ratioLadder('',range,ratio,wantName,haveName)}</div><span class="muted">Optional batch illustration (do not type this): ${batch}</span></li>`;
   const goldValue = s.goldVerified ? fmtInt(s.totalGold) : `~${fmtInt(s.estimatedTotalGold)} estimated`;
   const divGold = s.spreadDivPer100kGold == null ? '—' : fmt(s.spreadDivPer100kGold);
   const defaultItemFee = s.buyLeg.goldVerified && s.buyLeg.receive > 0 ? s.buyLeg.goldCost / s.buyLeg.receive : (s.estimatedGoldPerUnknownUnit || 1000);
+  const flow = s.flow;
+  // The round trip leads the drawer: three numbered steps in Exchange
+  // vocabulary (you HAVE this, you WANT that), then what you are left with.
+  const STEP_TITLES = { buy: 'Buy the item', sell: 'Sell the item', convert: 'Convert back to your starting currency' };
+  const STEP_RANGE = {
+    buy: [s.buyRatioRange, s.buyRatio, s.item.name, s.buyCurrency.name],
+    sell: [s.sellRatioRange, s.sellRatio, s.sellCurrency.name, s.item.name],
+    convert: [s.returnRatioRange, s.returnRatio, s.buyCurrency.name, s.sellCurrency.name],
+  };
+  const stepHtml = (step, index) => {
+    const [range, fallback, wantName, haveName] = STEP_RANGE[step.action];
+    return `<li class="flow-step ${esc(step.action)}"><span class="step-n">${index + 1}</span>`
+      + `<div class="step-body"><b>${esc(STEP_TITLES[step.action])}</b>`
+      + `<div class="have-want"><span>Have <strong>${fmtInt(step.haveUnits)}</strong> ${esc(step.haveCurrency)}</span>`
+      + `<i aria-hidden="true">→</i><span>Want <strong>${fmtInt(step.wantUnits)}</strong> ${esc(step.wantCurrency)}</span></div>`
+      + `<div class="step-bid">${ratioLadder('', range, fallback, wantName, haveName)}</div>`
+      + `<small class="step-gold">Exchange fee: ${step.goldCost == null ? 'unknown — verify in game' : `${fmtInt(step.goldCost)} gold`}</small>`
+      + `</div></li>`;
+  };
+  const netClass = flow?.netUnits == null ? 'muted' : flow.netUnits > 0 ? 'green' : 'red';
+  const roundTrip = `<section class="drawer-sec roundtrip"><h3>The round trip</h3>`
+    + `<p class="drawer-note"><strong>Snapshot: ${esc(sourceAgeText(s.sourceHourUtc))}.</strong> Target Bid is the favorable completed-hour reference for the Competing Trades side — where you post and wait. Plan / Fill is the safer boundary the numbers use. Confirm the live ladder in game; the official API does not expose it.</p>`
+    + `<ol class="flow-steps">${(flow?.steps || []).map(stepHtml).join('')}</ol>`
+    + `<div class="flow-outcome"><div><small>You start with</small><b>${fmtInt(flow?.startUnits)} ${esc(shortName(flow?.startCurrency || ''))}</b></div>`
+    + `<div><small>You end with</small><b>${flow?.finalUnits == null ? '—' : `${fmtInt(flow.finalUnits)} ${esc(shortName(flow.startCurrency))}`}</b></div>`
+    + `<div class="${netClass}"><small>Net</small><b>${flow?.netUnits == null ? 'Loop not closed' : `${flow.netUnits > 0 ? '+' : ''}${fmtInt(flow.netUnits)} ${esc(shortName(flow.startCurrency))}`}</b></div>`
+    + `<div><small>Total gold</small><b>${flow?.totalGold == null ? `~${fmtInt(flow?.estimatedTotalGold)} est.` : fmtInt(flow.totalGold)}</b></div>`
+    + `<div><small>Liquidity</small><b>${esc(s.liquidityLabel || '—')}</b></div></div>`
+    + (flow?.closesInStartCurrency ? '' : `<p class="drawer-note warn">No integer order size closes this loop inside the observed hourly volume. The prices are real; the plan is not sized.</p>`)
+    + `</section>`;
   const model = s.priceModel || {};
   const confirmed = model.returnConfirmedCyclePct;
   // Three figures, three separate rows, each labeled for what it actually is.
   // Presenting them together is the point: the gap between them IS the risk.
   const figures = `<section class="drawer-sec figures"><h3>Three separate figures</h3><table class="detail"><tr><td><b>Two-leg spread</b><small>Item mispricing between the two currency markets, every leg at its completed-hour midpoint. Discovery metric — gold excluded.</small></td><td class="${spreadOf(s) > 0 ? 'green' : ''}">${fmt(spreadOf(s))}%</td></tr><tr><td><b>Target-bid potential</b><small class="warn">What this path would return if every favorable posted bid filled. POTENTIAL, not executable profit: those prices may have occurred at different moments in the hour.</small></td><td class="muted">${model.targetBidPotentialPct == null ? '—' : `${fmt(model.targetBidPotentialPct)}%`}</td></tr><tr><td><b>Return-confirmed cycle</b><small>Exact integer sizing at the least-favorable observed boundary on all three legs, with all three gold fees. The only figure that may be called a closed cycle.</small></td><td class="${confirmed != null && confirmed > 0 ? 'green' : 'warn'}">${confirmed == null ? 'Not proven this hour' : `${fmt(confirmed)}%`}</td></tr></table><p class="drawer-note"><strong>Status: ${esc(s.classificationLabel || '')}.</strong> ${esc(s.warning || 'Re-enter all three ratios in the live Exchange before placing orders; this is completed-hour data.')}</p></section>`;
   const ocr = `<section class="drawer-sec gold-ocr"><h3>Confirm the gold fee from your screenshot</h3><p class="drawer-note">Paste or upload a crop showing the gold fee. OCR runs in your browser and suggests numbers; confirm the correct per-item fee before applying it.</p><input class="ocr-file" type="file" accept="image/*"><button type="button" class="ocr-read">Read screenshot</button><div class="ocr-status muted">No screenshot selected.</div><div class="ocr-candidates"></div><label>Gold per ${esc(s.item.name)} received<input class="ocr-fee" type="number" min="1" step="1" value="${fmtInt(defaultItemFee).replace(/,/g,'')}"></label><button type="button" class="ocr-apply">Apply confirmed fee</button><div class="ocr-result"></div></section>`;
-  return `<header class="drawer-head"><div class="item-lockup"><strong>${esc(s.item.name)}</strong><small>${esc(s.buyCurrency.name)} → ${esc(s.sellCurrency.name)} → ${esc(s.buyCurrency.name)}</small></div><button class="close" aria-label="Close">×</button></header><section class="drawer-sec playbook"><h3>Ratios to type in game</h3><p class="drawer-note"><strong>Snapshot: ${esc(sourceAgeText(s.sourceHourUtc))}.</strong> Target Bid is the favorable completed-hour reference for the bottom Competing Trades section—the side where you post and wait. Plan / Fill is the safer boundary used by the displayed P&amp;L. Confirm the current competing ladder in game because the official API does not expose it live.</p><ol>${ratioStep('Buy the item',s.buyRatioRange,s.buyRatio,s.item.name,s.buyCurrency.name,`${fmtInt(s.buyLeg.pay)} ${esc(s.buyCurrency.name)} → ${fmtInt(s.buyLeg.receive)} ${esc(s.item.name)}`)}${ratioStep('Sell the item',s.sellRatioRange,s.sellRatio,s.sellCurrency.name,s.item.name,`${fmtInt(s.sellLeg.pay)} ${esc(s.item.name)} → ${fmtInt(s.sellLeg.receive)} ${esc(s.sellCurrency.name)}`)}${ratioStep('Return to the starting currency',s.returnRatioRange,s.returnRatio,s.buyCurrency.name,s.sellCurrency.name,ret ? `${fmtInt(ret.pay)} ${esc(s.sellCurrency.name)} → ${fmtInt(ret.receive)} ${esc(s.buyCurrency.name)}` : 'no sizing fits the observed hourly volume')}</ol><p class="drawer-note"><strong>The Target Bid can improve profit only if it fills.</strong> The calculation does not count that favorable price as guaranteed; it uses the Plan / Fill boundary instead.</p></section>${figures}<section class="drawer-sec"><h3>Sizing and cost</h3><table class="detail"><tr><td>Start → final</td><td>${s.finalStartingQuantity == null ? `${fmtInt(s.startingQuantity)} ${esc(s.buyCurrency.name)} — no closing size fits this hour's volume` : `${fmtInt(s.startingQuantity)} → ${fmtInt(s.finalStartingQuantity)} ${esc(s.buyCurrency.name)}`}</td></tr><tr><td>Divine-equivalent profit</td><td>${s.estimatedProfitDivine == null ? '—' : `~${fmt(s.estimatedProfitDivine)} Divine`}</td></tr><tr><td>${s.goldVerified ? 'Total gold' : 'Estimated total gold'}</td><td id="drawerGold">${goldValue}</td></tr><tr><td>${s.goldVerified ? 'Div / 100K Gold' : 'Estimated Div / 100K Gold'}</td><td class="dg" id="drawerDivGold"><strong>${divGold}</strong></td></tr><tr><td>Fee estimate basis</td><td>${esc(s.goldEstimateBasis || 'All fees verified')}</td></tr><tr><td>Known leg fees</td><td>Buy ${fee(s.buyLeg)} · Sell ${fee(s.sellLeg)} · Return ${ret ? fee(ret) : '—'}</td></tr><tr><td>Item volume</td><td>${fmt(s.itemHourlyVolume)} / hr</td></tr><tr><td>Maximum volume share</td><td>${pct(s.maxVolumeShare)}${s.closedCycleProfitPct == null ? ' — larger than the whole observed hour' : ''}</td></tr><tr><td>Estimated fill risk</td><td>${esc(s.fillRiskLabel)} (${pct(s.fillRisk)})<small class="muted">Heuristic from volume share, hourly ratio range and market depth. Not a guarantee.</small></td></tr><tr><td>Ratio-range uncertainty</td><td>${fmt(s.ratioRangePct)}%</td></tr><tr><td>Source hour</td><td>${esc(s.sourceHourUtc)}</td></tr></table></section>${ocr}`;
+  return `<header class="drawer-head"><div class="item-lockup">${ICON(s.item)}<span><strong>${esc(s.item.name)}</strong><small>${esc(shortName(s.buyCurrency.name))} → ${esc(shortName(s.sellCurrency.name))} → ${esc(shortName(s.buyCurrency.name))}</small></span></div><button class="close" aria-label="Close">×</button></header>${roundTrip}${figures}<section class="drawer-sec"><h3>Sizing and cost</h3><table class="detail"><tr><td>Start → final</td><td>${s.finalStartingQuantity == null ? `${fmtInt(s.startingQuantity)} ${esc(s.buyCurrency.name)} — no closing size fits this hour's volume` : `${fmtInt(s.startingQuantity)} → ${fmtInt(s.finalStartingQuantity)} ${esc(s.buyCurrency.name)}`}</td></tr><tr><td>Divine-equivalent profit</td><td>${s.estimatedProfitDivine == null ? '—' : `~${fmt(s.estimatedProfitDivine)} Divine`}</td></tr><tr><td>${s.goldVerified ? 'Total gold' : 'Estimated total gold'}</td><td id="drawerGold">${goldValue}</td></tr><tr><td>${s.goldVerified ? 'Div / 100K Gold' : 'Estimated Div / 100K Gold'}</td><td class="dg" id="drawerDivGold"><strong>${divGold}</strong></td></tr><tr><td>Fee estimate basis</td><td>${esc(s.goldEstimateBasis || 'All fees verified')}</td></tr><tr><td>Known leg fees</td><td>Buy ${fee(s.buyLeg)} · Sell ${fee(s.sellLeg)} · Return ${ret ? fee(ret) : '—'}</td></tr><tr><td>Item volume</td><td>${fmt(s.itemHourlyVolume)} / hr</td></tr><tr><td>Maximum volume share</td><td>${pct(s.maxVolumeShare)}${s.closedCycleProfitPct == null ? ' — larger than the whole observed hour' : ''}</td></tr><tr><td>Estimated fill risk</td><td>${esc(s.fillRiskLabel)} (${pct(s.fillRisk)})<small class="muted">Heuristic from volume share, hourly ratio range and market depth. Not a guarantee.</small></td></tr><tr><td>Ratio-range uncertainty</td><td>${fmt(s.ratioRangePct)}%</td></tr><tr><td>Source hour</td><td>${esc(s.sourceHourUtc)}</td></tr></table></section>${ocr}`;
 }
 
 function wireGoldOcr(s, body) {
@@ -257,6 +364,7 @@ function closeDrawer() { $('#drawer').classList.remove('open'); $('#drawer').set
 function renderStatus(status) { const hour = status?.latest_successful_source_hour; $('#sourceAge').textContent = hour ? `Market hour ${hour.replace('T',' ').slice(0,16)} UTC` : 'No completed ingestion yet'; $('#age').textContent = hour ? window.POE2CurrencyRates.ageLabel(hour) : '—'; $('#completedAt').textContent = status?.completed_at ? `Fetched ${String(status.completed_at).replace('T',' ').slice(0,16)} UTC` : '—'; }
 async function load() { if (window.POE2_DEMO_DATA) { run = { routes: (window.POE2_DEMO_DATA.routes || []).map(normalizeOpportunityRow), status: window.POE2_DEMO_DATA.status }; currencyRates = window.POE2_DEMO_DATA.currencyRates || []; historyRows = window.POE2_DEMO_DATA.history || []; renderStatus(run.status); renderCurrencyRates(); render(); return; } const url = window.POE2_SUPABASE_URL || ''; const key = window.POE2_SUPABASE_PUBLISHABLE_KEY || ''; if (!url || !key) { run = { routes: [], status: null }; currencyRates = []; historyRows = []; renderStatus(null); renderCurrencyRates(); render(); return; } const headers = { apikey: key, Authorization: `Bearer ${key}` }; const [s, o, rates, history] = await Promise.all([fetch(`${url}/rest/v1/opportunity_run_status?select=*`,{headers}), fetch(`${url}/rest/v1/opportunity_public?select=*&order=score.desc`,{headers}), fetch(`${url}/rest/v1/currency_rates_public?select=*&order=source_hour.desc`,{headers}), fetch(`${url}/rest/v1/signal_history_public?select=*&order=source_hour.asc`,{headers})]); const statusRows = s.ok ? await s.json() : []; const rowsResp = o.ok ? await o.json() : []; currencyRates = rates.ok ? await rates.json() : []; historyRows = history.ok ? await history.json() : []; run = { routes: (Array.isArray(rowsResp) ? rowsResp : []).map(normalizeOpportunityRow), status: statusRows[0] || null }; renderStatus(run.status); renderCurrencyRates(); render(); }
 document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { tab = b.dataset.tab; document.querySelectorAll('[data-tab]').forEach(x => x.classList.toggle('active', x === b)); closeDrawer(); render(); });
+renderFlowPresets();
 ['minVolume','minSpread','maxGold'].forEach(id => document.getElementById(id)?.addEventListener('input', render));
 document.getElementById('hideHighRisk')?.addEventListener('change', render);
 const refresh = $('#refresh'); if (refresh) refresh.onclick = load; $('#scrim').onclick = closeDrawer; document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); }); load();

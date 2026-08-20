@@ -28,6 +28,7 @@ import { estimatedGoldCostPerUnit, GGG_HUB_PATHS, goldCostPerUnit } from "./mapp
 import type { OpportunityRow } from "./opportunity.ts";
 import type {
   DirectedEdge,
+  FlipIdentity,
   InGameRatio,
   InGameRatioRange,
   MarketSignal,
@@ -35,6 +36,8 @@ import type {
   RouteLeg,
   RunSettings,
   SignalClassification,
+  SignalFlow,
+  SignalFlowStep,
   SignalPriceModel,
   ValuationDisclosure,
 } from "./types.ts";
@@ -237,6 +240,72 @@ function findReturn(edges: DirectedEdge[], from: string, to: string, used: Set<s
  * cycle that only closes by eating a fifth of the hour's volume is high risk
  * whatever its percentage says.
  */
+/**
+ * Liquidity band straight from the order's share of the observed hour. The
+ * shared `estimateFillRisk` blends in the hourly ratio range, which on GGG's
+ * completed-hour feed is wide for almost every market — so its label saturates
+ * at High and stops distinguishing anything. This band answers the only
+ * question the scanner row has space for: how much of the hour would this
+ * order have to eat?
+ */
+export function liquidityBand(maxVolumeShare: number): "Low" | "Medium" | "High" {
+  if (!Number.isFinite(maxVolumeShare)) return "High";
+  if (maxVolumeShare <= 0.05) return "Low";
+  if (maxVolumeShare <= 0.2) return "Medium";
+  return "High";
+}
+
+/**
+ * The complete round trip as the player executes it: pay the starting
+ * currency for the item, sell the item into the other hub, convert that hub
+ * currency back. A spread that never converts back has not produced any of the
+ * currency the player started with, so the closing step is part of the record,
+ * not an afterthought.
+ */
+function buildFlow(
+  start: FlipIdentity,
+  item: FlipIdentity,
+  sell: FlipIdentity,
+  buyLeg: MarketSignal["buyLeg"],
+  sellLeg: MarketSignal["sellLeg"],
+  returnLeg: MarketSignal["returnLeg"],
+  startUnits: number,
+  finalUnits: number | null,
+  totalGold: number | null,
+  estimatedTotalGold: number,
+): SignalFlow {
+  const step = (
+    action: SignalFlowStep["action"],
+    leg: { pay: number; receive: number; goldCost: number; goldVerified: boolean },
+    haveCurrency: string,
+    wantCurrency: string,
+  ): SignalFlowStep => ({
+    action,
+    haveUnits: leg.pay,
+    haveCurrency,
+    wantUnits: leg.receive,
+    wantCurrency,
+    goldCost: leg.goldVerified ? leg.goldCost : null,
+  });
+  const steps = [
+    step("buy", buyLeg, start.name, item.name),
+    step("sell", sellLeg, item.name, sell.name),
+    ...(returnLeg ? [step("convert", returnLeg, sell.name, start.name)] : []),
+  ];
+  const closes = returnLeg !== null && finalUnits !== null;
+  return {
+    steps,
+    startCurrency: start.name,
+    startUnits,
+    finalUnits: closes ? finalUnits : null,
+    netUnits: closes ? finalUnits! - startUnits : null,
+    netPct: closes && startUnits > 0 ? (finalUnits! / startUnits - 1) * 100 : null,
+    totalGold,
+    estimatedTotalGold,
+    closesInStartCurrency: closes,
+  };
+}
+
 function classify(
   model: SignalPriceModel,
   goldVerified: boolean,
@@ -368,6 +437,9 @@ export function buildMarketSignalRows(
           estimatedGoldPerUnknownUnit: unknownFee?.cost ?? null,
           goldEstimateBasis: unknownFee?.basis ?? null,
           estimatedProfitDivine, estimatedDivPer100kGold: perGold(estimatedProfitDivine),
+          flow: buildFlow(startIdentity, item, sellIdentity, buyLeg, sellLeg, returnLeg,
+            startUnits, sizingFits ? final : null, totalGold, estimatedTotalGold),
+          liquidityLabel: liquidityBand(maxShare),
           priceModel, classification, classificationLabel: CLASSIFICATION_LABELS[classification],
           spreadProfitDivine, spreadDivPer100kGold, returnConfirmedDivPer100kGold,
           itemHourlyVolume,

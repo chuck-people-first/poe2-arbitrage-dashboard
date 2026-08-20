@@ -97,6 +97,38 @@ describe("currency reference UI model", () => {
     expect(spread).toBeGreaterThan(share);
   });
 
+  it("opens on the flow the player actually runs, not on every hub pair", () => {
+    const dashboard = readFileSync(new URL("../public/dashboard.js", import.meta.url), "utf8");
+    expect(dashboard).toMatch(/let flowPreset = 'mine'/);
+    const presets = dashboard.slice(dashboard.indexOf("const FLOW_PRESETS"), dashboard.indexOf("let flowPreset"));
+    // My flow == buy with Exalted or Chaos, sell for Divine, convert back.
+    expect(presets).toContain("sellCurrency?.id === DIVINE");
+    expect(presets).toContain("buyCurrency?.id === EXALTED || s.buyCurrency?.id === CHAOS");
+    expect(presets).toContain("All paths");
+  });
+
+  it("ranks a closed, profitable round trip above a bare gold-efficiency score", () => {
+    // Div / 100K Gold is measured on the midpoint spread, so on its own it
+    // floats rows whose actual loop loses money to the top — the opposite of
+    // the question the scanner is asked.
+    const dashboard = readFileSync(new URL("../public/dashboard.js", import.meta.url), "utf8");
+    const comparator = dashboard.slice(dashboard.indexOf("const SCANNER_SORTS"), dashboard.indexOf("function scannerRows"));
+    const closed = comparator.indexOf("closesUp(b.discovery)");
+    const efficiency = comparator.indexOf("divGoldOf(b.discovery)", closed);
+    expect(closed).toBeGreaterThan(-1);
+    expect(efficiency).toBeGreaterThan(closed);
+  });
+
+  it("shows the whole round trip in the row, ending in the starting currency", () => {
+    const dashboard = readFileSync(new URL("../public/dashboard.js", import.meta.url), "utf8");
+    const chain = dashboard.slice(dashboard.indexOf("function flowChainHtml"), dashboard.indexOf("function bidStripHtml"));
+    // Opens on the start hop and marks the closing hop differently — converting
+    // back is the step people skip, and the only hop in what they started with.
+    expect(chain).toContain("hop(flow.startUnits, flow.startCurrency, 'start')");
+    expect(chain).toContain("last ? 'back' : 'mid'");
+    expect(chain).toContain("no order size closes this loop");
+  });
+
   it("never ranks or headlines a row on the favorable-boundary compound", () => {
     // targetBidPotentialPct may only appear in the drawer's labeled figure
     // table. If it reaches a comparator or a main-row cell, three unrelated
