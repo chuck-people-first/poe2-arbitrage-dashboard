@@ -25,16 +25,26 @@ function rangePct(edge: DirectedEdge): number {
   return edge.rate > 0 ? Math.abs(edge.rateHigh - edge.rateLow) / edge.rate * 100 : 100;
 }
 
-function favorableRate(edge: DirectedEdge): number {
-  return edge.rateHigh;
+/**
+ * The GGG feed is an hourly aggregate, not a live order book. `rateHigh` is
+ * merely the most favorable trade seen somewhere in that hour. Combining the
+ * high from three different markets manufactures a best-case cycle that may
+ * never have existed at one moment.
+ *
+ * Size and price scanner ideas from the least-favorable observed boundary.
+ * This makes the completed-hour signal conservative; the player must still
+ * confirm the current book before posting an order.
+ */
+function planningRate(edge: DirectedEdge): number {
+  return edge.rateLow;
 }
 
 /** Normalize to the Currency Exchange's visible I WANT : I HAVE form. */
 function inGameRatio(edge: DirectedEdge) {
-  const rate = favorableRate(edge);
+  const rate = planningRate(edge);
   return rate >= 1
-    ? { want: rate, have: 1, side: "favorable-limit" as const }
-    : { want: 1, have: 1 / rate, side: "favorable-limit" as const };
+    ? { want: rate, have: 1, side: "conservative-hourly" as const }
+    : { want: 1, have: 1 / rate, side: "conservative-hourly" as const };
 }
 
 function flipLeg(edge: DirectedEdge, pay: number, receive: number) {
@@ -57,7 +67,7 @@ function routeLeg(edge: DirectedEdge, pay: number, receive: number): RouteLeg {
     to: edge.to,
     fromUnits: pay,
     toUnits: receive,
-    rate: favorableRate(edge),
+    rate: planningRate(edge),
     volumeFrom: edge.volumeFrom,
     volumeTo: edge.volumeTo,
     playbook: { give: pay, pay: edge.from, receive, want: edge.to },
@@ -72,13 +82,13 @@ function routeLeg(edge: DirectedEdge, pay: number, receive: number): RouteLeg {
 
 function chooseSizing(buy: DirectedEdge, sell: DirectedEdge, back: DirectedEdge | null) {
   const choices = OUTPUT_TARGETS.map((target) => {
-    const itemNeeded = Math.max(1, Math.ceil(target / favorableRate(sell)));
-    const start = Math.max(1, Math.ceil(itemNeeded / favorableRate(buy)));
-    const item = Math.floor(start * favorableRate(buy));
-    const end = Math.floor(item * favorableRate(sell));
-    const final = back ? Math.floor(end * favorableRate(back)) : null;
+    const itemNeeded = Math.max(1, Math.ceil(target / planningRate(sell)));
+    const start = Math.max(1, Math.ceil(itemNeeded / planningRate(buy)));
+    const item = Math.floor(start * planningRate(buy));
+    const end = Math.floor(item * planningRate(sell));
+    const final = back ? Math.floor(end * planningRate(back)) : null;
     if (item <= 0 || end <= 0) return null;
-    const twoLegProfitPct = (end * (back ? favorableRate(back) : 0) / start - 1) * 100;
+    const twoLegProfitPct = (end * (back ? planningRate(back) : 0) / start - 1) * 100;
     const closedCycleProfitPct = final === null ? null : (final / start - 1) * 100;
     const shares = [share(buy, start, item), share(sell, item, end)];
     if (back && final !== null) shares.push(share(back, end, final));
@@ -160,7 +170,7 @@ export function buildMarketSignalRows(
         const profitStart = final - startUnits;
         const toDivineRate = start === GGG_HUB_PATHS.DIVINE
           ? 1
-          : edges.find((edge) => edge.from === start && edge.to === GGG_HUB_PATHS.DIVINE)?.rateHigh ?? null;
+          : edges.find((edge) => edge.from === start && edge.to === GGG_HUB_PATHS.DIVINE)?.rateLow ?? null;
         const estimatedProfitDivine = toDivineRate === null ? null : profitStart * toDivineRate;
         const estimatedDivPer100kGold = estimatedProfitDivine === null || estimatedTotalGold <= 0
           ? null
@@ -192,8 +202,8 @@ export function buildMarketSignalRows(
         const valuation: ValuationDisclosure = {
           profitKind: "mark-to-market", inputValuationPath: [], outputValuationPath: [],
           observationIds: [buy.observationId, sell.observationId, back.observationId],
-          valuationRates: [favorableRate(buy), favorableRate(sell), favorableRate(back)],
-          returnToBaseLegs: [{ observationId: back.observationId, from: back.from, to: back.to, rate: favorableRate(back) }],
+          valuationRates: [planningRate(buy), planningRate(sell), planningRate(back)],
+          returnToBaseLegs: [{ observationId: back.observationId, from: back.from, to: back.to, rate: planningRate(back) }],
           returnToBaseIncluded: false, valuationBottleneckVolumeShare: maxShare,
           valuationRangeUncertaintyPct: maxRange, valuationConfidence: Math.max(0, 1 - riskValue),
           valuationExecutable: true, valuationGoldIncluded: false, valuationTradeCountIncluded: 0,

@@ -42,7 +42,9 @@ describe("broad market signals", () => {
   });
 
   it("surfaces a broad named scanner instead of only fee-verified routes", () => {
-    expect(rows.length).toBeGreaterThan(10);
+    // The conservative completed-hour boundary intentionally removes ideas
+    // that only work when unrelated best-case extremes are multiplied.
+    expect(rows.length).toBeGreaterThan(5);
     expect(rows.every((row) => row.route.discovery?.item.name && !row.route.discovery.item.name.startsWith("Metadata/"))).toBe(true);
     expect(rows.some((row) => row.route.discovery?.goldVerified === false)).toBe(true);
   });
@@ -72,16 +74,54 @@ describe("broad market signals", () => {
     }
   });
 
-  it("publishes the favorable limit-order ratios in I WANT : I HAVE form", () => {
+  it("publishes conservative completed-hour ratios in I WANT : I HAVE form", () => {
     for (const row of rows) {
       const signal = row.route.discovery!;
       for (const ratio of [signal.buyRatio, signal.sellRatio, signal.returnRatio]) {
         expect(ratio).not.toBeNull();
         expect(ratio!.want).toBeGreaterThan(0);
         expect(ratio!.have).toBeGreaterThan(0);
-        expect(ratio!.side).toBe("favorable-limit");
+        expect(ratio!.side).toBe("conservative-hourly");
         expect(Math.min(ratio!.want, ratio!.have)).toBe(1);
       }
     }
+  });
+
+  it("does not combine the three best hourly extremes into a fabricated Bauble cycle", () => {
+    const bauble = "Metadata/Items/Currency/CurrencyFlaskQuality";
+    const mk = (
+      pair: [string, string],
+      low: [number, number],
+      high: [number, number],
+      volume: [number, number],
+    ) => ({
+      league: LEAGUE,
+      marketId: pair.join("|"),
+      pair,
+      volumeTraded: { [pair[0]]: volume[0], [pair[1]]: volume[1] },
+      lowestStock: { [pair[0]]: 1, [pair[1]]: 1 },
+      highestStock: { [pair[0]]: 1, [pair[1]]: 1 },
+      lowestRatio: { [pair[0]]: low[0], [pair[1]]: low[1] },
+      highestRatio: { [pair[0]]: high[0], [pair[1]]: high[1] },
+    });
+    const screenshotEdges = deriveEdges([
+      // The user's live book was ~1 Bauble : 2.90 Exalted. The completed
+      // hour rounded to a 3:1 adverse boundary and also contained a tiny 1:2
+      // favorable extreme. The scanner must plan from 3:1, not 1:2.
+      mk([GGG_HUB_PATHS.EXALTED, bauble], [1, 2], [3, 1], [1394, 969]),
+      mk([GGG_HUB_PATHS.DIVINE, bauble], [1, 100], [1, 92], [2, 192]),
+      mk([GGG_HUB_PATHS.EXALTED, GGG_HUB_PATHS.DIVINE], [368, 1], [380, 1], [10000, 100]),
+    ], HOUR);
+    const screenshotRows = buildMarketSignalRows(
+      screenshotEdges,
+      settings,
+      LEAGUE,
+      HOUR,
+      "screenshot",
+      [GGG_HUB_PATHS.EXALTED, GGG_HUB_PATHS.CHAOS, GGG_HUB_PATHS.DIVINE],
+    );
+    const signal = screenshotRows.find((row) => row.route.discovery?.item.id === bauble)?.route.discovery;
+    expect(signal?.buyRatio).toEqual({ want: 1, have: 3, side: "conservative-hourly" });
+    expect(signal?.closedCycleProfitPct).toBeLessThan(25);
   });
 });

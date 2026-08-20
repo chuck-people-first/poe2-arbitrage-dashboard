@@ -359,9 +359,9 @@ export interface MarketSignal {
   sellLeg: FlipLeg & { goldVerified: boolean };
   returnLeg: (FlipLeg & { goldVerified: boolean }) | null;
   /** Ratios entered in game, always expressed as I WANT : I HAVE. */
-  buyRatio: { want: number; have: number; side: "favorable-limit" };
-  sellRatio: { want: number; have: number; side: "favorable-limit" };
-  returnRatio: { want: number; have: number; side: "favorable-limit" } | null;
+  buyRatio: { want: number; have: number; side: "conservative-hourly" };
+  sellRatio: { want: number; have: number; side: "conservative-hourly" };
+  returnRatio: { want: number; have: number; side: "conservative-hourly" } | null;
   /** Potential two-leg spread after valuing the sell currency back in start currency. */
   twoLegProfitPct: number;
   /** Exact integer three-leg result, when an independent direct return market exists. */
