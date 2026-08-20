@@ -51,6 +51,7 @@ describe("broad market signals", () => {
       expect(signal.closedCycleProfitPct).not.toBeNull();
       expect(signal.buyLeg.receive).toBe(signal.sellLeg.pay);
       expect(signal.sellLeg.receive).toBe(signal.returnLeg!.pay);
+      expect(signal.maxVolumeShare).toBeLessThanOrEqual(1);
     }
   });
 

@@ -71,7 +71,14 @@ function chooseSizing(buy: DirectedEdge, sell: DirectedEdge, back: DirectedEdge 
     const shares = [share(buy, start, item), share(sell, item, end)];
     if (back && final !== null) shares.push(share(back, end, final));
     return { start, item, end, final, twoLegProfitPct, closedCycleProfitPct, maxShare: Math.max(...shares) };
-  }).filter((x): x is NonNullable<typeof x> => x !== null && Number.isFinite(x.twoLegProfitPct));
+  }).filter((x): x is NonNullable<typeof x> =>
+    x !== null
+    && Number.isFinite(x.twoLegProfitPct)
+    // A proposed size larger than the entire observed hourly market is not a
+    // trade signal. Keeping the 20-100% band lets the product show HIGH RISK
+    // ideas without persisting impossible liquidity ratios.
+    && x.maxShare <= 1
+  );
 
   return choices.sort((a, b) =>
     (b.closedCycleProfitPct ?? b.twoLegProfitPct) - (a.closedCycleProfitPct ?? a.twoLegProfitPct)
