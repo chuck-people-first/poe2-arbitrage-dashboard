@@ -499,6 +499,22 @@ export interface MarketSignal {
   classificationLabel: string;
   /** The complete round trip as executable quantities, start currency to start currency. */
   flow: SignalFlow;
+  /**
+   * What the second, independent source says about this item. Present even
+   * when poe.ninja has no opinion — a missing second opinion is reported as
+   * "single-source", never silently treated as agreement.
+   */
+  sourceCheck: {
+    gggDivine: number | null;
+    ninjaDivine: number | null;
+    deviationPct: number | null;
+    agreement: "confirmed" | "close" | "diverging" | "conflicting" | "single-source";
+    agreementLabel: string;
+    /** poe.ninja's short-history net change for this item, when published. */
+    trendPct: number | null;
+    sparkline: number[];
+    sources: string[];
+  };
   /** Liquidity band from the order's share of the observed hour: <=5% / <=20% / above. */
   liquidityLabel: "Low" | "Medium" | "High";
   /** Midpoint-model Divine profit for the same starting quantity and gold basis. */

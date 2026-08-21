@@ -124,7 +124,7 @@ describe("currency reference UI model", () => {
     const chain = dashboard.slice(dashboard.indexOf("function flowChainHtml"), dashboard.indexOf("function bidStripHtml"));
     // Opens on the start hop and marks the closing hop differently — converting
     // back is the step people skip, and the only hop in what they started with.
-    expect(chain).toContain("hop(flow.startUnits, flow.startCurrency, 'start')");
+    expect(chain).toContain("hop(startUnits, flow.startCurrency, 'start')");
     expect(chain).toContain("last ? 'back' : 'mid'");
     expect(chain).toContain("no order size closes this loop");
   });

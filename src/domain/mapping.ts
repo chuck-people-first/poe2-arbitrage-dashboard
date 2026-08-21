@@ -12,6 +12,7 @@
 
 import type { ItemId } from "./types.ts";
 import { GENERATED_MAPPING, AUTHORITATIVE_IDENTITY_MAPPING } from "./mapping.generated.ts";
+import { NINJA_BRIDGE_MAPPING } from "./mapping.ninja-bridge.ts";
 
 export const GGG_HUB_PATHS = {
   DIVINE: "Metadata/Items/Currency/CurrencyModValues",
@@ -103,6 +104,15 @@ for (const item of Object.values(ITEM_MAP)) {
 // Apply manual overrides (gold costs from the poe2wiki exchange table).
 for (const [path, item] of Object.entries(MANUAL_OVERRIDES)) {
   ITEM_MAP[path] = item;
+}
+
+// poe.ninja bridge entries: identity from the shared art file, confirmed by two
+// independent Divine prices. They carry goldCostPerUnit -1, so they render a
+// readable name and price but can never satisfy a fee-verified claim. A
+// rate-verified or manually curated entry always wins over one of these.
+for (const [path, record] of Object.entries(NINJA_BRIDGE_MAPPING)) {
+  if (ITEM_MAP[path]) continue;
+  ITEM_MAP[path] = record.entry;
 }
 
 export function lookupItem(gggPath: string): ItemId | null {

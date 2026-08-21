@@ -93,14 +93,18 @@ describe("discovery funnel on the checked-in real GGG hour", () => {
   const funnel = auditFunnel();
 
   it("measures each stage of the candidate funnel", () => {
+    // These moved when poe.ninja became a second source: the identity bridge
+    // roughly doubled how many traded GGG paths resolve to a readable item, so
+    // the same hour now yields 192 readable families instead of 98. The shape
+    // of the funnel is unchanged — each stage still filters the one above it.
     expect(funnel).toMatchObject({
       marketsInLeague: 1389,
-      readableFamilies: 98,
-      withDirectReturnMarket: 98,
-      positiveFavorable: 83,
-      positiveMidpoint: 49,
-      midpointAtLeast25Pct: 28,
-      positiveConservative: 14,
+      readableFamilies: 192,
+      withDirectReturnMarket: 192,
+      positiveFavorable: 175,
+      positiveMidpoint: 96,
+      midpointAtLeast25Pct: 43,
+      positiveConservative: 16,
     });
   });
 

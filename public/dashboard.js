@@ -32,6 +32,34 @@ const FLOW_PRESETS = {
   all: { label: 'All paths', hint: 'Every hub pair, including Divine-funded routes', match: () => true },
 };
 let flowPreset = 'mine';
+let search = '';
+// Bankroll per starting currency; a row is sized from the pot it actually starts in.
+let bankroll = { Exalted: 4000, Chaos: 120, Divine: 10 };
+
+// Settings survive a reload. This is a tool someone returns to every hour, and
+// retyping filters each time is friction, not safety.
+const STORE_KEY = 'poe2.scanner.v1';
+function saveSettings() {
+  try {
+    localStorage.setItem(STORE_KEY, JSON.stringify({
+      flowPreset, scannerSort, bankroll,
+      minVolume: $('#minVolume')?.value, minSpread: $('#minSpread')?.value,
+      maxGold: $('#maxGold')?.value, hideHighRisk: $('#hideHighRisk')?.checked,
+    }));
+  } catch { /* private mode, or storage disabled: the tool still works */ }
+}
+function loadSettings() {
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORE_KEY) || 'null');
+    if (!saved) return;
+    if (saved.flowPreset && FLOW_PRESETS[saved.flowPreset]) flowPreset = saved.flowPreset;
+    if (saved.scannerSort && SCANNER_SORTS[saved.scannerSort]) scannerSort = saved.scannerSort;
+    if (saved.bankroll && typeof saved.bankroll === 'object') bankroll = { ...bankroll, ...saved.bankroll };
+    const set = (id, v) => { const el = document.getElementById(id); if (el && v != null && v !== '') el.value = v; };
+    set('minVolume', saved.minVolume); set('minSpread', saved.minSpread); set('maxGold', saved.maxGold);
+    if ($('#hideHighRisk')) $('#hideHighRisk').checked = Boolean(saved.hideHighRisk);
+  } catch { /* ignore malformed state rather than blocking the page */ }
+}
 const { normalizeOpportunityRow } = window.POE2Dashboard;
 const fmt = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Number(n || 0));
 const fmtInt = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Number(n || 0));
@@ -40,9 +68,12 @@ const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&':'&amp;', '<':'&
 const risk = label => `<span class="risk ${String(label || '').toLowerCase()}">${esc(label || '—')}</span>`;
 const rateFmt = n => n == null ? '—' : Number(n).toLocaleString('en-US', { maximumFractionDigits: 6 });
 const ratioNum = n => Number(n).toLocaleString('en-US', { maximumFractionDigits: 4 });
-const ratioText = (ratio, wantName, haveName) => ratio
-  ? `${ratioNum(ratio.want)} ${esc(wantName)} : ${ratioNum(ratio.have)} ${esc(haveName)}`
+// Two forms: one for the DOM (escaped) and one for the clipboard (raw). Passing
+// the escaped form to the clipboard pastes "Glassblower&#39;s" into the game.
+const ratioPlain = (ratio, wantName, haveName) => ratio
+  ? `${ratioNum(ratio.want)} ${wantName} : ${ratioNum(ratio.have)} ${haveName}`
   : 'Not observed';
+const ratioText = (ratio, wantName, haveName) => esc(ratioPlain(ratio, wantName, haveName));
 const ratioRange = (range, fallback) => range || (fallback ? {
   favorable: fallback,
   conservative: fallback,
@@ -52,10 +83,12 @@ const ratioRange = (range, fallback) => range || (fallback ? {
 // Hub currencies lose their " Orb" suffix here — it costs width in every ratio
 // cell and the Item column already carries the full path.
 const shortName = name => String(name || '').replace(/ Orb$/, '');
-const compactRatio = (range, fallback, wantName, haveName) => {
+const compactRatioPlain = (range, fallback, wantName, haveName) => {
   const observed = ratioRange(range, fallback);
-  return observed ? ratioText(observed.conservative, shortName(wantName), shortName(haveName)) : 'Not observed';
+  return observed ? ratioPlain(observed.conservative, shortName(wantName), shortName(haveName)) : 'Not observed';
 };
+const compactRatio = (range, fallback, wantName, haveName) =>
+  esc(compactRatioPlain(range, fallback, wantName, haveName));
 const ratioLadder = (title, range, fallback, wantName, haveName) => {
   const observed = ratioRange(range, fallback);
   if (!observed) return `<div class="ratio-leg"><b>${title}</b><span>Not observed</span></div>`;
@@ -97,6 +130,7 @@ function historySection(rows) {
 }
 function cycleRows() { return (run?.routes || []).filter(r => r.cycle?.closed && r.cycle?.executable); }
 function mtmRows() { return (run?.routes || []).filter(r => r.flip && r.strategy === 'two-leg-cross'); }
+const bankrollFor = s => Number(bankroll[shortName(s?.flow?.startCurrency || '')] ?? 0) || 0;
 const spreadOf = s => Number(s?.priceModel?.twoLegSpreadPct ?? 0);
 const divGoldOf = s => Number(s?.spreadDivPer100kGold ?? s?.estimatedDivPer100kGold ?? -Infinity);
 const goldOf = s => Number(s?.goldVerified ? s.totalGold : s?.estimatedTotalGold ?? Infinity);
@@ -105,8 +139,97 @@ const isConfirmed = s => s?.classification === 'return-confirmed';
 // Default order, in the product's words: return-confirmed and profitable first,
 // then gold efficiency, then the lighter liquidity footprint, then depth, then
 // the raw spread. Ranking never reads targetBidPotentialPct.
+const AGREEMENT_RANK = { confirmed: 4, close: 3, 'single-source': 2, diverging: 1, conflicting: 0, undefined: 2 };
 const closesUp = s => Number(s?.flow?.netUnits ?? -Infinity) > 0;
 
+// ---------------------------------------------------------------------------
+// Bankroll sizing.
+//
+// A row arrives sized to whatever batch the scanner picked. That is useless if
+// you hold 4,000 Exalted and the row is quoted in 17. Re-running the same three
+// conservative ratios against the amount actually held turns every row into a
+// plan you can execute, and exposes the two things that decide whether you
+// should: how much of the hour's volume your order would eat, and how much gold
+// it burns.
+//
+// The ratios come from the server-side flow (want / have per step) and are the
+// Plan / Fill boundary — the same conservative prices the published numbers use.
+// ---------------------------------------------------------------------------
+const stepRate = step => (step && step.haveUnits > 0 ? step.wantUnits / step.haveUnits : 0);
+const stepGoldPerUnit = (step, fallback) =>
+  step && step.goldCost != null && step.wantUnits > 0 ? step.goldCost / step.wantUnits : fallback;
+
+/** Share of an hour's item volume a single order may claim before it stops
+ *  being a plan and becomes a wish. Matches the scanner's own liquidity cap. */
+const MARKET_SHARE_CAP = 0.2;
+
+function scaleFlow(s, bankroll) {
+  const flow = s?.flow;
+  if (!flow || !Array.isArray(flow.steps) || flow.steps.length < 3) return null;
+  const [buyStep, sellStep, backStep] = flow.steps;
+  const buyRate = stepRate(buyStep), sellRate = stepRate(sellStep), backRate = stepRate(backStep);
+  if (!(buyRate > 0) || !(sellRate > 0) || !(backRate > 0)) return null;
+
+  const stake = Math.max(1, Math.floor(Number(bankroll) || 0));
+  // Telling someone their 4,000 Exalted "will not fill" is not advice. Cap the
+  // order at the slice of the hour this market can absorb and say so; the rest
+  // of the stake is free for other rows.
+  const affordable = s.itemHourlyVolume > 0
+    ? Math.floor((s.itemHourlyVolume * MARKET_SHARE_CAP) / buyRate)
+    : Infinity;
+  const ceiling = Math.max(1, Math.min(stake, affordable));
+
+  // Quantities on the Exchange are whole units, and every leg floors. Scaling
+  // naively to the ceiling throws that remainder away: 378 Exalted buys 126
+  // Baubles which floor to 1 Divine, losing 30% to rounding alone. So size from
+  // the OUTPUT backwards — pick the largest whole number of sell-currency units
+  // reachable within the ceiling, then buy exactly what that needs.
+  const maxOut = Math.floor(ceiling * buyRate * sellRate);
+  let start = ceiling;
+  if (maxOut >= 1) {
+    const items = Math.ceil(maxOut / sellRate);
+    const needed = Math.ceil(items / buyRate);
+    if (needed >= 1 && needed <= ceiling) start = needed;
+  }
+
+  const fallbackGold = Number(s.estimatedGoldPerUnknownUnit) || 0;
+  let units = start, gold = 0, goldKnown = true;
+  const steps = [];
+  for (const step of flow.steps) {
+    const receive = Math.floor(units * stepRate(step));
+    const perUnit = stepGoldPerUnit(step, fallbackGold);
+    if (step.goldCost == null) goldKnown = false;
+    gold += receive * perUnit;
+    steps.push({ action: step.action, have: units, haveCurrency: step.haveCurrency, want: receive, wantCurrency: step.wantCurrency });
+    units = receive;
+    if (units <= 0) break;
+  }
+  const closed = steps.length === flow.steps.length && units > 0;
+  const itemUnits = steps[0]?.want ?? 0;
+  const share = s.itemHourlyVolume > 0 ? itemUnits / s.itemHourlyVolume : Infinity;
+  return {
+    start, stake, capped: Number.isFinite(affordable) && affordable < stake,
+    steps, closed,
+    final: closed ? units : null,
+    net: closed ? units - start : null,
+    netPct: closed && start > 0 ? (units / start - 1) * 100 : null,
+    gold: Math.round(gold), goldKnown,
+    volumeShare: share,
+    tooThin: !closed,
+  };
+}
+
+
+// ---------------------------------------------------------------------------
+// Bankroll sizing.
+//
+// A row arrives sized to whatever batch the scanner picked. That is useless if
+// you hold 4,000 Exalted and the row is quoted in 17. Re-running the same three
+// conservative ratios against the amount actually held turns every row into a
+// plan you can execute, and exposes the two things that decide whether you
+// should: how much of the hour's volume your order would eat, and how much gold
+// it burns.
+//
 const SCANNER_SORTS = {
   default: (a, b) =>
     (isConfirmed(b.discovery) ? 1 : 0) - (isConfirmed(a.discovery) ? 1 : 0)
@@ -121,6 +244,8 @@ const SCANNER_SORTS = {
   volume: (a, b) => Number(b.discovery.itemHourlyVolume || 0) - Number(a.discovery.itemHourlyVolume || 0),
   gold: (a, b) => goldOf(a.discovery) - goldOf(b.discovery),
   fresh: (a, b) => String(b.discovery.sourceHourUtc || '').localeCompare(String(a.discovery.sourceHourUtc || '')),
+  // Best-corroborated first: two agreeing sources beat one, and a conflict sinks.
+  sources: (a, b) => AGREEMENT_RANK[b.discovery.sourceCheck?.agreement] - AGREEMENT_RANK[a.discovery.sourceCheck?.agreement],
 };
 
 function scannerRows() {
@@ -133,6 +258,7 @@ function scannerRows() {
     if (!window.POE2_DEMO_DATA && !hasPriceModel(r)) return false;
     const s = r.discovery;
     if (!preset.match(s)) return false;
+    if (search && !`${s.item.name} ${s.buyCurrency.name} ${s.sellCurrency.name}`.toLowerCase().includes(search)) return false;
     if (Number(s.itemHourlyVolume || 0) < minVolume) return false;
     if (spreadOf(s) < minSpread) return false;
     if (hideHighRisk && s.classification === 'high-risk') return false;
@@ -146,7 +272,8 @@ const SCANNER_HEAD = [
   ['Item', null],
   ['Round trip<small>start → item → sell → back</small>', null],
   ['Net', 'net'], ['Spread', 'spread'], ['Div / 100K', 'divgold'],
-  ['Volume<small>per hour</small>', 'volume'], ['Gold', 'gold'], ['Status', null],
+  ['Volume<small>per hour</small>', 'volume'], ['Gold', 'gold'],
+  ['Sources<small>GGG vs poe.ninja</small>', 'sources'], ['Status', null],
 ];
 const SCANNER_COLSPAN = SCANNER_HEAD.length;
 function renderFlowPresets() {
@@ -154,7 +281,7 @@ function renderFlowPresets() {
   host.innerHTML = Object.entries(FLOW_PRESETS).map(([key, preset]) =>
     `<button type="button" class="${key === flowPreset ? 'active' : ''}" data-flow="${key}">${esc(preset.label)}</button>`).join('');
   host.querySelectorAll('[data-flow]').forEach(btn => btn.onclick = () => {
-    flowPreset = btn.dataset.flow; closeDrawer(); renderFlowPresets(); render();
+    flowPreset = btn.dataset.flow; saveSettings(); closeDrawer(); renderFlowPresets(); render();
   });
   const hint = $('#flowHint');
   if (hint) hint.textContent = (FLOW_PRESETS[flowPreset] || FLOW_PRESETS.all).hint;
@@ -170,7 +297,7 @@ function renderHeader() {
       ? `<th class="sortable${scannerSort === key ? ' active' : ''}" data-sort="${key}" role="button" tabindex="0">${label}${scannerSort === key ? ' <span class="sort-caret">▼</span>' : ''}</th>`
       : `<th>${label}</th>`).join('');
     headRow.querySelectorAll('[data-sort]').forEach(th => {
-      const apply = () => { scannerSort = scannerSort === th.dataset.sort ? 'default' : th.dataset.sort; render(); };
+      const apply = () => { scannerSort = scannerSort === th.dataset.sort ? 'default' : th.dataset.sort; saveSettings(); render(); };
       th.onclick = apply;
       th.onkeydown = e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); apply(); } };
     });
@@ -184,29 +311,50 @@ function renderHeader() {
 // The round trip, in one line, in the quantities the player will actually
 // hold: 200 Ex -> 1,000 item -> 1 Div -> 300 Ex. The closing hop is drawn
 // differently from the rest because converting back is the step people skip.
-function flowChainHtml(s) {
+function flowChainHtml(s, plan) {
   const flow = s.flow;
   if (!flow) return '';
   const hop = (units, name, cls) =>
     `<span class="hop ${cls}"><b>${fmtInt(units)}</b> ${esc(shortName(name))}</span>`;
-  const parts = [hop(flow.startUnits, flow.startCurrency, 'start')];
-  flow.steps.forEach((step, i) => {
-    const last = i === flow.steps.length - 1;
+  // A hop that floors to zero is where the plan dies; render up to that point
+  // and stop, rather than printing "0 Divine" as though it were a quantity.
+  const raw = plan ? plan.steps : flow.steps.map(x => ({ want: x.wantUnits, wantCurrency: x.wantCurrency }));
+  const dead = raw.findIndex(step => !((step.want ?? step.wantUnits) > 0));
+  const steps = dead === -1 ? raw : raw.slice(0, dead);
+  const startUnits = plan ? plan.start : flow.startUnits;
+  const parts = [hop(startUnits, flow.startCurrency, 'start')];
+  steps.forEach((step, i) => {
+    const last = i === steps.length - 1;
     // Arrow and hop travel together; a line break must not strand an arrow.
     parts.push(`<span class="link"><i class="arrow" aria-hidden="true">→</i>`
-      + hop(step.wantUnits, step.wantCurrency, last ? 'back' : 'mid') + `</span>`);
+      + hop(step.want ?? step.wantUnits, step.wantCurrency, last ? 'back' : 'mid') + `</span>`);
   });
-  const open = !flow.closesInStartCurrency
-    ? '<small class="warn">no order size closes this loop inside the hour\u2019s volume</small>'
-    : '';
-  return `<div class="flow">${parts.join('')}</div>${open}`;
+  // Two different failures, and blaming the wrong one sends the player to fix
+  // the wrong thing: a stake too small is theirs to change, a market too thin
+  // within the volume cap is not.
+  const sellName = esc(shortName(flow.steps[1].wantCurrency));
+  const broken = plan && !plan.closed
+    ? plan.capped
+      ? `<small class="warn">this hour is too thin — ${pct(MARKET_SHARE_CAP, 0)} of its volume still buys less than one whole ${sellName}</small>`
+      : `<small class="warn">${fmtInt(plan.stake)} ${esc(shortName(flow.startCurrency))} is not enough to reach one whole ${sellName}</small>`
+    : plan && plan.capped
+      ? `<small class="muted">sized to ${pct(MARKET_SHARE_CAP, 0)} of this hour's volume · ${fmtInt(plan.stake - plan.start)} ${esc(shortName(flow.startCurrency))} of your stake stays free</small>`
+      : !flow.closesInStartCurrency && !plan
+        ? '<small class="warn">no order size closes this loop inside the hour\u2019s volume</small>'
+        : '';
+  return `<div class="flow">${parts.join('')}</div>${broken}`;
 }
 
 // The three bids exactly as they are typed into the Exchange. They sit on
 // their own line so the round trip above can stay one uninterrupted chain.
 function bidStripHtml(s) {
-  const bid = (label, range, fallback, wantName, haveName) =>
-    `<span class="bid"><em>${label}</em>${compactRatio(range, fallback, wantName, haveName)}</span>`;
+  // Each bid is a button: the Exchange wants these two numbers typed in, so one
+  // click puts them on the clipboard instead of making anyone transcribe.
+  const bid = (label, range, fallback, wantName, haveName) => {
+    const plain = compactRatioPlain(range, fallback, wantName, haveName);
+    return `<button type="button" class="bid" data-copy="${esc(plain)}" title="Copy ${esc(plain)}">`
+      + `<em>${label}</em>${esc(plain)}<span class="copy-hint" aria-hidden="true">⧉</span></button>`;
+  };
   return `<div class="bid-strip"><span class="bid-lead">Type in Exchange · I want : I have</span>`
     + bid('Buy', s.buyRatioRange, s.buyRatio, s.item.name, s.buyCurrency.name)
     + bid('Sell', s.sellRatioRange, s.sellRatio, s.sellCurrency.name, s.item.name)
@@ -218,28 +366,58 @@ const ICON = item => item?.iconUrl
   ? `<img class="item-icon" src="${esc(item.iconUrl)}" alt="" loading="lazy" width="30" height="30" onerror="this.replaceWith(Object.assign(document.createElement('span'),{className:'item-icon placeholder'}))">`
   : '<span class="item-icon placeholder" aria-hidden="true"></span>';
 
-function netCellHtml(s) {
-  const flow = s.flow || {};
-  if (flow.netUnits == null) return '<td class="num muted"><strong>—</strong><small>loop not closed</small></td>';
-  const up = flow.netUnits > 0;
-  return `<td class="num ${up ? 'green' : 'red'}"><strong>${up ? '+' : ''}${fmtInt(flow.netUnits)}</strong>`
-    + `<small>${esc(shortName(flow.startCurrency))} · ${up ? '+' : ''}${fmt(flow.netPct)}%</small></td>`;
+function netCellHtml(plan) {
+  if (!plan || plan.net == null) return '<td class="num muted"><strong>—</strong><small>loop not closed</small></td>';
+  const up = plan.net > 0;
+  return `<td class="num ${up ? 'green' : 'red'}"><strong>${up ? '+' : ''}${fmtInt(plan.net)}</strong>`
+    + `<small>${esc(shortName(plan.steps[0].haveCurrency))} · ${up ? '+' : ''}${fmt(plan.netPct)}%</small></td>`;
+}
+
+/** A 7-point poe.ninja history, drawn small enough to read at a glance. */
+function sparkHtml(values, trendPct) {
+  if (!Array.isArray(values) || values.length < 2) return '<small class="muted">no history</small>';
+  const min = Math.min(...values), max = Math.max(...values), span = Math.max(1e-9, max - min);
+  const points = values.map((v, i) => `${i / (values.length - 1) * 100},${14 - ((v - min) / span) * 12}`).join(' ');
+  const dir = trendPct == null ? '' : trendPct > 0 ? 'up' : trendPct < 0 ? 'down' : '';
+  return `<svg class="spark ${dir}" viewBox="0 0 100 16" preserveAspectRatio="none" aria-hidden="true"><polyline points="${points}"/></svg>`;
+}
+
+function sourceCellHtml(s) {
+  const sc = s.sourceCheck;
+  if (!sc) return '<td><span class="src single-source">GGG only</span></td>';
+  const trend = sc.trendPct == null ? '' :
+    `<small class="${sc.trendPct > 0 ? 'ok' : sc.trendPct < 0 ? 'warn' : ''}">${sc.trendPct > 0 ? '+' : ''}${fmt(sc.trendPct)}% 7d</small>`;
+  const dev = sc.deviationPct == null ? 'poe.ninja has no price for this item'
+    : `GGG ${fmt(sc.gggDivine)} div vs poe.ninja ${fmt(sc.ninjaDivine)} div · ${fmt(sc.deviationPct)}% apart`;
+  return `<td class="cell-src" title="${esc(dev)}"><span class="src ${esc(sc.agreement)}">${esc(sc.agreementLabel)}</span>`
+    + `${sparkHtml(sc.sparkline, sc.trendPct)}${trend}</td>`;
 }
 
 function scannerRowHtml(r) {
   const s = r.discovery;
+  const plan = scaleFlow(s, bankrollFor(s));
   const spread = spreadOf(s);
   const divGold = s.spreadDivPer100kGold == null ? '—' : fmt(s.spreadDivPer100kGold);
-  const gold = s.goldVerified ? `<b>${fmtInt(s.totalGold)}</b><small>verified</small>` : `<b>~${fmtInt(s.estimatedTotalGold)}</b><small class="warn">estimated</small>`;
-  const status = `<span class="status ${esc(s.classification || 'two-leg-spread')}">${esc(s.classificationLabel || s.recommendation)}</span>`;
+  const gold = plan
+    ? `<b>${plan.goldKnown ? '' : '~'}${fmtInt(plan.gold)}</b><small class="${plan.goldKnown ? '' : 'warn'}">${plan.goldKnown ? 'verified' : 'estimated'}</small>`
+    : `<b>—</b>`;
+  // Short chip in the row, full wording on hover and in the drawer: the column
+  // is scanned, not read, and the long form costs ~60px on every line.
+  const SHORT_STATUS = {
+    'return-confirmed': 'Confirmed', 'fee-check-needed': 'Fee check',
+    'return-quote-available': 'Quote only', 'two-leg-spread': 'Spread only', 'high-risk': 'High risk',
+  };
+  const cls = s.classification || 'two-leg-spread';
+  const status = `<span class="status ${esc(cls)}" title="${esc(s.classificationLabel || '')}">${esc(SHORT_STATUS[cls] || s.classificationLabel || s.recommendation)}</span>`;
   return `<tr class="clickable lead" data-id="${esc(r.id)}">`
     + `<td class="cell-item">${ICON(s.item)}<span><b>${esc(s.item.name)}</b><small>${esc(shortName(s.buyCurrency.name))} → ${esc(shortName(s.sellCurrency.name))} → ${esc(shortName(s.buyCurrency.name))}</small></span></td>`
-    + `<td class="cell-flow">${flowChainHtml(s)}</td>`
-    + netCellHtml(s)
+    + `<td class="cell-flow">${flowChainHtml(s, plan)}</td>`
+    + netCellHtml(plan)
     + `<td class="num ${spread > 0 ? 'green' : ''}"><strong>${spread > 0 ? '+' : ''}${fmt(spread)}%</strong><small>midpoint</small></td>`
     + `<td class="num dg"><strong>${divGold}</strong><small>${s.goldVerified ? 'verified fees' : 'estimated fees'}</small></td>`
-    + `<td class="num">${fmt(s.itemHourlyVolume)}<small class="${s.liquidityLabel === 'High' ? 'warn' : ''}">${pct(s.maxVolumeShare, 0)} share · ${esc(s.liquidityLabel || '—')}</small></td>`
+    + `<td class="num">${fmt(s.itemHourlyVolume)}<small class="${plan && plan.volumeShare > MARKET_SHARE_CAP + 1e-9 ? 'warn' : ''}">${plan ? pct(plan.volumeShare, 0) : pct(s.maxVolumeShare, 0)} share</small></td>`
     + `<td class="num">${gold}</td>`
+    + sourceCellHtml(s)
     + `<td>${status}</td></tr>`
     + `<tr class="clickable bids" data-id="${esc(r.id)}"><td colspan="${SCANNER_COLSPAN}">${bidStripHtml(s)}</td></tr>`;
 }
@@ -274,6 +452,23 @@ function render() {
   $('#count').textContent = String(rs.length);
   $('#verifiedCount').textContent = String(rs.filter(r => tab === 'scanner' ? isConfirmed(r.discovery) : tab === 'closed').length);
   $('#unknownCount').textContent = String(rs.filter(r => tab === 'scanner' && !r.discovery?.goldVerified).length);
+  // Copying a bid must not also open the drawer.
+  document.querySelectorAll('#routes [data-copy]').forEach(btn => {
+    btn.onclick = async event => {
+      event.stopPropagation();
+      try {
+        await navigator.clipboard.writeText(btn.dataset.copy);
+        btn.classList.add('copied');
+        setTimeout(() => btn.classList.remove('copied'), 900);
+      } catch {
+        // Clipboard denied (insecure context or permission): select the text so
+        // it can still be copied by hand rather than silently failing.
+        const range = document.createRange();
+        range.selectNodeContents(btn);
+        const selection = getSelection(); selection.removeAllRanges(); selection.addRange(range);
+      }
+    };
+  });
   document.querySelectorAll('#routes tr.clickable').forEach(tr => {
     // Scanner opportunities render as a lead row plus a bid strip. Only the
     // lead row takes focus, so tabbing moves one stop per opportunity.
@@ -371,7 +566,29 @@ function closeDrawer() { $('#drawer').classList.remove('open'); $('#drawer').set
 function renderStatus(status) { const hour = status?.latest_successful_source_hour; $('#sourceAge').textContent = hour ? `Market hour ${hour.replace('T',' ').slice(0,16)} UTC` : 'No completed ingestion yet'; $('#age').textContent = hour ? window.POE2CurrencyRates.ageLabel(hour) : '—'; $('#completedAt').textContent = status?.completed_at ? `Fetched ${String(status.completed_at).replace('T',' ').slice(0,16)} UTC` : '—'; }
 async function load() { if (window.POE2_DEMO_DATA) { run = { routes: (window.POE2_DEMO_DATA.routes || []).map(normalizeOpportunityRow), status: window.POE2_DEMO_DATA.status }; currencyRates = window.POE2_DEMO_DATA.currencyRates || []; historyRows = window.POE2_DEMO_DATA.history || []; renderStatus(run.status); renderCurrencyRates(); render(); return; } const url = window.POE2_SUPABASE_URL || ''; const key = window.POE2_SUPABASE_PUBLISHABLE_KEY || ''; if (!url || !key) { run = { routes: [], status: null }; currencyRates = []; historyRows = []; renderStatus(null); renderCurrencyRates(); render(); return; } const headers = { apikey: key, Authorization: `Bearer ${key}` }; const [s, o, rates, history] = await Promise.all([fetch(`${url}/rest/v1/opportunity_run_status?select=*`,{headers}), fetch(`${url}/rest/v1/opportunity_public?select=*&order=score.desc`,{headers}), fetch(`${url}/rest/v1/currency_rates_public?select=*&order=source_hour.desc`,{headers}), fetch(`${url}/rest/v1/signal_history_public?select=*&order=source_hour.asc`,{headers})]); const statusRows = s.ok ? await s.json() : []; const rowsResp = o.ok ? await o.json() : []; currencyRates = rates.ok ? await rates.json() : []; historyRows = history.ok ? await history.json() : []; run = { routes: (Array.isArray(rowsResp) ? rowsResp : []).map(normalizeOpportunityRow), status: statusRows[0] || null }; renderStatus(run.status); renderCurrencyRates(); render(); }
 document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { tab = b.dataset.tab; document.querySelectorAll('[data-tab]').forEach(x => x.classList.toggle('active', x === b)); closeDrawer(); render(); });
+loadSettings();
 renderFlowPresets();
-['minVolume','minSpread','maxGold'].forEach(id => document.getElementById(id)?.addEventListener('input', render));
-document.getElementById('hideHighRisk')?.addEventListener('change', render);
+['minVolume','minSpread','maxGold'].forEach(id => document.getElementById(id)?.addEventListener('input', () => { saveSettings(); render(); }));
+document.getElementById('hideHighRisk')?.addEventListener('change', () => { saveSettings(); render(); });
+$('#search')?.addEventListener('input', event => { search = event.target.value.trim().toLowerCase(); render(); });
+document.querySelectorAll('[data-bankroll]').forEach(input => {
+  input.value = bankroll[input.dataset.bankroll] ?? 0;
+  input.addEventListener('input', () => {
+    bankroll = { ...bankroll, [input.dataset.bankroll]: Number(input.value) || 0 };
+    saveSettings(); render();
+  });
+});
+
+// Keyboard: this is a tool used at speed with the game open next to it.
+document.addEventListener('keydown', event => {
+  const typing = /^(INPUT|TEXTAREA|SELECT)$/.test(document.activeElement?.tagName || '');
+  if (event.key === '/' && !typing) { event.preventDefault(); $('#search')?.focus(); return; }
+  if (typing || (event.key !== 'j' && event.key !== 'k')) return;
+  const rows = [...document.querySelectorAll('#routes tr.lead')];
+  if (!rows.length) return;
+  const current = rows.indexOf(document.activeElement);
+  const next = event.key === 'j' ? Math.min(rows.length - 1, current + 1) : Math.max(0, current < 0 ? 0 : current - 1);
+  rows[next]?.focus();
+  rows[next]?.scrollIntoView({ block: 'nearest' });
+});
 const refresh = $('#refresh'); if (refresh) refresh.onclick = load; $('#scrim').onclick = closeDrawer; document.addEventListener('keydown', e => { if (e.key === 'Escape') closeDrawer(); }); load();

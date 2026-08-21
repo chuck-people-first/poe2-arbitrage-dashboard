@@ -21,7 +21,10 @@
 // return-confirmed when the conservative closed cycle is positive with every
 // fee verified.
 
+import { AGREEMENT_LABELS, crossSourcePrice } from "./cross-source.ts";
+import type { DivinePriceBook } from "./divine-price.ts";
 import { conflictsWith } from "./edges.ts";
+import type { NinjaQuote } from "../integrations/poe-ninja.ts";
 import { estimateFillRisk, fillRiskLabel, resolveIdentity } from "./flips.ts";
 import { sha256Hex } from "./identity.ts";
 import { estimatedGoldCostPerUnit, GGG_HUB_PATHS, goldCostPerUnit } from "./mapping.ts";
@@ -326,6 +329,8 @@ export function buildMarketSignalRows(
   sourceHourUtc: string,
   payloadSha256: string,
   hubCurrencies: readonly string[],
+  /** Second-source context. Omitted in tests that only exercise GGG behaviour. */
+  secondSource?: { book: DivinePriceBook; quotesByPath: Map<string, NinjaQuote> },
 ): OpportunityRow[] {
   const hubs = new Set(hubCurrencies);
   const byFrom = new Map<string, DirectedEdge[]>();
@@ -425,6 +430,10 @@ export function buildMarketSignalRows(
           : classification === "return-confirmed"
             ? "VERIFY NOW"
             : "WATCH";
+        const cross = crossSourcePrice(
+          secondSource?.book.perUnit.get(buy.to) ?? null,
+          secondSource?.quotesByPath.get(buy.to) ?? null,
+        );
         const signal: MarketSignal = {
           id, familyId, league, sourceHourUtc, item, buyCurrency: startIdentity,
           sellCurrency: sellIdentity, buyLeg, sellLeg, returnLeg,
@@ -440,6 +449,13 @@ export function buildMarketSignalRows(
           flow: buildFlow(startIdentity, item, sellIdentity, buyLeg, sellLeg, returnLeg,
             startUnits, sizingFits ? final : null, totalGold, estimatedTotalGold),
           liquidityLabel: liquidityBand(maxShare),
+          sourceCheck: {
+            gggDivine: cross.gggDivine, ninjaDivine: cross.ninjaDivine,
+            deviationPct: cross.deviationPct, agreement: cross.agreement,
+            agreementLabel: AGREEMENT_LABELS[cross.agreement],
+            trendPct: cross.ninjaTrendPct, sparkline: cross.ninjaSparkline,
+            sources: cross.sources,
+          },
           priceModel, classification, classificationLabel: CLASSIFICATION_LABELS[classification],
           spreadProfitDivine, spreadDivPer100kGold, returnConfirmedDivPer100kGold,
           itemHourlyVolume,

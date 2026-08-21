@@ -159,3 +159,86 @@ hourly ratio range, which is wide for nearly every GGG completed-hour market,
 so its label saturates at High and stops distinguishing anything. That heuristic
 still drives the other tabs and the drawer, where the share and range that
 produced it are on screen beside it.
+
+## Two sources, never averaged
+
+The official GGG feed is authoritative for what traded, but it publishes one
+completed hour as a low/high band and says nothing about the live book. A thin
+hour's boundary can be far from the going rate. poe.ninja observes the same
+economy independently, so the product carries both prices side by side with
+their deviation and a plain label — `Both sources agree`, `Sources close`,
+`Sources diverge`, `Sources conflict`, or `GGG only`.
+
+It does **not** average them. Averaging hides the only thing worth knowing:
+whether the hour you are about to trade on looks like the rest of the economy.
+A missing second opinion is reported as `GGG only`, never as agreement.
+
+`src/integrations/poe-ninja.ts` fetches 12 exchange categories (532 priced
+lines). A category that fails is recorded and skipped; poe.ninja being down
+must never block publishing the official hour.
+
+### Identity comes from the art file, never from price
+
+The bridge between the two sources is the poecdn image token, which decodes to
+the item's art path — two entries referencing the same art file are the same
+item. An art leaf claimed by more than one poe.ninja line is ambiguous and is
+dropped. Each surviving identity is then *validated* by requiring both sources'
+Divine prices to agree within 25%.
+
+Price is never used to *find* an identity. Measured against the checked-in
+known-good table, price-nearest matching scores 25–44%: on 2026-08-21T01:00Z
+the nearest line to `CurrencyCorrupt` is "Greater Essence of Command" at 1.2%,
+while the correct answer — Vaal Orb — sits at 1.8%. Hundreds of items share
+price bands. Semantics select the candidate; price only confirms it.
+
+`scripts/generate-ninja-bridge.ts` regenerates the bridge and records every
+rejection with its reason in `NINJA_BRIDGE_QUARANTINE`.
+
+### The hand-written table had gone stale
+
+Three high-volume currencies were unnamed because the checked-in hypothesis
+table pointed at GGG paths the live feed no longer trades: `CurrencyVaal` and
+`AnnullOrb` did not appear in the hour at all. The game renamed them to
+`CurrencyCorrupt` and `CurrencyRemoveMod`, and both sources price those within
+2% and 9%. Naming coverage of traded paths went 23 → 43, and the scanner from
+51 to 90 rows on the same live hour.
+
+### Which market sets an item's price
+
+An item usually trades against several hubs in one hour and those markets
+disagree. Six rules were benchmarked against poe.ninja across every item both
+sources price:
+
+| rule | mean deviation | ≤10% | ≤25% | >60% |
+|---|---|---|---|---|
+| direct market preferred | 18.5% | 25 | 32 | 4 |
+| deepest in Divine value | 17.2% | 26 | 31 | 2 |
+| scarcer side's unit count | 18.8% | 25 | 26 | 2 |
+| **where the item itself traded most** | **14.4%** | **27** | **32** | **1** |
+| median of all candidates | 19.3% | 21 | 28 | 2 |
+| Exalted hop first | 19.3% | 22 | 26 | 2 |
+
+Price is best discovered where the thing actually changed hands. Note that
+valuing depth in Divine picks thin markets back up, because ten Divine outvalue
+seven hundred Exalted. `DivinePriceEntry.spreadPct` reports how far the hour's
+own markets disagreed, which is a real data-quality warning.
+
+## Sizing to the player, not to a batch
+
+A row is only useful at a size you can actually trade, so the browser re-runs
+the same three conservative ratios against the stake you hold, bounded by two
+constraints:
+
+- **Your stake.** Whatever you enter per starting currency.
+- **The market.** No order may claim more than 20% of the hour's item volume.
+  Telling someone their 4,000 Exalted "will not fill" is not advice; the row is
+  sized to the slice this market can absorb and says how much stake stays free.
+
+Quantities floor at every leg, so the plan is sized from the OUTPUT backwards —
+the largest whole number of sell-currency units reachable within those bounds,
+then exactly the input that buys it. Scaling naively to the ceiling throws the
+remainder away: 378 Exalted buys 126 Baubles which floor to 1 Divine, losing
+30% to rounding, where 270 Exalted buys 90 and floors to nothing.
+
+When the loop cannot close, the row distinguishes the two causes — a stake too
+small is yours to change, a market too thin within the cap is not.

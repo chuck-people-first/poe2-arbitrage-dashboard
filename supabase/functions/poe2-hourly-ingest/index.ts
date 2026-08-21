@@ -3,11 +3,12 @@ import { parseGggPayload } from "../../../src/domain/ggg.ts";
 import { GGG_HUB_PATHS } from "../../../src/domain/mapping.ts";
 import { buildCurrencyRates } from "../../../src/domain/currency-rates.ts";
 import { DEFAULT_START_CURRENCIES, scanOpportunityRows } from "../../../src/domain/scanner.ts";
+import { fetchNinjaSnapshot, type NinjaSnapshot } from "../../../src/integrations/poe-ninja.ts";
 import type { RunSettings } from "../../../src/domain/types.ts";
 
 const FUNCTION = "poe2-hourly-ingest";
 const LEAGUE = Deno.env.get("POE2_LEAGUE") ?? "Runes of Aldur";
-const ALGORITHM_VERSION = "phase7-broad-discovery-1";
+const ALGORITHM_VERSION = "phase8-second-source-1";
 const MAX_ATTEMPTS = 3;
 
 function json(status: number, body: Record<string, unknown>): Response {
@@ -65,7 +66,13 @@ async function rpc(name: string, body: Record<string, unknown>): Promise<unknown
   return response.json();
 }
 
-function buildOpportunities(payload: ReturnType<typeof parseGggPayload>, sourceHourUtc: string, settings: RunSettings, hash: string) {
+function buildOpportunities(
+  payload: ReturnType<typeof parseGggPayload>,
+  sourceHourUtc: string,
+  settings: RunSettings,
+  hash: string,
+  ninja: NinjaSnapshot | null,
+) {
   const markets = payload.markets.filter((market) => market.league === LEAGUE);
   const edges = deriveEdges(markets, sourceHourUtc);
   return scanOpportunityRows(
@@ -76,6 +83,7 @@ function buildOpportunities(payload: ReturnType<typeof parseGggPayload>, sourceH
     hash,
     Date.now(),
     DEFAULT_START_CURRENCIES,
+    ninja,
   );
 }
 
@@ -107,7 +115,17 @@ Deno.serve(async (request) => {
     const raw = await fetchWithRetry(sourceUrl, { headers: { "user-agent": "poe2-arbitrage-dashboard/0.1", accept: "application/json" } });
     const payload = parseGggPayload(raw);
     const payloadSha256 = await sha256Json(raw);
-    const opportunities = buildOpportunities(payload, sourceHourUtc, settings, payloadSha256);
+    // The second source is best-effort by design: poe.ninja being slow or down
+    // must never block publishing the official hour. A null snapshot makes
+    // every row report "GGG only" instead of implying corroboration.
+    let ninja: NinjaSnapshot | null = null;
+    try {
+      ninja = await fetchNinjaSnapshot(LEAGUE);
+      if (ninja.quotes.length === 0) ninja = null;
+    } catch (error) {
+      console.warn(JSON.stringify({ function: FUNCTION, status: "second-source-unavailable", error: safeError(error) }));
+    }
+    const opportunities = buildOpportunities(payload, sourceHourUtc, settings, payloadSha256, ninja);
     const marketRows = payload.markets.filter((market) => market.league === LEAGUE).map((market) => ({
       marketId: market.marketId, pairA: market.pair[0], pairB: market.pair[1], volumeTraded: market.volumeTraded,
       lowestStock: market.lowestStock, highestStock: market.highestStock, lowestRatio: market.lowestRatio, highestRatio: market.highestRatio,
@@ -137,7 +155,9 @@ Deno.serve(async (request) => {
         fill_risk_pct: rate.fillRiskPct, executable: rate.executable, reason: rate.reason,
       })),
     });
-    console.log(JSON.stringify({ function: FUNCTION, status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: opportunities.length, durationMs: Date.now() - startedAt }));
+    console.log(JSON.stringify({ function: FUNCTION, status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: opportunities.length,
+      secondSource: ninja ? { quotes: ninja.quotes.length, failedCategories: ninja.failedCategories } : "unavailable",
+      durationMs: Date.now() - startedAt }));
     return json(200, { status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: count, durationMs: Date.now() - startedAt });
   } catch (error) {
     // Best-effort failure marker (item 1): a run begun but not atomically

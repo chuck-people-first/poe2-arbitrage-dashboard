@@ -2,8 +2,12 @@
 // Function. The product never asks the player to choose a starting currency:
 // every completed hour is scanned from each liquid hub independently.
 
+import { HUB_NINJA_IDS, indexByGggPath } from "./cross-source.ts";
 import { dedupeOpportunityRows } from "./dedupe.ts";
-import { GGG_HUB_PATHS } from "./mapping.ts";
+import { buildDivinePriceBook } from "./divine-price.ts";
+import { NINJA_BRIDGE_MAPPING } from "./mapping.ninja-bridge.ts";
+import type { NinjaSnapshot } from "../integrations/poe-ninja.ts";
+import { GGG_HUB_PATHS, ITEM_MAP } from "./mapping.ts";
 import { projectRoute, type OpportunityRow } from "./opportunity.ts";
 import {
   enumerateClosedTriangles,
@@ -60,6 +64,8 @@ export function scanOpportunityRows(
   payloadSha256: string,
   referenceTimeMs: number = Date.now(),
   startCurrencies: readonly string[] = DEFAULT_START_CURRENCIES,
+  /** Independent second source. Null keeps the run GGG-only and honest about it. */
+  ninja: NinjaSnapshot | null = null,
 ): OpportunityRow[] {
   const rows = enumerateAllCurrencyRoutes(edges, settings, startCurrencies)
     .map((candidate) => {
@@ -99,8 +105,28 @@ export function scanOpportunityRows(
   // readable, positive completed-hour cross-market signals even when the item
   // gold fee is not yet verified. They are marked WATCH/HIGH RISK and never
   // inherit the actionable TRADE NOW classification.
+  // Second source: resolve every poe.ninja quote onto the GGG path it was
+  // matched to, so the scanner can report agreement per item. Resolution uses
+  // the SAME evidence the mapping was built from (art file + hub identity) —
+  // never a fresh price guess.
+  // Every mapped item already records the poe.ninja id it was matched to, so
+  // the reverse index covers the whole checked-in map, not just the newest
+  // bridge entries. Hubs are pinned last because their identity is certain.
+  const ninjaIdToPath = new Map<string, string>();
+  for (const [path, item] of Object.entries(ITEM_MAP)) {
+    if (item.ninjaId) ninjaIdToPath.set(item.ninjaId, path);
+  }
+  for (const [path, record] of Object.entries(NINJA_BRIDGE_MAPPING)) ninjaIdToPath.set(record.ninjaId, path);
+  for (const [path, ninjaId] of Object.entries(HUB_NINJA_IDS)) ninjaIdToPath.set(ninjaId, path);
+  const secondSource = ninja
+    ? {
+      book: buildDivinePriceBook(edges),
+      quotesByPath: indexByGggPath(ninja, (quote) => ninjaIdToPath.get(quote.ninjaId) ?? null),
+    }
+    : undefined;
+
   const discovery = buildMarketSignalRows(
-    edges, settings, league, sourceHourUtc, payloadSha256, startCurrencies,
+    edges, settings, league, sourceHourUtc, payloadSha256, startCurrencies, secondSource,
   );
   return [...actionable, ...discovery];
 }
