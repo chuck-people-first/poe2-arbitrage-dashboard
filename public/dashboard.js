@@ -45,6 +45,7 @@ function saveSettings() {
       flowPreset, scannerSort, bankroll,
       minVolume: $('#minVolume')?.value, minSpread: $('#minSpread')?.value,
       maxGold: $('#maxGold')?.value, hideHighRisk: $('#hideHighRisk')?.checked,
+      hideLosers: $('#hideLosers')?.checked,
     }));
   } catch { /* private mode, or storage disabled: the tool still works */ }
 }
@@ -58,6 +59,7 @@ function loadSettings() {
     const set = (id, v) => { const el = document.getElementById(id); if (el && v != null && v !== '') el.value = v; };
     set('minVolume', saved.minVolume); set('minSpread', saved.minSpread); set('maxGold', saved.maxGold);
     if ($('#hideHighRisk')) $('#hideHighRisk').checked = Boolean(saved.hideHighRisk);
+    if ($('#hideLosers') && saved.hideLosers !== undefined) $('#hideLosers').checked = Boolean(saved.hideLosers);
   } catch { /* ignore malformed state rather than blocking the page */ }
 }
 const { normalizeOpportunityRow } = window.POE2Dashboard;
@@ -131,6 +133,18 @@ function historySection(rows) {
 function cycleRows() { return (run?.routes || []).filter(r => r.cycle?.closed && r.cycle?.executable); }
 function mtmRows() { return (run?.routes || []).filter(r => r.flip && r.strategy === 'two-leg-cross'); }
 const bankrollFor = s => Number(bankroll[shortName(s?.flow?.startCurrency || '')] ?? 0) || 0;
+
+// Gold efficiency MUST come from the same plan as Net. Deriving it from the
+// midpoint spread while Net came from the conservative round trip is how a row
+// showed "30.64 Div / 100K" next to "-30 Chaos": two different price models in
+// adjacent columns, which is exactly what the three-figure separation exists to
+// forbid. Valuing the plan's own net in Divine keeps one model per row.
+function planDivPer100k(s, plan) {
+  if (!plan || plan.net == null || !(plan.gold > 0)) return null;
+  const perStart = Number(s?.flow?.startDivinePrice);
+  if (!Number.isFinite(perStart) || perStart <= 0) return null;
+  return (plan.net * perStart) / plan.gold * 100000;
+}
 const spreadOf = s => Number(s?.priceModel?.twoLegSpreadPct ?? 0);
 const divGoldOf = s => Number(s?.spreadDivPer100kGold ?? s?.estimatedDivPer100kGold ?? -Infinity);
 const goldOf = s => Number(s?.goldVerified ? s.totalGold : s?.estimatedTotalGold ?? Infinity);
@@ -140,7 +154,16 @@ const isConfirmed = s => s?.classification === 'return-confirmed';
 // then gold efficiency, then the lighter liquidity footprint, then depth, then
 // the raw spread. Ranking never reads targetBidPotentialPct.
 const AGREEMENT_RANK = { confirmed: 4, close: 3, 'single-source': 2, diverging: 1, conflicting: 0, undefined: 2 };
-const closesUp = s => Number(s?.flow?.netUnits ?? -Infinity) > 0;
+// Profit at the size you would actually trade. Every sort is layered on top of
+// this, because no ordering — not gold efficiency, not volume — should ever put
+// a trade that loses money above one that makes it.
+const profits = r => Number(r._plan?.net ?? -Infinity) > 0;
+
+// When one hour's ratios span this much, its midpoint is not a price. The
+// Omen markets routinely print 1 Divine : 3 items and 1 Divine : 26 items in
+// the same hour, which is what inflates a midpoint spread to +310%.
+const WILD_RANGE_PCT = 80;
+const wildRange = s => Number(s?.ratioRangePct ?? 0) > WILD_RANGE_PCT;
 
 // ---------------------------------------------------------------------------
 // Bankroll sizing.
@@ -230,23 +253,26 @@ function scaleFlow(s, bankroll) {
 // should: how much of the hour's volume your order would eat, and how much gold
 // it burns.
 //
-const SCANNER_SORTS = {
+const SCANNER_COLUMN_SORTS = {
   default: (a, b) =>
     (isConfirmed(b.discovery) ? 1 : 0) - (isConfirmed(a.discovery) ? 1 : 0)
-    || (closesUp(b.discovery) ? 1 : 0) - (closesUp(a.discovery) ? 1 : 0)
-    || divGoldOf(b.discovery) - divGoldOf(a.discovery)
-    || Number(a.discovery.maxVolumeShare ?? Infinity) - Number(b.discovery.maxVolumeShare ?? Infinity)
+    || Number(b._divGold ?? -Infinity) - Number(a._divGold ?? -Infinity)
+    || Number(a._plan?.volumeShare ?? Infinity) - Number(b._plan?.volumeShare ?? Infinity)
     || Number(b.discovery.itemHourlyVolume || 0) - Number(a.discovery.itemHourlyVolume || 0)
     || spreadOf(b.discovery) - spreadOf(a.discovery),
-  net: (a, b) => Number(b.discovery.flow?.netPct ?? -Infinity) - Number(a.discovery.flow?.netPct ?? -Infinity),
+  net: (a, b) => Number(b._plan?.netPct ?? -Infinity) - Number(a._plan?.netPct ?? -Infinity),
   spread: (a, b) => spreadOf(b.discovery) - spreadOf(a.discovery),
-  divgold: (a, b) => divGoldOf(b.discovery) - divGoldOf(a.discovery),
+  divgold: (a, b) => Number(b._divGold ?? -Infinity) - Number(a._divGold ?? -Infinity),
   volume: (a, b) => Number(b.discovery.itemHourlyVolume || 0) - Number(a.discovery.itemHourlyVolume || 0),
-  gold: (a, b) => goldOf(a.discovery) - goldOf(b.discovery),
+  gold: (a, b) => Number(a._plan?.gold ?? Infinity) - Number(b._plan?.gold ?? Infinity),
   fresh: (a, b) => String(b.discovery.sourceHourUtc || '').localeCompare(String(a.discovery.sourceHourUtc || '')),
   // Best-corroborated first: two agreeing sources beat one, and a conflict sinks.
   sources: (a, b) => AGREEMENT_RANK[b.discovery.sourceCheck?.agreement] - AGREEMENT_RANK[a.discovery.sourceCheck?.agreement],
 };
+
+// Whatever column is chosen, a losing round trip never outranks a winning one.
+const SCANNER_SORTS = Object.fromEntries(Object.entries(SCANNER_COLUMN_SORTS).map(([key, compare]) =>
+  [key, (a, b) => ((profits(b) ? 1 : 0) - (profits(a) ? 1 : 0)) || compare(a, b)]));
 
 function scannerRows() {
   const minVolume = Number($('#minVolume')?.value || 0);
@@ -254,7 +280,13 @@ function scannerRows() {
   const maxGold = Number($('#maxGold')?.value || 0);
   const hideHighRisk = Boolean($('#hideHighRisk')?.checked);
   const preset = FLOW_PRESETS[flowPreset] || FLOW_PRESETS.all;
-  return (run?.routes || []).filter(r => r.discovery).filter(r => {
+  const hideLosers = $('#hideLosers') ? $('#hideLosers').checked : true;
+  return (run?.routes || []).filter(r => r.discovery).map(r => {
+    // Size once per render; filter, sort and every cell read the same plan.
+    r._plan = scaleFlow(r.discovery, bankrollFor(r.discovery));
+    r._divGold = planDivPer100k(r.discovery, r._plan);
+    return r;
+  }).filter(r => {
     if (!window.POE2_DEMO_DATA && !hasPriceModel(r)) return false;
     const s = r.discovery;
     if (!preset.match(s)) return false;
@@ -262,6 +294,10 @@ function scannerRows() {
     if (Number(s.itemHourlyVolume || 0) < minVolume) return false;
     if (spreadOf(s) < minSpread) return false;
     if (hideHighRisk && s.classification === 'high-risk') return false;
+    // A round trip that ends with less than it started is not an opportunity.
+    // Listing it as a candidate is how "52 Chaos in, 22 Chaos out" reached the
+    // top of the table; it stays available behind the toggle, not by default.
+    if (hideLosers && !(Number(r._plan?.net ?? -Infinity) > 0)) return false;
     if (s.goldVerified && maxGold > 0 && Number(s.totalGold || 0) > maxGold) return false;
     return true;
   }).sort(SCANNER_SORTS[scannerSort] || SCANNER_SORTS.default);
@@ -395,9 +431,10 @@ function sourceCellHtml(s) {
 
 function scannerRowHtml(r) {
   const s = r.discovery;
-  const plan = scaleFlow(s, bankrollFor(s));
+  const plan = r._plan;
   const spread = spreadOf(s);
-  const divGold = s.spreadDivPer100kGold == null ? '—' : fmt(s.spreadDivPer100kGold);
+  const divGold = r._divGold == null ? '—' : fmt(r._divGold);
+  const losing = plan && plan.net != null && plan.net <= 0;
   const gold = plan
     ? `<b>${plan.goldKnown ? '' : '~'}${fmtInt(plan.gold)}</b><small class="${plan.goldKnown ? '' : 'warn'}">${plan.goldKnown ? 'verified' : 'estimated'}</small>`
     : `<b>—</b>`;
@@ -407,14 +444,19 @@ function scannerRowHtml(r) {
     'return-confirmed': 'Confirmed', 'fee-check-needed': 'Fee check',
     'return-quote-available': 'Quote only', 'two-leg-spread': 'Spread only', 'high-risk': 'High risk',
   };
-  const cls = s.classification || 'two-leg-spread';
-  const status = `<span class="status ${esc(cls)}" title="${esc(s.classificationLabel || '')}">${esc(SHORT_STATUS[cls] || s.classificationLabel || s.recommendation)}</span>`;
+  // A losing plan is labelled as such regardless of how much of the equation is
+  // proven: "Quote only" reads neutral next to a 58% loss.
+  const cls = losing ? 'loses' : (s.classification || 'two-leg-spread');
+  const status = losing
+    ? `<span class="status loses" title="This round trip ends with less than it started, at the size you can trade">Loses money</span>`
+    : `<span class="status ${esc(cls)}" title="${esc(s.classificationLabel || '')}">${esc(SHORT_STATUS[cls] || s.classificationLabel || s.recommendation)}</span>`;
   return `<tr class="clickable lead" data-id="${esc(r.id)}">`
     + `<td class="cell-item">${ICON(s.item)}<span><b>${esc(s.item.name)}</b><small>${esc(shortName(s.buyCurrency.name))} → ${esc(shortName(s.sellCurrency.name))} → ${esc(shortName(s.buyCurrency.name))}</small></span></td>`
     + `<td class="cell-flow">${flowChainHtml(s, plan)}</td>`
     + netCellHtml(plan)
-    + `<td class="num ${spread > 0 ? 'green' : ''}"><strong>${spread > 0 ? '+' : ''}${fmt(spread)}%</strong><small>midpoint</small></td>`
-    + `<td class="num dg"><strong>${divGold}</strong><small>${s.goldVerified ? 'verified fees' : 'estimated fees'}</small></td>`
+    + `<td class="num ${spread > 0 && !wildRange(s) ? 'green' : ''}"><strong>${spread > 0 ? '+' : ''}${fmt(spread)}%</strong>`
+      + `<small class="${wildRange(s) ? 'warn' : ''}">${wildRange(s) ? `range ${fmt(s.ratioRangePct)}%` : 'midpoint'}</small></td>`
+    + `<td class="num dg ${r._divGold != null && r._divGold < 0 ? 'red' : ''}"><strong>${divGold}</strong><small>${s.goldVerified ? 'verified fees' : 'estimated fees'}</small></td>`
     + `<td class="num">${fmt(s.itemHourlyVolume)}<small class="${plan && plan.volumeShare > MARKET_SHARE_CAP + 1e-9 ? 'warn' : ''}">${plan ? pct(plan.volumeShare, 0) : pct(s.maxVolumeShare, 0)} share</small></td>`
     + `<td class="num">${gold}</td>`
     + sourceCellHtml(s)
@@ -569,7 +611,7 @@ document.querySelectorAll('[data-tab]').forEach(b => b.onclick = () => { tab = b
 loadSettings();
 renderFlowPresets();
 ['minVolume','minSpread','maxGold'].forEach(id => document.getElementById(id)?.addEventListener('input', () => { saveSettings(); render(); }));
-document.getElementById('hideHighRisk')?.addEventListener('change', () => { saveSettings(); render(); });
+['hideHighRisk','hideLosers'].forEach(id => document.getElementById(id)?.addEventListener('change', () => { saveSettings(); render(); }));
 $('#search')?.addEventListener('input', event => { search = event.target.value.trim().toLowerCase(); render(); });
 document.querySelectorAll('[data-bankroll]').forEach(input => {
   input.value = bankroll[input.dataset.bankroll] ?? 0;

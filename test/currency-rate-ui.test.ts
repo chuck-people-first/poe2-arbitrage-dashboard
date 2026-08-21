@@ -86,10 +86,10 @@ describe("currency reference UI model", () => {
 
   it("ranks scanner results by proof, then gold efficiency, then liquidity footprint", () => {
     const dashboard = readFileSync(new URL("../public/dashboard.js", import.meta.url), "utf8");
-    const comparator = dashboard.slice(dashboard.indexOf("const SCANNER_SORTS"), dashboard.indexOf("function scannerRows"));
+    const comparator = dashboard.slice(dashboard.indexOf("const SCANNER_COLUMN_SORTS"), dashboard.indexOf("function scannerRows"));
     const proof = comparator.indexOf("isConfirmed(b.discovery)");
-    const efficiency = comparator.indexOf("divGoldOf(b.discovery)", proof);
-    const share = comparator.indexOf("maxVolumeShare", efficiency);
+    const efficiency = comparator.indexOf("b._divGold", proof);
+    const share = comparator.indexOf("volumeShare", efficiency);
     const spread = comparator.indexOf("spreadOf(b.discovery)", share);
     expect(proof).toBeGreaterThan(-1);
     expect(efficiency).toBeGreaterThan(proof);
@@ -107,16 +107,37 @@ describe("currency reference UI model", () => {
     expect(presets).toContain("All paths");
   });
 
-  it("ranks a closed, profitable round trip above a bare gold-efficiency score", () => {
-    // Div / 100K Gold is measured on the midpoint spread, so on its own it
-    // floats rows whose actual loop loses money to the top — the opposite of
-    // the question the scanner is asked.
+  it("never ranks a losing round trip above a profitable one, under ANY sort", () => {
+    // A row showing "30.64 Div / 100K" beside "-30 Chaos" reached the top of the
+    // live table purely by sorting on gold efficiency. Profitability at the size
+    // you can actually trade is now layered over every column sort.
     const dashboard = readFileSync(new URL("../public/dashboard.js", import.meta.url), "utf8");
-    const comparator = dashboard.slice(dashboard.indexOf("const SCANNER_SORTS"), dashboard.indexOf("function scannerRows"));
-    const closed = comparator.indexOf("closesUp(b.discovery)");
-    const efficiency = comparator.indexOf("divGoldOf(b.discovery)", closed);
-    expect(closed).toBeGreaterThan(-1);
-    expect(efficiency).toBeGreaterThan(closed);
+    expect(dashboard).toContain("const profits = r => Number(r._plan?.net ?? -Infinity) > 0;");
+    const wrapper = dashboard.slice(dashboard.indexOf("const SCANNER_SORTS = Object.fromEntries"));
+    expect(wrapper).toContain("(profits(b) ? 1 : 0) - (profits(a) ? 1 : 0)");
+  });
+
+  it("derives gold efficiency from the SAME plan as Net, not the midpoint spread", () => {
+    // Two price models in adjacent columns is what produced "+30.64 Div / 100K"
+    // beside a 58% loss.
+    const dashboard = readFileSync(new URL("../public/dashboard.js", import.meta.url), "utf8");
+    const fn = dashboard.slice(dashboard.indexOf("function planDivPer100k"), dashboard.indexOf("const spreadOf"));
+    expect(fn).toContain("plan.net");
+    expect(fn).toContain("startDivinePrice");
+    expect(fn).not.toContain("spreadDivPer100kGold");
+    const row = dashboard.slice(dashboard.indexOf("function scannerRowHtml"), dashboard.indexOf("function closedRowHtml"));
+    expect(row).toContain("r._divGold");
+    expect(row).not.toContain("s.spreadDivPer100kGold");
+  });
+
+  it("labels a losing round trip as a loss, and hides such rows by default", () => {
+    const dashboard = readFileSync(new URL("../public/dashboard.js", import.meta.url), "utf8");
+    const row = dashboard.slice(dashboard.indexOf("function scannerRowHtml"), dashboard.indexOf("function closedRowHtml"));
+    expect(row).toContain("Loses money");
+    expect(row).toContain("const cls = losing ?");
+    // Default-on: a trade that ends with less than it started is not a candidate.
+    const html = readFileSync(new URL("../public/index.html", import.meta.url), "utf8");
+    expect(html).toMatch(/id="hideLosers"[^>]*checked/);
   });
 
   it("shows the whole round trip in the row, ending in the starting currency", () => {
