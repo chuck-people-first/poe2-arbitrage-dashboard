@@ -307,3 +307,6 @@ td.red, .red { color: var(--red); }
 .spark polyline { fill: none; stroke: var(--muted); stroke-width: 1.4; vector-effect: non-scaling-stroke; }
 .spark.up polyline { stroke: var(--green); }
 .spark.down polyline { stroke: var(--red); }
+
+/* A losing round trip is never dressed as an opportunity. */
+.status.loses { background: rgba(245,120,124,.16); color: var(--red); border-color: rgba(245,120,124,.5); }

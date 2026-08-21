@@ -276,6 +276,7 @@ function buildFlow(
   finalUnits: number | null,
   totalGold: number | null,
   estimatedTotalGold: number,
+  startDivinePrice: number | null,
 ): SignalFlow {
   const step = (
     action: SignalFlowStep["action"],
@@ -303,6 +304,7 @@ function buildFlow(
     finalUnits: closes ? finalUnits : null,
     netUnits: closes ? finalUnits! - startUnits : null,
     netPct: closes && startUnits > 0 ? (finalUnits! / startUnits - 1) * 100 : null,
+    startDivinePrice,
     totalGold,
     estimatedTotalGold,
     closesInStartCurrency: closes,
@@ -447,7 +449,7 @@ export function buildMarketSignalRows(
           goldEstimateBasis: unknownFee?.basis ?? null,
           estimatedProfitDivine, estimatedDivPer100kGold: perGold(estimatedProfitDivine),
           flow: buildFlow(startIdentity, item, sellIdentity, buyLeg, sellLeg, returnLeg,
-            startUnits, sizingFits ? final : null, totalGold, estimatedTotalGold),
+            startUnits, sizingFits ? final : null, totalGold, estimatedTotalGold, toDivineRate),
           liquidityLabel: liquidityBand(maxShare),
           sourceCheck: {
             gggDivine: cross.gggDivine, ninjaDivine: cross.ninjaDivine,
