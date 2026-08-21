@@ -1,13 +1,14 @@
 import { deriveEdges } from "../../../src/domain/edges.ts";
 import { parseGggPayload } from "../../../src/domain/ggg.ts";
-import { enumerateClosedTriangles, enumerateTwoLegFlips, evaluateCandidate } from "../../../src/domain/routes.ts";
 import { GGG_HUB_PATHS } from "../../../src/domain/mapping.ts";
-import { rankDefault, scoreCandidate, toRoute } from "../../../src/domain/scoring.ts";
+import { buildCurrencyRates } from "../../../src/domain/currency-rates.ts";
+import { DEFAULT_START_CURRENCIES, scanOpportunityRows } from "../../../src/domain/scanner.ts";
+import { fetchNinjaSnapshot, type NinjaSnapshot } from "../../../src/integrations/poe-ninja.ts";
 import type { RunSettings } from "../../../src/domain/types.ts";
 
 const FUNCTION = "poe2-hourly-ingest";
 const LEAGUE = Deno.env.get("POE2_LEAGUE") ?? "Runes of Aldur";
-const ALGORITHM_VERSION = "phase3-edge-1";
+const ALGORITHM_VERSION = "phase8-second-source-1";
 const MAX_ATTEMPTS = 3;
 
 function json(status: number, body: Record<string, unknown>): Response {
@@ -65,37 +66,25 @@ async function rpc(name: string, body: Record<string, unknown>): Promise<unknown
   return response.json();
 }
 
-function buildOpportunities(payload: ReturnType<typeof parseGggPayload>, sourceHourUtc: string, settings: RunSettings, hash: string) {
+function buildOpportunities(
+  payload: ReturnType<typeof parseGggPayload>,
+  sourceHourUtc: string,
+  settings: RunSettings,
+  hash: string,
+  ninja: NinjaSnapshot | null,
+) {
   const markets = payload.markets.filter((market) => market.league === LEAGUE);
-  const edges = deriveEdges(markets.filter((market) => market.league === LEAGUE), sourceHourUtc);
-  const candidates = [...enumerateTwoLegFlips(edges, settings), ...enumerateClosedTriangles(edges, settings)];
-  return candidates.map((candidate) => {
-    const evaluation = evaluateCandidate(candidate);
-    const scoring = scoreCandidate(candidate, evaluation, edges, settings);
-    const route = toRoute(candidate, scoring, evaluation, sourceHourUtc);
-    if (!route || scoring.score === null) return null;
-    return {
-      strategy: route.strategy,
-      route,
-      playbook: route.legs.map((leg) => leg.playbook),
-      startCurrency: route.startCurrency,
-      endCurrency: route.endCurrency,
-      startUnits: route.startUnits,
-      endUnits: route.endUnits,
-      grossProfitBase: route.grossProfitBase,
-      conservativeProfitBase: route.conservativeProfitBase,
-      expectedProfitBase: route.expectedProfitBase,
-      goldCost: route.goldCostTotal,
-      legCount: route.legs.length,
-      bottleneckVolumeShare: route.bottleneckVolumeShare,
-      ratioRangePct: route.ratioRangePct,
-      movementHaircutPct: route.movementHaircutPct,
-      fillConfidence: route.fillConfidence,
-      score: route.score,
-      sourceHour: sourceHourUtc,
-      payloadSha256: hash,
-    };
-  }).filter((row): row is NonNullable<typeof row> => row !== null).sort((a, b) => rankDefault(a.route, b.route));
+  const edges = deriveEdges(markets, sourceHourUtc);
+  return scanOpportunityRows(
+    edges,
+    settings,
+    LEAGUE,
+    sourceHourUtc,
+    hash,
+    Date.now(),
+    DEFAULT_START_CURRENCIES,
+    ninja,
+  );
 }
 
 Deno.serve(async (request) => {
@@ -109,6 +98,7 @@ Deno.serve(async (request) => {
   const sourceHourUtc = sourceHour.toISOString();
   const sourceUrl = `https://web.poecdn.com/api/currency-exchange/poe2/${Math.floor(sourceHour.getTime() / 1000)}`;
   const settings: RunSettings = {
+    league: LEAGUE,
     startCurrency: GGG_HUB_PATHS.CHAOS,
     baseCurrency: GGG_HUB_PATHS.DIVINE,
     capitalUnits: Number(Deno.env.get("POE2_CAPITAL_UNITS") ?? "100"),
@@ -116,28 +106,70 @@ Deno.serve(async (request) => {
     maxLegs: 3,
     maxVolumeSharePct: 20,
     minConservativeProfitBase: 0.05,
-    maxDataAgeHours: 0,
-    movementRiskTolerancePct: 100,
+    maxDataAgeHours: Number(Deno.env.get("POE2_MAX_DATA_AGE_HOURS") ?? "3"),
+    movementRiskTolerancePct: Number(Deno.env.get("POE2_MOVEMENT_TOLERANCE_PCT") ?? "100"),
   };
 
+  let activeRunId: string | null = null; // set once begin succeeds; drives best-effort fail
   try {
     const raw = await fetchWithRetry(sourceUrl, { headers: { "user-agent": "poe2-arbitrage-dashboard/0.1", accept: "application/json" } });
     const payload = parseGggPayload(raw);
     const payloadSha256 = await sha256Json(raw);
-    const opportunities = buildOpportunities(payload, sourceHourUtc, settings, payloadSha256);
+    // The second source is best-effort by design: poe.ninja being slow or down
+    // must never block publishing the official hour. A null snapshot makes
+    // every row report "GGG only" instead of implying corroboration.
+    let ninja: NinjaSnapshot | null = null;
+    try {
+      ninja = await fetchNinjaSnapshot(LEAGUE);
+      if (ninja.quotes.length === 0) ninja = null;
+    } catch (error) {
+      console.warn(JSON.stringify({ function: FUNCTION, status: "second-source-unavailable", error: safeError(error) }));
+    }
+    const opportunities = buildOpportunities(payload, sourceHourUtc, settings, payloadSha256, ninja);
     const marketRows = payload.markets.filter((market) => market.league === LEAGUE).map((market) => ({
       marketId: market.marketId, pairA: market.pair[0], pairB: market.pair[1], volumeTraded: market.volumeTraded,
       lowestStock: market.lowestStock, highestStock: market.highestStock, lowestRatio: market.lowestRatio, highestRatio: market.highestRatio,
     }));
-    const begun = (await rpc("begin_poe2_ingestion", { p_league: LEAGUE, p_source_hour: sourceHourUtc, p_payload_sha256: payloadSha256, p_settings: settings, p_algorithm_version: ALGORITHM_VERSION, p_markets: marketRows })) as Array<{ status: string; run_id: string | null; market_rows: number }>;
+    const persistedSettings = {
+      ...settings,
+      scanStartCurrencies: [...DEFAULT_START_CURRENCIES],
+      currencySelectionRequired: false,
+    };
+    const begun = (await rpc("begin_poe2_ingestion", { p_league: LEAGUE, p_source_hour: sourceHourUtc, p_payload_sha256: payloadSha256, p_settings: persistedSettings, p_algorithm_version: ALGORITHM_VERSION, p_markets: marketRows })) as Array<{ status: string; run_id: string | null; market_rows: number }>;
     const run = begun[0];
     if (!run || run.status === "skipped") return json(200, { status: "skipped", sourceHour: sourceHourUtc, durationMs: Date.now() - startedAt });
     if (!run.run_id) throw new Error("begin RPC returned no run id");
-    const count = await rpc("complete_poe2_ingestion", { p_run_id: run.run_id, p_league: LEAGUE, p_source_hour: sourceHourUtc, p_payload_sha256: payloadSha256, p_opportunities: opportunities });
-    await rpc("project_poe2_opportunities", { p_run_id: run.run_id });
-    console.log(JSON.stringify({ function: FUNCTION, status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: opportunities.length, durationMs: Date.now() - startedAt }));
+    activeRunId = run.run_id;
+    const currencyRates = buildCurrencyRates(payload.markets.filter((market) => market.league === LEAGUE), sourceHourUtc, settings.capitalUnits);
+    // One RPC is the completion boundary: opportunities, six directional
+    // rates, closed-cycle history, safe projections, ingestion state and the
+    // succeeded run status commit or roll back together.
+    const count = await rpc("complete_poe2_ingestion", {
+      p_run_id: run.run_id, p_league: LEAGUE, p_source_hour: sourceHourUtc,
+      p_payload_sha256: payloadSha256, p_opportunities: opportunities,
+      p_rates: currencyRates.map((rate) => ({
+        direction: rate.direction, from_currency: rate.from.id, to_currency: rate.to.id,
+        market_id: rate.marketId, rate: rate.rate, rate_low: rate.rateLow, rate_high: rate.rateHigh,
+        pay_units: rate.payUnits, receive_units: rate.receiveUnits, gold_cost: rate.goldCost,
+        from_volume: rate.fromVolume, to_volume: rate.toVolume, volume_share: rate.volumeShare,
+        fill_risk_pct: rate.fillRiskPct, executable: rate.executable, reason: rate.reason,
+      })),
+    });
+    console.log(JSON.stringify({ function: FUNCTION, status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: opportunities.length,
+      secondSource: ninja ? { quotes: ninja.quotes.length, failedCategories: ninja.failedCategories } : "unavailable",
+      durationMs: Date.now() - startedAt }));
     return json(200, { status: "succeeded", runId: run.run_id, sourceHour: sourceHourUtc, marketCount: marketRows.length, opportunityCount: count, durationMs: Date.now() - startedAt });
   } catch (error) {
+    // Best-effort failure marker (item 1): a run begun but not atomically
+    // completed must not be left as 'running' forever. If a run id is known,
+    // attempt fail_poe2_ingestion; swallow its errors (best effort only).
+    if (activeRunId) {
+      try {
+        await rpc("fail_poe2_ingestion", { p_run_id: activeRunId, p_error: safeError(error) });
+      } catch (failError) {
+        console.error(JSON.stringify({ function: FUNCTION, status: "fail-marker-errored", runId: activeRunId, error: safeError(failError) }));
+      }
+    }
     const detail = safeError(error);
     console.error(JSON.stringify({ function: FUNCTION, status: "failed", sourceHour: sourceHourUtc, durationMs: Date.now() - startedAt, error: detail }));
     return json(502, { error: "ingestion failed", sourceHour: sourceHourUtc });

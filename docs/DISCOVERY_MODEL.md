@@ -1,0 +1,244 @@
+# Discovery model: three figures, one classification
+
+The Market Scanner has two jobs that pull in opposite directions. It has to be
+*broad* — a long list of items mispriced across the Exalted, Chaos and Divine
+markets, the way Divine Tendies is broad — and it has to be *honest*, because
+the official GGG feed cannot prove most of what a broad list shows.
+
+The resolution: list broadly, but never let one number carry two meanings.
+
+## Why the list used to be one or two rows
+
+Measured on the checked-in real GGG hour (`fixtures/ggg-currency-exchange-1787090400.json`,
+2026-08-18T22:00Z). These counts are asserted in `test/scanner-discovery-funnel.test.ts`,
+so a change to any of them is a deliberate product change:
+
+| Stage | Count |
+|---|---|
+| Markets in league | 1,389 |
+| Readable hub → item → hub families | 98 |
+| Families with a direct return market | 98 |
+| Positive using favorable boundaries | 83 |
+| Positive using the hourly midpoint | 49 |
+| Midpoint profit ≥ 25% | 28 |
+| Positive using every conservative edge | 14 |
+
+The old scanner required a positive **conservative** closed cycle just to
+appear. That is the 98 → 14 collapse. The UI then applied a 25% minimum cycle
+P&L and a volume floor on top, which is how production ended up showing one or
+two rows.
+
+Discovery is now gated on the **midpoint**, so the list is the 49.
+
+## The three figures
+
+They live on `MarketSignal.priceModel` and must never be collapsed into one.
+
+**`twoLegSpreadPct` — discovery.** The item's price in the starting currency
+from the buy market, versus its price implied by (sell market → return market),
+every leg at that market's completed-hour midpoint. Gold excluded. This is the
+"same item, mispriced across two currencies" number, and the only one the list
+is ranked on.
+
+**`targetBidPotentialPct` — potential, never executable.** The same path with
+every leg at its *favorable* boundary. It exists so the width of the hourly
+range is visible. It appears exactly once, in the drawer, under a label saying
+it is not executable profit. It is never in a row headline and never in a
+comparator — `test/currency-rate-ui.test.ts` asserts both.
+
+**`returnConfirmedCyclePct` — the only closed cycle.** Exact integer sizing at
+the *least-favorable* observed boundary on all three legs, with all three gold
+fees. Null when no independent return market was observed, or when no integer
+sizing closes inside the observed hourly liquidity.
+
+### The rule these exist to enforce
+
+GGG publishes an hourly aggregate, not an order book. `rateHigh` is the most
+favorable trade seen *somewhere* in that hour. Three favorable boundaries from
+three different markets may have occurred at three different moments and may
+never have been simultaneously executable. Multiplying them produced the
++25,900% results; on the fixture hour the favorable compound still reaches
++1613%, against a best return-confirmed cycle of +131%.
+
+`compoundPct()` in `src/domain/market-signals.ts` takes a *side selector* and
+applies it to every leg, so each published percentage is reproducible from one
+consistent side of every leg's range. Mixing sides is structurally impossible.
+
+## The classification
+
+`MarketSignal.classification` says how much of the equation a row has proven.
+It — not the score — decides what a row is allowed to claim.
+
+| Classification | Meaning |
+|---|---|
+| `return-confirmed` | Conservative closed cycle is positive and every gold fee is verified. The only row that may be called a closed cycle. |
+| `fee-check-needed` | Conservative closed cycle is positive but at least one item gold fee is a category estimate. |
+| `return-quote-available` | A return market exists and is priced, but the conservative cycle is not positive. The spread is real; the round trip is not proven. |
+| `two-leg-spread` | Item mispricing only; no independent return market observed. |
+| `high-risk` | No sizing fits inside the observed hourly liquidity, or the sizing consumes more than 20% of it. Overrides the others: liquidity, not price, is the binding constraint. |
+
+`TRADE NOW` remains reserved for the Verified Closed Cycles tab, which runs the
+separate scored-route path. No discovery row can reach it.
+
+## Sizing
+
+`chooseSizing()` reports the best plan that stays **inside** the liquidity cap
+(`RunSettings.maxVolumeSharePct`), not the best plan at any size. Two failure
+modes are being avoided: sizing up until `maxVolumeShare` — the number the
+classification keys on — becomes an artifact of the sizer's ambition, and
+sizing down until integer flooring, rather than the market, dictates the
+closed-cycle percentage. A batch whose return leg floors to zero units is
+rejected: reporting its −100% as the closed-cycle result is noise.
+
+## Price source
+
+The broad scanner uses the GGG completed-hour **midpoint**. poe.ninja's
+directional rates (`/poe2/api/economy/exchange/current/{overview,details}`)
+remain the intended independent price source for discovery; until that
+integration lands, the midpoint is the consistent model and the conservative
+boundary stays the risk/verification source. The official GGG feed continues to
+serve as audit source, currency reference, historical fallback and boundary
+information.
+
+## History
+
+`supabase/migrations/016_discovery_signal_history.sql` extends
+`complete_poe2_ingestion` so discovery families get the same append-only hourly
+retention as verified cycles. What is retained is the ratio that *caused* the
+row — the conservative boundaries the player was told to type — alongside the
+midpoint metric the list is ranked on, so the series is comparable hour over
+hour. Before this, no scanner family had any history and every drawer read
+INSUFFICIENT HISTORY forever.
+
+## The round trip is the product
+
+The flow the player actually runs is three trades, not two:
+
+```
+pay Exalted or Chaos  →  hold the item  →  sell for Divine  →  convert Divine back
+```
+
+A two-leg spread that stops at "you now hold Divine" has not produced any of
+the currency the player started with. So `MarketSignal.flow` (`SignalFlow`)
+carries the whole chain as executable quantities — each step in the Exchange's
+own vocabulary, *you HAVE this, you WANT that* — and it is the closing step
+that decides whether a net figure exists at all:
+
+- `closesInStartCurrency` is false when no integer order size closes the loop
+  inside the observed hourly volume. `finalUnits`, `netUnits` and `netPct` are
+  then null. The steps still describe the path; they do not describe a
+  completed trip, and the row says so rather than implying one.
+- `netUnits` is the number that matters: what the player ends with minus what
+  they started with, in the currency they started with.
+
+`test/signal-flow.test.ts` pins the chain: each step's WANT is the next step's
+HAVE (both currency and quantity), the first HAVE is the starting currency, the
+last WANT is the starting currency again, and a net figure never appears for a
+loop that did not close.
+
+### Flow presets
+
+The scanner opens on **My flow** — buy with Exalted or Chaos, sell for Divine,
+convert back — because that is what gets run most of the time. **Exalted only**
+narrows to `Exalted → item → Divine → Exalted`; **All paths** restores every hub
+pair, including Divine-funded routes. On the fixture hour: 23 / 11 / 49 rows.
+
+### Ranking
+
+Default order is: return-confirmed first, then loops that actually close in
+profit, then Div / 100K gold, then the lighter liquidity footprint, then depth,
+then the raw spread. The gold-efficiency metric is measured on the *midpoint
+spread*, so ranking on it alone floats rows whose real loop loses money to the
+top — the closed-and-profitable tier exists to stop that.
+
+### Liquidity band
+
+`liquidityBand()` reads only the order's share of the observed hour: ≤5% Low,
+≤20% Medium, above that High. The shared `estimateFillRisk` blends in the
+hourly ratio range, which is wide for nearly every GGG completed-hour market,
+so its label saturates at High and stops distinguishing anything. That heuristic
+still drives the other tabs and the drawer, where the share and range that
+produced it are on screen beside it.
+
+## Two sources, never averaged
+
+The official GGG feed is authoritative for what traded, but it publishes one
+completed hour as a low/high band and says nothing about the live book. A thin
+hour's boundary can be far from the going rate. poe.ninja observes the same
+economy independently, so the product carries both prices side by side with
+their deviation and a plain label — `Both sources agree`, `Sources close`,
+`Sources diverge`, `Sources conflict`, or `GGG only`.
+
+It does **not** average them. Averaging hides the only thing worth knowing:
+whether the hour you are about to trade on looks like the rest of the economy.
+A missing second opinion is reported as `GGG only`, never as agreement.
+
+`src/integrations/poe-ninja.ts` fetches 12 exchange categories (532 priced
+lines). A category that fails is recorded and skipped; poe.ninja being down
+must never block publishing the official hour.
+
+### Identity comes from the art file, never from price
+
+The bridge between the two sources is the poecdn image token, which decodes to
+the item's art path — two entries referencing the same art file are the same
+item. An art leaf claimed by more than one poe.ninja line is ambiguous and is
+dropped. Each surviving identity is then *validated* by requiring both sources'
+Divine prices to agree within 25%.
+
+Price is never used to *find* an identity. Measured against the checked-in
+known-good table, price-nearest matching scores 25–44%: on 2026-08-21T01:00Z
+the nearest line to `CurrencyCorrupt` is "Greater Essence of Command" at 1.2%,
+while the correct answer — Vaal Orb — sits at 1.8%. Hundreds of items share
+price bands. Semantics select the candidate; price only confirms it.
+
+`scripts/generate-ninja-bridge.ts` regenerates the bridge and records every
+rejection with its reason in `NINJA_BRIDGE_QUARANTINE`.
+
+### The hand-written table had gone stale
+
+Three high-volume currencies were unnamed because the checked-in hypothesis
+table pointed at GGG paths the live feed no longer trades: `CurrencyVaal` and
+`AnnullOrb` did not appear in the hour at all. The game renamed them to
+`CurrencyCorrupt` and `CurrencyRemoveMod`, and both sources price those within
+2% and 9%. Naming coverage of traded paths went 23 → 43, and the scanner from
+51 to 90 rows on the same live hour.
+
+### Which market sets an item's price
+
+An item usually trades against several hubs in one hour and those markets
+disagree. Six rules were benchmarked against poe.ninja across every item both
+sources price:
+
+| rule | mean deviation | ≤10% | ≤25% | >60% |
+|---|---|---|---|---|
+| direct market preferred | 18.5% | 25 | 32 | 4 |
+| deepest in Divine value | 17.2% | 26 | 31 | 2 |
+| scarcer side's unit count | 18.8% | 25 | 26 | 2 |
+| **where the item itself traded most** | **14.4%** | **27** | **32** | **1** |
+| median of all candidates | 19.3% | 21 | 28 | 2 |
+| Exalted hop first | 19.3% | 22 | 26 | 2 |
+
+Price is best discovered where the thing actually changed hands. Note that
+valuing depth in Divine picks thin markets back up, because ten Divine outvalue
+seven hundred Exalted. `DivinePriceEntry.spreadPct` reports how far the hour's
+own markets disagreed, which is a real data-quality warning.
+
+## Sizing to the player, not to a batch
+
+A row is only useful at a size you can actually trade, so the browser re-runs
+the same three conservative ratios against the stake you hold, bounded by two
+constraints:
+
+- **Your stake.** Whatever you enter per starting currency.
+- **The market.** No order may claim more than 20% of the hour's item volume.
+  Telling someone their 4,000 Exalted "will not fill" is not advice; the row is
+  sized to the slice this market can absorb and says how much stake stays free.
+
+Quantities floor at every leg, so the plan is sized from the OUTPUT backwards —
+the largest whole number of sell-currency units reachable within those bounds,
+then exactly the input that buys it. Scaling naively to the ceiling throws the
+remainder away: 378 Exalted buys 126 Baubles which floor to 1 Divine, losing
+30% to rounding, where 270 Exalted buys 90 and floors to nothing.
+
+When the loop cannot close, the row distinguishes the two causes — a stake too
+small is yours to change, a market too thin within the cap is not.

@@ -5,6 +5,9 @@
 import type { DirectedEdge, RouteLeg } from "./types.ts";
 import { goldCostPerUnit } from "./mapping.ts";
 
+/** A leg before volume shares are computed. */
+export type LegDraft = Omit<RouteLeg, "volumeShare" | "fromShare" | "toShare">;
+
 /**
  * Compute an integer trade for one directed edge.
  *
@@ -19,7 +22,7 @@ import { goldCostPerUnit } from "./mapping.ts";
 export function planLeg(
   edge: DirectedEdge,
   giveFullUnits: number,
-): { leg: Omit<RouteLeg, "volumeShare">; receivedUnits: number; goldCost: number } {
+): { leg: LegDraft; receivedUnits: number; goldCost: number } {
   if (giveFullUnits < 0) throw new Error("giveFullUnits must be non-negative");
   const receivedUnits = Math.max(0, Math.floor(giveFullUnits * edge.rate));
   if (receivedUnits === 0) {
@@ -30,6 +33,9 @@ export function planLeg(
         to: edge.to,
         fromUnits: giveFullUnits,
         toUnits: 0,
+        rate: edge.rate,
+        volumeFrom: edge.volumeFrom,
+        volumeTo: edge.volumeTo,
         playbook: { give: giveFullUnits, pay: edge.from, receive: 0, want: edge.to },
         goldCost: 0,
       },
@@ -49,6 +55,9 @@ export function planLeg(
       to: edge.to,
       fromUnits: giveFullUnits,
       toUnits: receivedUnits,
+      rate: edge.rate,
+      volumeFrom: edge.volumeFrom,
+      volumeTo: edge.volumeTo,
       playbook: {
         give: giveFullUnits,
         pay: edge.from,
@@ -70,8 +79,8 @@ export function planLeg(
 export function walkChain(
   edges: DirectedEdge[],
   startUnits: number,
-): { legs: Omit<RouteLeg, "volumeShare">[]; endUnits: number; totalGold: number } {
-  const legs: Omit<RouteLeg, "volumeShare">[] = [];
+): { legs: LegDraft[]; endUnits: number; totalGold: number } {
+  const legs: LegDraft[] = [];
   let units = startUnits;
   let totalGold = 0;
   for (const edge of edges) {

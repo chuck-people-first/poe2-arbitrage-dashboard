@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PoE2 Arbitrage Dashboard — Demo</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+  <main class="shell">
+    <div class="demo-banner" role="alert" style="display:flex;align-items:center;gap:10px;margin-bottom:14px;background:repeating-linear-gradient(45deg,rgba(248,113,113,.18),rgba(248,113,113,.18) 10px,rgba(248,113,113,.08) 10px,rgba(248,113,113,.08) 20px);border:2px solid rgba(248,113,113,.6);color:#ffd7d7;border-radius:10px;padding:12px 16px;font-size:14px;font-weight:700;">
+      ⚠ DEMO DATA — NOT LIVE OR EXECUTABLE
+    </div>
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">POE2 CURRENCY EXCHANGE</p>
+        <h1>Market scanner</h1>
+        <p class="subhead">All profitable Exalted, Chaos, and Divine item paths—ranked with the return conversion included.</p>
+      </div>
+      <div class="source-badge"><span class="dot"></span><div><strong>Hourly data</strong><small id="sourceAge">Loading source…</small><small id="completedAt">—</small></div></div>
+    </header>
+    <section class="controls"><label>League<select id="league"><option>Runes of Aldur</option></select></label><div class="scan-scope"><span>Automatic scanner</span><strong>Exalted · Chaos · Divine</strong><small>No starting-currency selection required</small></div><label>Min volume/hr<input id="minVolume" type="number" min="0" value="10"></label><label>Min cycle P&amp;L<input id="minPnl" type="number" min="0" value="25"><small>%</small></label><label>Max verified gold<input id="maxGold" type="number" min="0" value="100000"></label><button id="refresh">Refresh demo data</button></section>
+    <section class="cards">
+      <article><span>Data age</span><strong id="age">—</strong><small>Since latest completed hour</small></article>
+      <article><span>Market signals</span><strong id="count">—</strong><small>Current filtered paths</small></article>
+      <article><span>Gold fully known</span><strong id="verifiedCount">—</strong><small>All three fees verified</small></article>
+      <article><span>Needs fee check</span><strong id="unknownCount">—</strong><small>Estimated until OCR/manual confirmation</small></article>
+    </section>
+    <section class="rates-panel panel" aria-labelledby="ratesTitle"><div class="panel-head"><div><h2 id="ratesTitle">Quick Currency Reference</h2><p>Latest completed-hour exchange ratios. These are reference rates, not arbitrage recommendations.</p></div><span class="pill">3 PAIRS</span></div><div id="currencyRates" class="rate-reference"><div class="empty">No completed-hour currency observations yet.</div></div></section>
+    <nav class="tabs" aria-label="Opportunity type"><button class="active" data-tab="scanner">Market Scanner</button><button data-tab="closed">Verified Closed Cycles</button><button data-tab="mtm">Mark-to-Market</button></nav>
+    <section class="panel">
+      <div class="panel-head"><div><h2 id="tabTitle">Closed Cycles</h2><p id="tabHint">Executable three-trade cycles only.</p></div><span class="pill">SOURCE: GGG COMPLETED HOUR</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Item</th><th>Buy With / Path</th><th>Conservative P&amp;L</th><th class="sort-dg">Div / 100K Gold <span class="sort-caret">↕</span></th><th>Volume</th><th>Fill Risk</th><th>Gold</th><th>Trend</th><th>Recommendation</th></tr></thead><tbody id="routes"></tbody></table></div>
+    </section>
+    <footer><span>ⓘ Scanner ratios are shown exactly as I WANT : I HAVE.</span><span>Unknown gold uses a labeled estimate and can be replaced with OCR/manual input.</span></footer>
+  </main>
+  <aside class="drawer" id="drawer" aria-hidden="true"><div class="drawer-inner" id="drawerInner"></div></aside>
+  <div class="scrim" id="scrim" hidden></div>
+  <script src="/dashboard-demo.js"></script>
+  <script src="/dashboard-market-demo.js"></script>
+  <script src="/dashboard-rates-demo.js"></script>
+  <script src="/currency-rates.js"></script>
+  <script src="/ocr-gold.js"></script>
+  <script src="/dashboard-data.js"></script>
+  <script src="/dashboard.js"></script>
+</body>
+</html>

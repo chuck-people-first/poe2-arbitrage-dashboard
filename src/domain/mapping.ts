@@ -10,8 +10,9 @@
 //   chaos->exalted GGG 33.5  vs ninja 33.45  (0.2% match)
 //   mirror->divine GGG 4758  vs ninja 4759   (0.02% match)
 
-import type { ItemId } from "./types";
-import { GENERATED_MAPPING } from "./mapping.generated.ts";
+import type { ItemId } from "./types.ts";
+import { GENERATED_MAPPING, AUTHORITATIVE_IDENTITY_MAPPING } from "./mapping.generated.ts";
+import { NINJA_BRIDGE_MAPPING } from "./mapping.ninja-bridge.ts";
 
 export const GGG_HUB_PATHS = {
   DIVINE: "Metadata/Items/Currency/CurrencyModValues",
@@ -20,6 +21,32 @@ export const GGG_HUB_PATHS = {
 } as const;
 
 const verified = "checked-in-verified" as const;
+
+// Public PoE2 wiki Currency Exchange table, checked 2026-08-20.
+// Fees are per unit received on the I WANT side.
+// https://www.poe2wiki.net/wiki/Currency_exchange
+const VERIFIED_GOLD_BY_NAME: Record<string, number> = {
+  "Orb of Annulment": 1000,
+  "Artificer's Shard": 100,
+  "Glassblower's Bauble": 750,
+  "Lesser Jeweller's Orb": 200,
+  "Greater Jeweller's Orb": 600,
+  "Perfect Jeweller's Orb": 1000,
+  "Orb of Chance": 1000,
+  "Vaal Orb": 160,
+  "Arcanist's Etcher": 500,
+  "Blacksmith's Whetstone": 500,
+};
+
+const ESTIMATED_GOLD_BY_CATEGORY: Record<string, number> = {
+  Currency: 1000,
+  Breach: 250,
+  Ritual: 500,
+  Vaal: 1000,
+  Expedition: 1000,
+  SoulCore: 1000,
+  Gem: 9000,
+};
 
 /** Manually curated entries (merged over generated ones for gold-cost fixes). */
 const MANUAL_OVERRIDES: Record<string, ItemId> = {
@@ -59,9 +86,33 @@ export const ITEM_MAP: Record<string, ItemId> = Object.fromEntries(
   Object.entries(GENERATED_MAPPING).map(([path, rec]) => [path, { ...rec.entry, mappingSource: verified }]),
 );
 
+// Merge authoritative identity-only entries (real GGG path + readable name +
+// icon from the poe.ninja image-decoded bridge) so `lookupItem` resolves them.
+// These carry goldCostPerUnit = -1 (FEE_UNKNOWN): they render a readable
+// identity, but goldCostPerUnit() reports unverified so no route is marketed
+// or priced without a verified fee. Ambiguous paths are never included.
+for (const [path, rec] of Object.entries(AUTHORITATIVE_IDENTITY_MAPPING)) {
+  if (ITEM_MAP[path]) continue; // rate-verified entry wins over identity-only
+  ITEM_MAP[path] = { ...rec.entry, mappingSource: verified };
+}
+
+for (const item of Object.values(ITEM_MAP)) {
+  const fee = VERIFIED_GOLD_BY_NAME[item.displayName];
+  if (fee !== undefined) item.goldCostPerUnit = fee;
+}
+
 // Apply manual overrides (gold costs from the poe2wiki exchange table).
 for (const [path, item] of Object.entries(MANUAL_OVERRIDES)) {
   ITEM_MAP[path] = item;
+}
+
+// poe.ninja bridge entries: identity from the shared art file, confirmed by two
+// independent Divine prices. They carry goldCostPerUnit -1, so they render a
+// readable name and price but can never satisfy a fee-verified claim. A
+// rate-verified or manually curated entry always wins over one of these.
+for (const [path, record] of Object.entries(NINJA_BRIDGE_MAPPING)) {
+  if (ITEM_MAP[path]) continue;
+  ITEM_MAP[path] = record.entry;
 }
 
 export function lookupItem(gggPath: string): ItemId | null {
@@ -83,4 +134,14 @@ export function goldCostPerUnit(gggPath: string): { cost: number; verified: bool
     return { cost: 0, verified: false };
   }
   return { cost: item.goldCostPerUnit, verified: true };
+}
+
+/** Product-only fallback for research signals; it remains explicitly unverified. */
+export function estimatedGoldCostPerUnit(gggPath: string): { cost: number; verified: boolean; basis: string } {
+  const exact = goldCostPerUnit(gggPath);
+  if (exact.verified) return { ...exact, basis: "verified item fee" };
+  const item = lookupItem(gggPath);
+  const category = item?.category ?? "unmapped item";
+  const cost = ESTIMATED_GOLD_BY_CATEGORY[category] ?? 1000;
+  return { cost, verified: false, basis: `${category} fallback: ${cost.toLocaleString("en-US")} gold per unit received` };
 }

@@ -4,18 +4,103 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>PoE2 Arbitrage Dashboard</title>
+  <link rel="icon" href="data:,">
   <link rel="stylesheet" href="/dashboard.css">
 </head>
 <body>
   <main class="shell">
     <header class="topbar">
-      <div><p class="eyebrow">POE2 MARKET INTELLIGENCE</p><h1>Arbitrage signals</h1><p class="subhead">Conservative hourly opportunities — verify every quote in Exchange before posting.</p></div>
-      <div class="source-badge"><span class="dot"></span><div><strong>Hourly signal</strong><small id="sourceAge">Loading source…</small></div></div>
+      <div>
+        <p class="eyebrow">POE2 CURRENCY EXCHANGE</p>
+        <h1>Market scanner</h1>
+        <p class="subhead">Every readable item mispriced across the Exalted, Chaos, and Divine markets, ranked best to worst. Each row shows the bids you type in the Exchange and how far the round trip has actually been proven.</p>
+      </div>
+      <div class="source-badge">
+        <span class="dot"></span>
+        <div>
+          <strong>Hourly data</strong>
+          <small id="sourceAge">Loading source…</small>
+          <small id="completedAt">—</small>
+        </div>
+      </div>
     </header>
-    <section class="controls"><label>League<select id="league"><option>Runes of Aldur</option></select></label><label>Base currency<select><option>Divine Orb</option></select></label><label>Capital<input id="capital" type="number" value="100" min="1"></label><button id="refresh">Refresh live data</button></section>
-    <section class="cards"><article><span>Source age</span><strong id="age">—</strong><small>Completed UTC hour</small></article><article><span>Candidate routes</span><strong id="count">—</strong><small>After conservative filters</small></article><article><span>Gold budget</span><strong id="budget">2,000,000</strong><small>Per run</small></article><article><span>Data policy</span><strong>≤ 20%</strong><small>Hourly volume ceiling</small></article></section>
-    <nav class="tabs"><button class="active" data-tab="best">Best overall</button><button data-tab="two">Two-leg</button><button data-tab="triangle">Closed loops</button></nav>
-    <section class="panel"><div class="panel-head"><div><h2 id="tabTitle">Best overall</h2><p>Ranked by expected profit per gold, fewer legs, freshness, and persistence.</p></div><span class="pill">SOURCE: GGG COMPLETED HOUR</span></div><div class="table-wrap"><table><thead><tr><th>Route</th><th>Signal</th><th>Conservative profit</th><th>Profit / 1M gold</th><th>Profit / trade</th><th>Capital ROI</th><th>Gold</th><th>Volume share</th></tr></thead><tbody id="routes"></tbody></table></div></section>
-    <footer><span>⚠ Historical aggregate data is not live or executable.</span><span>Source age and assumptions are shown per route.</span></footer>
-  <script src="/config.js"></script><script src="/dashboard-data.js"></script><script src="/dashboard.js"></script>
-</body></html>
+
+    <section class="controls">
+      <label>League<select id="league"><option>Runes of Aldur</option></select></label>
+      <div class="scan-scope"><span>Automatic scanner</span><strong>Exalted · Chaos · Divine</strong><small>No starting-currency selection required</small></div>
+      <label class="grow">Find item<input id="search" type="search" placeholder="Search name…  ( / )" autocomplete="off"></label>
+      <label>Min volume/hr<input id="minVolume" type="number" min="0" step="1" value="10"></label>
+      <label>Min spread<input id="minSpread" type="number" min="0" step="1" value="0"><small>%</small></label>
+      <label>Max verified gold<input id="maxGold" type="number" min="0" step="10000" value="500000"><small>0 = no cap</small></label>
+      <label class="toggle"><input id="hideHighRisk" type="checkbox">Hide high risk</label>
+      <button id="refresh">Refresh live data</button>
+    </section>
+
+    <section class="cards">
+      <article><span>Data age</span><strong id="age">—</strong><small>Since the latest completed market hour</small></article>
+      <article><span>Market signals</span><strong id="count">—</strong><small>Current filtered completed-hour paths</small></article>
+      <article><span>Return confirmed</span><strong id="verifiedCount">—</strong><small>Closed cycle survives the least-favorable boundary with every fee verified</small></article>
+      <article><span>Needs fee check</span><strong id="unknownCount">—</strong><small>Estimated until OCR/manual confirmation</small></article>
+    </section>
+
+    <section class="rates-panel panel" aria-labelledby="ratesTitle">
+      <div class="panel-head"><div><h2 id="ratesTitle">Quick Currency Reference</h2><p>Latest completed-hour exchange ratios. These are reference rates, not arbitrage recommendations.</p></div><span class="pill">3 PAIRS</span></div>
+      <div id="currencyRates" class="rate-reference"><div class="empty">Loading currency ratios…</div></div>
+    </section>
+
+    <nav class="tabs" aria-label="Opportunity type">
+      <button class="active" data-tab="scanner">Market Scanner</button>
+      <button data-tab="closed">Verified Closed Cycles</button>
+      <button data-tab="mtm">Mark-to-Market</button>
+    </nav>
+    <section class="panel">
+      <div class="panel-head">
+        <div>
+          <h2 id="tabTitle">Cross-currency flips</h2>
+          <p id="tabHint">Same item, priced differently in two currency markets. Every row is measured back to the currency you started in.</p>
+        </div>
+        <span class="pill">SOURCE: GGG COMPLETED HOUR</span>
+      </div>
+      <div class="flow-bar" id="flowBar">
+        <div class="flow-bar-head"><span class="label">Flow</span><div class="preset-group" id="flowPresets" role="group" aria-label="Currency flow"></div></div>
+        <small id="flowHint"></small>
+        <div class="bankroll">
+          <span class="label">Your stake</span>
+          <label>Exalted<input type="number" min="0" step="100" data-bankroll="Exalted"></label>
+          <label>Chaos<input type="number" min="0" step="1" data-bankroll="Chaos"></label>
+          <label>Divine<input type="number" min="0" step="1" data-bankroll="Divine"></label>
+          <small>Every row is re-sized to the pot it starts from.</small>
+        </div>
+      </div>
+      <p class="section-warning">Prices are the <strong>last completed hour</strong>, not the live book. GGG's API does not publish the Competing Trades ladder, so the bids below are references to confirm in game before you post. <strong>Net</strong> is what you actually end up with after converting back; <strong>Spread</strong> is midpoint mispricing before the round trip is proven.</p>
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>Item</th><th>Round trip<small>start → item → sell → back</small></th><th>Net</th><th>Spread</th><th>Div / 100K</th><th>Volume<small>per hour</small></th><th>Gold</th><th>Sources<small>GGG vs poe.ninja</small></th><th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="routes"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <footer>
+      <span>ⓘ Click any row for the full round trip: numbered steps, target vs. plan boundaries, per-step gold, volume share, history and the OCR fee correction.</span>
+      <span>Unknown gold uses a clearly labeled category estimate and can be replaced with OCR/manual in-game fee input. Fill risk is not a guarantee.</span>
+    </footer>
+  </main>
+
+  <!-- Detail drawer -->
+  <aside class="drawer" id="drawer" aria-hidden="true">
+    <div class="drawer-inner" id="drawerInner"></div>
+  </aside>
+  <div class="scrim" id="scrim" hidden></div>
+
+  <script src="/config.js"></script>
+  <script src="/currency-rates.js"></script>
+  <script src="/ocr-gold.js"></script>
+  <script src="/dashboard-data.js"></script>
+  <script src="/dashboard.js"></script>
+</body>
+</html>

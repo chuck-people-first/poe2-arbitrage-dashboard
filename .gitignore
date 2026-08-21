@@ -9,3 +9,4 @@ public/config.js
 
 .vercel
 .env*
+supabase/.branches/

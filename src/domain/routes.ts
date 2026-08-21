@@ -117,10 +117,20 @@ export interface EvaluatedRoute {
 export function evaluateCandidate(c: RouteCandidate): EvaluatedRoute {
   try {
     const { legs, endUnits, totalGold } = walkChain(c.edges, c.startUnits);
-    const withShare = legs.map((leg, i) => ({
-      ...leg,
-      volumeShare: c.edges[i]!.hourlyVolume > 0 ? leg.toUnits / c.edges[i]!.hourlyVolume : 0,
-    }));
+    const withShare = legs.map((leg, i) => {
+      const edge = c.edges[i]!;
+      // Unit-safe volume share: each denominator is in the same currency as its
+      // numerator. volumeFrom and volumeTo are DIFFERENT currencies and may not
+      // be compared directly; the leg share is the max of the two own-unit shares.
+      const fromShare = edge.volumeFrom > 0 ? leg.fromUnits / edge.volumeFrom : NaN;
+      const toShare = edge.volumeTo > 0 ? leg.toUnits / edge.volumeTo : NaN;
+      return {
+        ...leg,
+        fromShare,
+        toShare,
+        volumeShare: Math.max(fromShare, toShare),
+      };
+    });
     return { route: c, legs: withShare, endUnits, goldTotal: totalGold, error: null };
   } catch (e) {
     return {
@@ -146,10 +156,22 @@ export function valueInBase(
   edges: DirectedEdge[],
   usedEdgeKeys: Set<string> = new Set(),
 ): number | null {
-  if (itemPath === basePath) return units;
+  const path = valuationPath(itemPath, basePath, edges, usedEdgeKeys);
+  if (path === null) return null;
+  return path.reduce((value, edge) => value * edge.rate, units);
+}
+
+/** Return the independently observed edge path used to value an item. */
+export function valuationPath(
+  itemPath: string,
+  basePath: string,
+  edges: DirectedEdge[],
+  usedEdgeKeys: Set<string> = new Set(),
+): DirectedEdge[] | null {
+  if (itemPath === basePath) return [];
   const idx = edgeIndex(edges);
   const direct = idx.getAllByEndpoints(itemPath, basePath).find((e) => !conflictsWith(e, usedEdgeKeys));
-  if (direct) return units * direct.rate;
+  if (direct) return [direct];
   // try via an intermediate hub (two hops) — only when both legs are independent
   const viaCandidates = edges.filter((e) => e.from === itemPath);
   for (const e of viaCandidates) {
@@ -158,7 +180,7 @@ export function valueInBase(
       (candidate) => !conflictsWith(candidate, new Set([...usedEdgeKeys, e.key])),
     );
     if (second) {
-      return units * e.rate * second.rate;
+      return [e, second];
     }
   }
   return null;

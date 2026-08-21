@@ -84,13 +84,43 @@ const GOLD_COSTS: Record<string, number> = {
 const FEE_UNKNOWN = -1;
 
 const ggg = JSON.parse(readFileSync(join(FIXTURES, "ggg-currency-exchange-1787022000.json"), "utf8"));
+// Aggregate item metadata (name/icon/category) from EVERY poe.ninja fixture
+// file (currency + thematic categories: breach, expedition, soulcores). This
+// is the authoritative name/icon source; GGG payloads carry only metadata
+// paths, never display names. When a leaf decodes to two DIFFERENT ninja ids
+// across files the collision is surfaced, never silently resolved.
+const NINJA_FILES = [
+  "poe-ninja-currency-overview.json",
+  "poe-ninja-currency.json",
+  "poe-ninja-breach.json",
+  "poe-ninja-expedition.json",
+  "poe-ninja-soulcores.json",
+];
 const ninja = JSON.parse(readFileSync(join(FIXTURES, "poe-ninja-currency-overview.json"), "utf8"));
 
 const roa = ggg.markets.filter((m: { league: string }) => m.league === "Runes of Aldur");
 const ninjaDiv: Record<string, number> = {};
 for (const line of ninja.lines) ninjaDiv[line.id] = line.primaryValue;
 const ninjaNames: Record<string, { name: string; category: string; image: string; detailsId: string }> = {};
-for (const item of ninja.items) ninjaNames[item.id] = item;
+// Aggregate item metadata (name/icon/category) from EVERY poe.ninja fixture
+// file (currency + thematic: breach, expedition, soulcores). GGG payloads
+// carry only metadata paths, never display names — poe.ninja items are the
+// authoritative name/icon source. A ninja id maps to ONE item definition;
+// if two files disagree about a shared id the later file is ignored (first
+// definition wins) rather than silently overwriting it.
+const ninjaById = new Map<string, { name: string; category: string; image: string; detailsId: string }>();
+for (const file of NINJA_FILES) {
+  let parsed: { items?: { id: string; name: string; category: string; image: string; detailsId: string }[] };
+  try {
+    parsed = JSON.parse(readFileSync(join(FIXTURES, file), "utf8"));
+  } catch {
+    continue;
+  }
+  for (const item of parsed.items ?? []) {
+    if (!ninjaById.has(item.id)) ninjaById.set(item.id, { name: item.name, category: item.category, image: item.image, detailsId: item.detailsId });
+  }
+}
+for (const [id, meta] of ninjaById) ninjaNames[id] = meta;
 
 /** Cross-check a GGG market against ninja rates; returns observed ratio vs implied. */
 function checkPair(p0: string, p1: string) {
@@ -106,10 +136,80 @@ function checkPair(p0: string, p1: string) {
 
 const TOLERANCE = 0.25;
 
-// Aggregate per-pair validation: every market pair (p0,p1) whose hypothesis ids
-// are known gives one observation with a cross-rate in a fixed unit direction
-// (units of p1 per unit of p0). A path is verified when at least one of its
-// pairs matches poe.ninja's implied rate within tolerance.
+// ---------------------------------------------------------------------------
+// Auto-derived hypotheses from the REAL fixture + poe.ninja metadata.
+//
+// Bridge: poe.ninja item `image` URLs are /gen/image/<base64>/<hash>/<leaf>.png
+// where the base64 JSON fragment encodes the item's REAL GGG asset path, e.g.
+//   [25,14,{"f":"2DItems/Currency/Breach/BreachCatalystCold",...}]
+//   -> Metadata/Items/Currency/Breach/BreachCatalystCold  (Tul's Catalyst)
+// So decoding the image URL yields the item's authoritative GGG metadata path
+// plus poe.ninja's readable name, category and absolute icon URL. This is a
+// deterministic, non-fuzzy join key — NOT leaf-name guessing. A GGG path that
+// decodes to two DIFFERENT poe.ninja ids is a collision and is never guessed.
+// ---------------------------------------------------------------------------
+function decodeNinjaImageUrl(imageUrl: string): string | null {
+  const seg = imageUrl.split("/")[3]; // /gen/image/<B64>/<hash>/<leaf>.png
+  if (!seg) return null;
+  let decoded: unknown;
+  try {
+    const raw = Buffer.from(seg.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString("utf8");
+    decoded = JSON.parse(raw);
+  } catch {
+    return null;
+  }
+  const inner = Array.isArray(decoded) ? (decoded as unknown[])[(decoded as unknown[]).length - 1] : decoded;
+  const asset = inner && typeof inner === "object" ? (inner as { f?: unknown }).f : null;
+  if (typeof asset !== "string") return null;
+  return "Metadata/Items/" + asset.replace("2DItems/", "");
+}
+
+// Build authoritative GGG path -> poe.ninja item map from EVERY poe.ninja
+// fixture file. First definition wins; a path that maps to multiple distinct
+// ninja ids across files is flagged as a collision and never guessed.
+const authedToNinja = new Map<string, { id: string; name: string; category: string; image: string }>();
+const authedCollisions = new Set<string>();
+for (const file of NINJA_FILES) {
+  let parsed: { items?: { id: string; name: string; category: string; image: string }[] };
+  try {
+    parsed = JSON.parse(readFileSync(join(FIXTURES, file), "utf8"));
+  } catch {
+    continue;
+  }
+  for (const item of parsed.items ?? []) {
+    const ggPath = decodeNinjaImageUrl(item.image ?? "");
+    if (!ggPath) continue;
+    const existing = authedToNinja.get(ggPath);
+    if (!existing) authedToNinja.set(ggPath, { id: item.id, name: item.name, category: item.category, image: item.image });
+    else if (existing.id !== item.id) authedCollisions.add(ggPath);
+  }
+}
+
+// Real fixture (latest completed hour) — the published-opportunity universe.
+const gggLatest = JSON.parse(readFileSync(join(FIXTURES, "ggg-currency-exchange-1787090400.json"), "utf8"));
+const roaLatest = gggLatest.markets.filter((m: { league: string }) => m.league === "Runes of Aldur");
+const seenLeaves = new Set<string>();
+let derivedHypotheses = 0;
+const collisionLeaves = new Set<string>();
+for (const m of roaLatest) {
+  for (const p of m.market_pair) {
+    const leaf = String(p).split("/").pop();
+    if (seenLeaves.has(leaf)) continue;
+    seenLeaves.add(leaf);
+    if (authedCollisions.has(p)) { collisionLeaves.add(leaf); continue; }
+    const authed = authedToNinja.get(p);
+    if (!authed) continue;
+    if (!HYPOTHESIS[p]) {
+      HYPOTHESIS[p] = authed.id;
+      derivedHypotheses++;
+    }
+  }
+}
+
+// Aggregate rate + collision stats for the report.
+const derivedIds = new Set(Object.values(HYPOTHESIS));
+const dedupeNinjaIds = Array.from(derivedIds);
+
 const pairResults: { p0: string; p1: string; ok: boolean; gggMid: number; implied: number; id0: string; id1: string }[] = [];
 for (const m of roa) {
   const [p0, p1] = m.market_pair;
@@ -162,13 +262,15 @@ function bestRate(obs: { gggMid: number; implied: number }[]): number {
   return obs.reduce((a, b) => (Math.abs(b.gggMid / b.implied - 1) < Math.abs(a.gggMid / a.implied - 1) ? b : a)).gggMid;
 }
 
+const GENERATED_KEYS = new Set(verified.map((v) => v.gggPath));
+
 const lines: string[] = [];
 lines.push("// AUTO-GENERATED. Do not edit by hand — run `npx tsx scripts/generate-mapping.ts`.");
 lines.push("// Provenance: cross-validated 2026-08-18 against GGG completed-hour feed");
 lines.push("// (1787022000, league 'Runes of Aldur') and poe.ninja PoE2 economy overview.");
 lines.push("// Verified entries matched within 25% of the poe.ninja implied rate across all");
 lines.push("// observed markets. Quarantined entries failed the check and are NOT added.");
-lines.push("import type { ItemId } from \"./types\";");
+lines.push("import type { ItemId } from \"./types.ts\";");
 lines.push("");
 lines.push("export interface MappingRecord {");
 lines.push("  entry: ItemId;");
@@ -202,6 +304,39 @@ for (const v of verified.sort((a, b) => b.observations - a.observations)) {
 }
 lines.push("};");
 lines.push("");
+
+// Authoritative identities from the poe.ninja image-decoded bridge: REAL GGG
+// paths (per the asset path embedded in each image URL) with poe.ninja's
+// readable name, category and absolute icon. These are NOT rate-quarantined —
+// many (e.g. Tul's Catalyst) simply have no exchange-market observation in
+// these fixture hours, so they cannot be rate-validated, but their identity
+// is authoritative. Gold is left FEE_UNKNOWN (-1) so nothing is marketable or
+// priced without a verified fee. They resolve to a readable flip identity,
+// are rejected by scoring when gold is undefined, and never show a raw GGG id.
+lines.push("// --- Authoritative identity-only entries (path+name+icon from poe.ninja) ---");
+lines.push("export const AUTHORITATIVE_IDENTITY_MAPPING: Record<string, MappingRecord> = {");
+for (const [ggPath, authed] of [...authedToNinja.entries()].sort((a, b) => a[0].localeCompare(b[0]))) {
+  if (authedCollisions.has(ggPath)) continue; // never guess an ambiguous path
+  if (GENERATED_KEYS.has(ggPath)) continue; // already emitted (rate-verified)
+  const iconUrl = authed.image ? "https://web.poecdn.com" + authed.image : null;
+  lines.push(`  ${JSON.stringify(ggPath)}: {`);
+  lines.push(`    entry: {`);
+  lines.push(`      gggPath: ${JSON.stringify(ggPath)},`);
+  lines.push(`      ninjaId: ${JSON.stringify(authed.id)},`);
+  lines.push(`      displayName: ${JSON.stringify(authed.name)},`);
+  lines.push(`      category: ${JSON.stringify(authed.category)},`);
+  lines.push(`      iconUrl: ${JSON.stringify(iconUrl)},`);
+  lines.push(`      goldCostPerUnit: ${FEE_UNKNOWN},`);
+  lines.push(`      mappingSource: "checked-in-verified",`);
+  lines.push(`      lastVerifiedUtc: "2026-08-18T00:00:00Z",`);
+  lines.push(`    },`);
+  lines.push(`    validatedRate: 0,`);
+  lines.push(`    observations: 0,`);
+  lines.push(`  },`);
+}
+lines.push("};");
+lines.push("");
+
 lines.push("export const QUARANTINED_MAPPING: Record<string, { ninjaId: string; reason: string }> = {");
 for (const q of quarantined) {
   lines.push(`  ${JSON.stringify(q.gggPath)}: { ninjaId: ${JSON.stringify(q.ninjaId)}, reason: "failed cross-validation" },`);
@@ -210,6 +345,7 @@ lines.push("};");
 
 writeFileSync(OUT, lines.join("\n"));
 console.log(`Wrote ${OUT}`);
-console.log(`Verified: ${verified.length} paths | Quarantined: ${quarantined.length} paths`);
-for (const v of verified) console.log(`  OK  ${v.ninjaId.padEnd(34)} obs=${v.observations} rate=${v.ratio.toFixed(6)}`);
+console.log(`Verified: ${verified.length} paths | Quarantined: ${quarantined.length} paths | Auto-derived hypotheses: ${derivedHypotheses} | Collision leaves skipped: ${collisionLeaves.size}`);
+for (const v of verified) console.log(`  OK  ${v.ninjaId.padEnd(34)} obs=${v.observations} rate=${v.ratio.toFixed(6)} name=${ninjaNames[v.ninjaId]?.name ?? "?"}`);
 for (const q of quarantined) console.log(`  Q?  ${q.ninjaId.padEnd(34)} obs=${q.observations}`);
+if (collisionLeaves.size) console.log(`COLLISION leaves (1 ninja id ambiguous): ${[...collisionLeaves].join(", ")}`);

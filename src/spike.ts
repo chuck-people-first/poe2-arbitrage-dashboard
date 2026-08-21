@@ -3,12 +3,12 @@
 
 import { readFileSync } from "node:fs";
 import { join } from "node:path";
-import { parseGggPayload } from "./domain/ggg";
-import { deriveEdges } from "./domain/edges";
-import { enumerateClosedTriangles, enumerateTwoLegFlips, evaluateCandidate } from "./domain/routes";
-import { scoreCandidate, toRoute, rankDefault } from "./domain/scoring";
-import { displayName, GGG_HUB_PATHS, ITEM_MAP } from "./domain/mapping";
-import type { RunSettings } from "./domain/types";
+import { parseGggPayload } from "./domain/ggg.ts";
+import { deriveEdges } from "./domain/edges.ts";
+import { enumerateClosedTriangles, enumerateTwoLegFlips, evaluateCandidate } from "./domain/routes.ts";
+import { scoreCandidate, toRoute, rankDefault } from "./domain/scoring.ts";
+import { displayName, GGG_HUB_PATHS, ITEM_MAP } from "./domain/mapping.ts";
+import type { RunSettings } from "./domain/types.ts";
 
 const LEAGUE = "Runes of Aldur";
 const HOUR_UTC = "2026-08-18T03:00:00Z";
@@ -24,6 +24,7 @@ const edges = deriveEdges(roa, HOUR_UTC);
 console.log(`Derived ${edges.length} directed edges from ${roa.length} independent market pairs\n`);
 
 const settings: RunSettings = {
+  league: LEAGUE,
   startCurrency: GGG_HUB_PATHS.CHAOS,
   baseCurrency: GGG_HUB_PATHS.DIVINE,
   capitalUnits: 100, // start with 100 chaos (~10 divine)
@@ -74,7 +75,7 @@ const routes = [...scoredFlips, ...scoredTris]
   .filter((r) => r.route !== null)
   .sort((a, b) => rankDefault(a.route, b.route));
 
-console.log("=== TOP 25 ROUTES by profit-per-1M-gold (conservative) ===\n");
+console.log("=== TOP 25 ROUTES by profit per Divine per Gold (conservative) ===\n");
 for (const { route } of routes.slice(0, 25)) {
   const legNames = route.legs
     .map((l) => `give ${l.playbook.give} ${displayName(l.from).split(" ")[0]} -> get ${l.playbook.receive} ${displayName(l.to).split(" ")[0]}`)
@@ -84,7 +85,7 @@ for (const { route } of routes.slice(0, 25)) {
       `${route.endUnits} ${displayName(route.endCurrency).padEnd(12)} ` +
       `gross=${route.grossProfitBase.toFixed(2)} adj=${route.conservativeProfitBase.toFixed(2)} ` +
       `gold=${route.goldCostTotal.toLocaleString()} ` +
-      `per1M=${route.profitPer1mGold.toFixed(2)} pt=${route.profitPerTrade.toFixed(3)} ` +
+      `perDivineGold=${route.divineProfitPerGold.toFixed(2)} pt=${route.profitPerTrade.toFixed(3)} ` +
       `roi=${route.capitalRoiPct.toFixed(2)}% conf=${(route.fillConfidence * 100).toFixed(0)}% ` +
       `bottleneck=${(route.bottleneckVolumeShare * 100).toFixed(1)}%`,
   );

@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PoE2 Arbitrage Dashboard — Live Zero-Candidate</title>
+  <link rel="stylesheet" href="/dashboard.css">
+</head>
+<body>
+  <!-- This page renders the LIVE zero-candidate state: a completed hour with 0
+       publishable flips (honest Phase 0 output). NO synthetic demo banner —
+       this is the real safe-projection empty state. -->
+  <main class="shell">
+    <header class="topbar">
+      <div><p class="eyebrow">POE2 CURRENCY EXCHANGE</p><h1>Actionable flips</h1><p class="subhead">Buy a specific item with one currency, then sell that same item for another. Exact integer quantities. Verify every quote in Exchange before posting.</p></div>
+      <div class="source-badge"><span class="dot"></span><div><strong>Hourly status</strong><small id="sourceAge">Loading source…</small><small id="completedAt">—</small></div></div>
+    </header>
+    <section class="cards">
+      <article><span>Source age</span><strong id="age">—</strong><small>Completed UTC hour</small></article>
+      <article><span>Executable flips</span><strong id="count">—</strong><small>Same-item two-leg flips</small></article>
+      <article><span>Run status</span><strong id="runStatus">—</strong><small>succeeded / failed / running</small></article>
+      <article><span>Algorithm</span><strong id="algorithmVersion">—</strong><small>Version of this run</small></article>
+    </section>
+    <nav class="tabs" aria-label="Opportunity type"><button class="active" data-tab="closed">Closed Cycles</button><button data-tab="mtm">Mark-to-Market</button></nav>
+    <section class="panel">
+      <div class="panel-head"><div><h2 id="tabTitle">Closed Cycles</h2><p id="tabHint">Executable three-trade cycles only.</p></div><span class="pill">SOURCE: GGG COMPLETED HOUR</span></div>
+      <div class="table-wrap"><table><thead><tr><th>Item</th><th>Buy With / Path</th><th>Conservative P&amp;L</th><th class="sort-dg">Div / 100K Gold <span class="sort-caret">↕</span></th><th>Volume</th><th>Fill Risk</th><th>Gold</th><th>Trend</th><th>Recommendation</th></tr></thead><tbody id="routes"></tbody></table></div>
+    </section>
+    <footer><span>ⓘ Div / 100K Gold = Net Divine profit per 100K Gold = <code>conservative profit ÷ gold × 100,000</code>.</span><span>Mark-to-market edges are not closed realized loops; fill risk is an estimate.</span></footer>
+  </main>
+  <aside class="drawer" id="drawer" aria-hidden="true"><div class="drawer-inner" id="drawerInner"></div></aside>
+  <div class="scrim" id="scrim" hidden></div>
+  <script src="/dashboard-zero.js"></script>
+  <script src="/dashboard-data.js"></script>
+  <script src="/dashboard.js"></script>
+</body>
+</html>
