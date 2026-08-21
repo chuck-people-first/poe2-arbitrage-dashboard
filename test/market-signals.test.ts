@@ -146,7 +146,9 @@ describe("broad market signals", () => {
       // hour rounded to a 3:1 adverse boundary and also contained a tiny 1:2
       // favorable extreme. The scanner must plan from 3:1, not 1:2.
       mk([GGG_HUB_PATHS.EXALTED, bauble], [1, 2], [3, 1], [1394, 969]),
-      mk([GGG_HUB_PATHS.DIVINE, bauble], [1, 100], [1, 92], [2, 192]),
+      // Priced so the midpoint spread stays inside the plausibility cap: the
+      // point of this case is which BOUNDARY gets used, not the headline size.
+      mk([GGG_HUB_PATHS.DIVINE, bauble], [1, 150], [1, 140], [40, 1920]),
       mk([GGG_HUB_PATHS.EXALTED, GGG_HUB_PATHS.DIVINE], [368, 1], [380, 1], [10000, 100]),
     ], HOUR);
     const screenshotRows = buildMarketSignalRows(

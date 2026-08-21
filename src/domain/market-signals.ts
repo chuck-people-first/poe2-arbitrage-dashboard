@@ -50,6 +50,28 @@ const OUTPUT_TARGETS = [1, 2, 5, 10, 25, 50, 100, 250, 500] as const;
 /** Above this share of the observed hourly market, liquidity is the binding risk. */
 const HIGH_RISK_SHARE = 0.2;
 
+/**
+ * An item that changed hands a handful of times in an hour has no price — the
+ * "ratio" is whichever single trade happened to occur. Widening the item map to
+ * 574 named paths surfaced hundreds of these, and they arrive looking like the
+ * best opportunities on the board: buy for 6 Exalted, sell for 1 Divine, "+5,316%".
+ * Measured on the checked-in hour, dropping legs below 25 units cuts profitable
+ * rows from 175 to 32 and the worst spread from 36,325% to 7,540%.
+ *
+ * 25 units is the smallest market where the product's own 20% liquidity cap
+ * still leaves an order of 5 units — below that there is nothing to plan.
+ */
+const MIN_ITEM_HOURLY_VOLUME = 25;
+
+/**
+ * Past this, the buy and sell markets do not agree about what the item IS, and
+ * one of the quotes is broken. Real cross-market mispricing on a liquid item
+ * runs to tens of percent; four figures is a data fault. With the volume floor
+ * applied, capping here takes the worst surviving spread from 7,540% to 232%
+ * and leaves 19 profitable rows on the fixture hour.
+ */
+const MAX_PLAUSIBLE_SPREAD_PCT = 300;
+
 const CLASSIFICATION_LABELS: Record<SignalClassification, string> = {
   "return-confirmed": "Return confirmed",
   "fee-check-needed": "Fee check needed",
@@ -276,6 +298,7 @@ function buildFlow(
   finalUnits: number | null,
   totalGold: number | null,
   estimatedTotalGold: number,
+  startDivinePrice: number | null,
 ): SignalFlow {
   const step = (
     action: SignalFlowStep["action"],
@@ -303,6 +326,7 @@ function buildFlow(
     finalUnits: closes ? finalUnits : null,
     netUnits: closes ? finalUnits! - startUnits : null,
     netPct: closes && startUnits > 0 ? (finalUnits! / startUnits - 1) * 100 : null,
+    startDivinePrice,
     totalGold,
     estimatedTotalGold,
     closesInStartCurrency: closes,
@@ -355,10 +379,20 @@ export function buildMarketSignalRows(
         if (!back) continue;
         const path = [buy, sell, back] as const;
 
+        // LIQUIDITY GATE, before anything is priced. A market of one or two
+        // units cannot produce a ratio worth compounding, and a broad item map
+        // makes these the majority of candidates rather than a curiosity.
+        const itemVolume = Math.min(buy.volumeTo, sell.volumeFrom);
+        if (!(itemVolume >= MIN_ITEM_HOURLY_VOLUME)) continue;
+
         // DISCOVERY GATE: the item is mispriced at the hour's midpoint. This is
         // the broad list; proof of a closed cycle is a separate question below.
         const twoLegSpreadPct = compoundPct(path, discoveryRate);
         if (!Number.isFinite(twoLegSpreadPct) || twoLegSpreadPct <= 0) continue;
+        // A spread this large is two markets disagreeing about the item's
+        // identity, not an opportunity. Publishing it would put a broken quote
+        // at the top of the board.
+        if (twoLegSpreadPct > MAX_PLAUSIBLE_SPREAD_PCT) continue;
 
         const fitted = chooseSizing(buy, sell, back, settings.maxVolumeSharePct);
         const sizingFits = fitted !== null;
@@ -396,7 +430,7 @@ export function buildMarketSignalRows(
         };
 
         const maxRange = Math.max(rangePct(buy), rangePct(sell), rangePct(back));
-        const itemHourlyVolume = Math.min(buy.volumeTo, sell.volumeFrom);
+        const itemHourlyVolume = itemVolume;
         const riskValue = estimateFillRisk(maxShare, maxRange, itemHourlyVolume);
         const classification = classify(priceModel, goldVerified, maxShare, sizingFits);
         const familyId = sha256Hex(`market-signal|${start}|${buy.to}|${sell.to}`);
@@ -447,7 +481,7 @@ export function buildMarketSignalRows(
           goldEstimateBasis: unknownFee?.basis ?? null,
           estimatedProfitDivine, estimatedDivPer100kGold: perGold(estimatedProfitDivine),
           flow: buildFlow(startIdentity, item, sellIdentity, buyLeg, sellLeg, returnLeg,
-            startUnits, sizingFits ? final : null, totalGold, estimatedTotalGold),
+            startUnits, sizingFits ? final : null, totalGold, estimatedTotalGold, toDivineRate),
           liquidityLabel: liquidityBand(maxShare),
           sourceCheck: {
             gggDivine: cross.gggDivine, ninjaDivine: cross.ninjaDivine,

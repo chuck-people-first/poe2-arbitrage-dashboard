@@ -73,7 +73,15 @@ function auditFunnel() {
   const withReturn = all.filter((family) => family.back !== null);
   const cycle = (family: typeof all[number], side: (edge: DirectedEdge) => number) =>
     side(family.buy) * side(family.sell) * side(family.back!);
+  const midpointPositive = withReturn.filter((f) => cycle(f, (e) => e.rate) > 1);
+  // The two gates added once the item map widened to 574 named paths: an item
+  // that traded a handful of units has no price, and a four-figure spread is a
+  // broken quote rather than an opportunity.
+  const liquid = midpointPositive.filter((f) => Math.min(f.buy.volumeTo, f.sell.volumeFrom) >= 25);
+  const plausible = liquid.filter((f) => (cycle(f, (e) => e.rate) - 1) * 100 <= 300);
   return {
+    liquidEnoughToPrice: liquid.length,
+    plausibleSpread: plausible.length,
     marketsInLeague: markets.length,
     rawCombinations,
     readableFamilies: all.length,
@@ -93,27 +101,48 @@ describe("discovery funnel on the checked-in real GGG hour", () => {
   const funnel = auditFunnel();
 
   it("measures each stage of the candidate funnel", () => {
-    // These moved when poe.ninja became a second source: the identity bridge
-    // roughly doubled how many traded GGG paths resolve to a readable item, so
-    // the same hour now yields 192 readable families instead of 98. The shape
-    // of the funnel is unchanged — each stage still filters the one above it.
+    // These numbers have moved twice. poe.ninja's bridge took readable families
+    // from 98 to 192; poe2scout — which publishes the GGG metadata path and the
+    // display name in the same record — took them to 1,372, naming 574 of the
+    // 583 traded paths and 100% of traded volume.
+    //
+    // That coverage also introduced the noise the last two stages exist to
+    // remove: hundreds of items that traded once or twice an hour, arriving at
+    // the top of the board as "+5,316%" round trips.
     expect(funnel).toMatchObject({
       marketsInLeague: 1389,
-      readableFamilies: 192,
-      withDirectReturnMarket: 192,
-      positiveFavorable: 175,
-      positiveMidpoint: 96,
-      midpointAtLeast25Pct: 43,
-      positiveConservative: 16,
+      readableFamilies: 1372,
+      withDirectReturnMarket: 1372,
+      positiveFavorable: 1102,
+      positiveMidpoint: 686,
+      midpointAtLeast25Pct: 406,
+      positiveConservative: 258,
+      liquidEnoughToPrice: 271,
+      plausibleSpread: 256,
     });
   });
 
-  it("publishes the midpoint-positive families, not only the conservative survivors", () => {
+  it("publishes the midpoint-positive families that survive the liquidity and plausibility gates", () => {
     // The old scanner required a positive CONSERVATIVE closed cycle to list at
-    // all, which is why 98 readable families collapsed to ~14 before the UI
-    // filters even ran. Discovery is now the midpoint gate.
-    expect(rows.length).toBe(funnel.positiveMidpoint);
-    expect(rows.length).toBeGreaterThan(funnel.positiveConservative * 3);
+    // all, which is why readable families collapsed by an order of magnitude
+    // before the UI filters even ran. Discovery is the midpoint gate now; what
+    // it publishes is then bounded only by whether the market is real.
+    expect(rows.length).toBe(funnel.plausibleSpread);
+    // Broad: an order of magnitude past the ~14 rows the conservative-only gate
+    // published, and past the 90 the poe.ninja bridge alone reached.
+    expect(rows.length).toBeGreaterThan(200);
+    // But strictly narrower than raw midpoint-positive — the gates are real.
+    expect(rows.length).toBeLessThan(funnel.positiveMidpoint);
+  });
+
+  it("refuses to price an item that barely traded, however good the ratio looks", () => {
+    // A market of one or two units produces whichever single trade happened to
+    // occur. Every published row must clear the floor on BOTH item legs.
+    for (const signal of signals) expect(signal.itemHourlyVolume).toBeGreaterThanOrEqual(25);
+    // And no published spread may be in the range that only a broken quote
+    // reaches — the raw hour contains them, the board does not.
+    for (const signal of signals) expect(signal.priceModel.twoLegSpreadPct).toBeLessThanOrEqual(300);
+    expect(funnel.positiveMidpoint - funnel.liquidEnoughToPrice).toBeGreaterThan(300);
   });
 
   it("keeps proof scarce even though discovery is broad", () => {

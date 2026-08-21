@@ -15,7 +15,7 @@ export interface ItemId {
   /** gold cost per unit received on the Currency Exchange (want side) */
   goldCostPerUnit: number;
   /** where the mapping came from; "quarantined" until proven */
-  mappingSource: "checked-in-verified" | "poe-ninja" | "ggg-only" | "quarantined";
+  mappingSource: "checked-in-verified" | "poe2scout" | "poe-ninja" | "ggg-only" | "quarantined";
   /** when the mapping entry was last verified against live sources */
   lastVerifiedUtc: string;
 }
@@ -455,6 +455,9 @@ export interface SignalFlow {
   /** finalUnits - startUnits, in the starting currency. The number that matters. */
   netUnits: number | null;
   netPct: number | null;
+  /** Divine per 1 unit of the starting currency, so a re-sized plan can be
+   *  valued in Divine without reaching for a different price model. */
+  startDivinePrice: number | null;
   /** Total gold across all three steps; null when any fee is unverified. */
   totalGold: number | null;
   /** Same total using the labeled category fallback for unverified fees. */

@@ -203,3 +203,69 @@ Fixtures: `fixtures/ggg-currency-exchange-*.json` (two real hours) and
   entry claim a verified fee.
 - `TRADE NOW` stays reserved for the Verified Closed Cycles tab.
 - Destructive DB operations go through Chuck.
+
+---
+
+# Next session (scheduled ~03:00 ET / 07:00 UTC) — references from Chuck
+
+Three leads, aimed squarely at the naming gap (43 of 583 traded paths, the
+ceiling on everything).
+
+## 1 · poe2scout — likely the fix for item naming
+
+- MCP wrapper: https://github.com/vanzan01/poe2scout-mcp
+- Backend: https://github.com/poe2scout/poe2scout
+
+**Confirmed by probing:** the API base is **`https://poe2scout.com/api/v1/`**.
+Evidence: every other path returns a bare 404, while `/api/v1/leagues` returns
+`400 "Invalid realm."` — the route exists and is rejecting a missing/invalid
+parameter.
+
+Still unknown: the realm parameter's NAME and accepted values, and the route
+list. Ruled out already — `?realm=` with poe2 / pc / poe2-pc / standard / POE2 /
+Poe2 / poe / xbox, a `realm:` header, an `X-Realm:` header, and path segments
+`/api/v1/poe2/...` and `/api/v1/pc/...`. There is no OpenAPI schema at
+`/api/v1/openapi.json`, `/docs` or `/redoc`, and the site is a Remix app that
+loads data server-side, so the browser bundles contain no API calls to copy.
+
+**Fastest route to the answer:** `add_repo` on `poe2scout/poe2scout` (it is
+public but not in this session's GitHub scope — the plain API call was refused),
+then grep the backend for its route definitions and the realm validator. That
+gives the parameter name, the valid values and every endpoint in one pass.
+
+The MCP README also notes the API is **rate limited to 2 req/sec (burst 5)** and
+**requires an email** in the request, presumably in the User-Agent. Respect both.
+
+Why it matters: if poe2scout exposes GGG metadata ids alongside item names, it
+closes the naming gap directly and the row count multiplies. If it only exposes
+names and prices, it still becomes a THIRD price source for the agreement check.
+
+## 2 · falleng0d/poe2-arbitrage-calculator
+
+A manual calculator, not a scanner: the user enters currencies and rates by hand
+and it validates them. Two things worth stealing:
+
+- **Per-currency gold cost values, user-editable.** That is our third-largest
+  gap — only 14 of our items have a verified Currency Exchange fee, and
+  poe.ninja does not publish fees. A small editable fee table (persisted, seeded
+  from the poe2wiki values we already have) would move many rows from
+  "estimated fees" to verified, and is a better answer than the current
+  per-row OCR flow.
+- **Rate validation with visual feedback**, i.e. telling the user when the
+  numbers they typed cannot be right.
+
+## 3 · Video — "Path of Exile 2 Arbitrage in under 5 minutes" (Path of Stonks)
+
+https://www.youtube.com/watch?v=IsGV2rIJEE4 — not watchable from this container.
+Worth having Chuck summarise the method, or check whether it describes a flow
+the scanner does not model (e.g. vendor recipes, which Divine Tendies also
+lists and we do not).
+
+## Suggested order
+
+1. `add_repo poe2scout/poe2scout`, read the routes + realm validator, probe the
+   live API, and see whether it carries GGG metadata ids.
+2. If it does: extend the identity bridge with it as a third corroborating
+   source, using the same rule — identity structural, price only confirms.
+3. Editable gold-fee table seeded from poe2wiki.
+4. Re-audit the ~20 rows where GGG and poe.ninja diverge or conflict.
