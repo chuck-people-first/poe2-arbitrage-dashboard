@@ -61,7 +61,7 @@ const HIGH_RISK_SHARE = 0.2;
  * 25 units is the smallest market where the product's own 20% liquidity cap
  * still leaves an order of 5 units — below that there is nothing to plan.
  */
-const MIN_ITEM_HOURLY_VOLUME = 25;
+export const MIN_ITEM_HOURLY_VOLUME = 25;
 
 /**
  * Past this, the buy and sell markets do not agree about what the item IS, and
@@ -70,7 +70,7 @@ const MIN_ITEM_HOURLY_VOLUME = 25;
  * applied, capping here takes the worst surviving spread from 7,540% to 232%
  * and leaves 19 profitable rows on the fixture hour.
  */
-const MAX_PLAUSIBLE_SPREAD_PCT = 300;
+export const MAX_PLAUSIBLE_SPREAD_PCT = 300;
 
 const CLASSIFICATION_LABELS: Record<SignalClassification, string> = {
   "return-confirmed": "Return confirmed",

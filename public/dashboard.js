@@ -62,7 +62,7 @@ function loadSettings() {
     if ($('#hideLosers') && saved.hideLosers !== undefined) $('#hideLosers').checked = Boolean(saved.hideLosers);
   } catch { /* ignore malformed state rather than blocking the page */ }
 }
-const { normalizeOpportunityRow } = window.POE2Dashboard;
+const { normalizeOpportunityRow, isCredibleSignal, MIN_ITEM_HOURLY_VOLUME } = window.POE2Dashboard;
 const fmt = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Number(n || 0));
 const fmtInt = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Number(n || 0));
 const pct = (n, d = 1) => `${(Number(n || 0) * 100).toFixed(d)}%`;
@@ -289,6 +289,9 @@ function scannerRows() {
   }).filter(r => {
     if (!window.POE2_DEMO_DATA && !hasPriceModel(r)) return false;
     const s = r.discovery;
+    // Not a user filter: a stored signal this thin or this extreme is a data
+    // fault, and no toggle should be able to put it back on the board.
+    if (!isCredibleSignal(s)) return false;
     if (!preset.match(s)) return false;
     if (search && !`${s.item.name} ${s.buyCurrency.name} ${s.sellCurrency.name}`.toLowerCase().includes(search)) return false;
     if (Number(s.itemHourlyVolume || 0) < minVolume) return false;
@@ -488,9 +491,15 @@ function render() {
   const staleRows = tab === 'scanner' && !window.POE2_DEMO_DATA
     ? (run?.routes || []).filter(r => r.discovery && !hasPriceModel(r))
     : [];
+  // Signals the ingest published but the credibility gate suppressed. Told
+  // apart from user filters so the empty state does not send Chuck to widen
+  // filters that would not have brought these back anyway.
+  const suppressedRows = tab === 'scanner'
+    ? (run?.routes || []).filter(r => r.discovery && hasPriceModel(r) && !isCredibleSignal(r.discovery))
+    : [];
   const staleVersion = staleRows[0]?.algorithmVersion || run?.status?.algorithm_version || null;
   const staleNotice = `<b>Waiting on the next hourly ingest.</b><span>This dashboard reads the round-trip model, and the ${staleRows.length} stored ${staleRows.length === 1 ? 'signal was' : 'signals were'} produced by the previous scanner${staleVersion ? ` (<code>${esc(staleVersion)}</code>)` : ''}. Nothing is wrong with the data — the hourly ingestion just has not run with this version yet. Old best-case percentages stay hidden rather than being shown as if they were comparable.</span>`;
-  $('#routes').innerHTML = rs.length ? rs.map(r => tab === 'scanner' ? scannerRowHtml(r) : tab === 'closed' ? closedRowHtml(r) : mtmRowHtml(r)).join('') : `<tr><td colspan="${tab === 'scanner' ? SCANNER_COLSPAN : 9}" class="empty">${staleRows.length ? `<div class="empty-notice">${staleNotice}</div>` : tab === 'scanner' ? `No ${esc((FLOW_PRESETS[flowPreset] || FLOW_PRESETS.all).label)} signals match these filters. Switch to All paths, or lower Min spread / Min volume.` : tab === 'closed' ? 'No fully verified closed cycles this hour. Check Market Scanner for paths that need a live gold-fee check.' : 'No executable mark-to-market flips this hour.'}</td></tr>`;
+  $('#routes').innerHTML = rs.length ? rs.map(r => tab === 'scanner' ? scannerRowHtml(r) : tab === 'closed' ? closedRowHtml(r) : mtmRowHtml(r)).join('') : `<tr><td colspan="${tab === 'scanner' ? SCANNER_COLSPAN : 9}" class="empty">${staleRows.length ? `<div class="empty-notice">${staleNotice}</div>` : tab === 'scanner' ? (suppressedRows.length ? `<div class="empty-notice"><b>${suppressedRows.length} stored ${suppressedRows.length === 1 ? 'signal was' : 'signals were'} held back as untradeable.</b><span>They quote markets that traded fewer than ${MIN_ITEM_HOURLY_VOLUME} units in the hour, or a spread too wide for the two markets to be pricing the same item. A single trade in a dead market is not a price, so these are not shown at any filter setting. The next hourly ingest may surface real ones.</span></div>` : `No ${esc((FLOW_PRESETS[flowPreset] || FLOW_PRESETS.all).label)} signals match these filters. Switch to All paths, or lower Min spread / Min volume.`) : tab === 'closed' ? 'No fully verified closed cycles this hour. Check Market Scanner for paths that need a live gold-fee check.' : 'No executable mark-to-market flips this hour.'}</td></tr>`;
   $('#count').textContent = String(rs.length);
   $('#verifiedCount').textContent = String(rs.filter(r => tab === 'scanner' ? isConfirmed(r.discovery) : tab === 'closed').length);
   $('#unknownCount').textContent = String(rs.filter(r => tab === 'scanner' && !r.discovery?.goldVerified).length);
