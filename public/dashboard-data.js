@@ -61,5 +61,41 @@
     return x.replaceAll('-', ' ').replaceAll('_', ' ').replace(/\b\w/g, c => c.toUpperCase());
   }
 
-  root.POE2Dashboard = { normalizeOpportunityRow, name };
+
+  // The ingest applies a liquidity floor and a plausibility cap before it
+  // publishes (src/domain/market-signals.ts). The dashboard, however, renders
+  // whatever the last SUCCESSFUL ingest wrote — which can be an older
+  // algorithm version that predates those gates, and stays on screen until an
+  // ingest with the new version lands. Re-applying the same two thresholds
+  // here means a one-unit market can never sit at the top of the board just
+  // because the Edge Function has not been redeployed yet.
+  //
+  // Keep these two numbers identical to MIN_ITEM_HOURLY_VOLUME and
+  // MAX_PLAUSIBLE_SPREAD_PCT in src/domain/market-signals.ts.
+  const MIN_ITEM_HOURLY_VOLUME = 25;
+  const MAX_PLAUSIBLE_SPREAD_PCT = 300;
+
+  // Why a stored signal is not fit to show, or null when it is fit.
+  // Returning the reason (rather than a boolean) lets the empty state explain
+  // itself instead of looking like a broken page.
+  function credibilityFault(discovery) {
+    if (!discovery) return 'no-signal';
+    const volume = Number(discovery.itemHourlyVolume);
+    if (!Number.isFinite(volume) || volume < MIN_ITEM_HOURLY_VOLUME) return 'thin-market';
+    const spread = Number(discovery.priceModel?.twoLegSpreadPct ?? discovery.twoLegProfitPct);
+    if (!Number.isFinite(spread)) return 'unpriced';
+    // A round trip that gives back less than it takes is not an opportunity,
+    // whatever the ingest scored it.
+    if (spread <= 0) return 'negative-spread';
+    // Past this the buy and sell markets disagree about what the item IS.
+    if (spread > MAX_PLAUSIBLE_SPREAD_PCT) return 'implausible-spread';
+    return null;
+  }
+
+  const isCredibleSignal = discovery => credibilityFault(discovery) === null;
+
+  root.POE2Dashboard = {
+    normalizeOpportunityRow, name, credibilityFault, isCredibleSignal,
+    MIN_ITEM_HOURLY_VOLUME, MAX_PLAUSIBLE_SPREAD_PCT,
+  };
 })(window);

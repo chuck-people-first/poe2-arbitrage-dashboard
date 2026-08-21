@@ -179,20 +179,20 @@ table.detail tr.total td { border-top: 1px solid var(--border); padding-top: 8px
 .section-warning { margin: 0; padding: 11px 18px; background: rgba(240,192,90,.06); border-bottom: 1px solid var(--border); color: var(--muted); font-size: 12px; line-height: 1.55; }
 .section-warning strong { color: var(--fg-dim, var(--fg)); font-weight: 600; }
 
-thead th { padding: 12px 11px; font-size: 10.5px; letter-spacing: .09em; }
+thead th { padding: 12px 8px; font-size: 10.5px; letter-spacing: .09em; }
 thead th small { display: block; margin-top: 3px; font-weight: 500; text-transform: none; letter-spacing: 0; font-size: 10px; opacity: .7; }
 thead th.sortable { cursor: pointer; user-select: none; }
 thead th.sortable:hover, thead th.sortable:focus-visible { color: var(--fg); }
 thead th.sortable.active { color: var(--accent); }
 
 /* Two rows, one opportunity: the lead row opens the card, the strip closes it. */
-tbody tr.lead td { padding: 13px 11px 7px; border-bottom: 0; }
-tbody tr.bids td { padding: 0 11px 13px; }
+tbody tr.lead td { padding: 13px 8px 7px; border-bottom: 0; }
+tbody tr.bids td { padding: 0 8px 13px; }
 tbody tr.lead:hover, tbody tr.lead:hover + tr.bids,
 tbody tr.bids:hover, tbody tr.lead:has(+ tr.bids:hover) { background: var(--panel-2); }
 tbody tr.lead:focus-visible { outline: 2px solid var(--accent-2); outline-offset: -2px; }
 
-td.cell-item { display: flex; align-items: center; gap: 11px; max-width: 216px; }
+td.cell-item { display: flex; align-items: center; gap: 9px; max-width: 190px; }
 td.cell-item > span { display: flex; flex-direction: column; min-width: 0; }
 td.cell-item b { font-size: 14.5px; line-height: 1.25; }
 td.cell-item small { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -201,7 +201,7 @@ td.cell-item small { white-space: nowrap; overflow: hidden; text-overflow: ellip
 
 /* The chain. The closing hop is coloured because converting back is the step
    people skip, and it is the only hop denominated in what they started with. */
-.cell-flow { min-width: 430px; }
+.cell-flow { min-width: 330px; }
 .flow .link { display: inline-flex; align-items: center; gap: 5px; }
 .flow { display: flex; align-items: center; flex-wrap: wrap; gap: 3px 5px; font-size: 13px; }
 .flow .hop { display: inline-flex; align-items: baseline; gap: 4px; padding: 3px 8px; border-radius: var(--radius-sm); background: var(--raised); border: 1px solid var(--border); white-space: nowrap; color: var(--muted); }
@@ -296,7 +296,7 @@ td.red, .red { color: var(--red); }
 .bid.copied .copy-hint { opacity: 1; }
 .bid.copied .copy-hint::after { content: " copied"; }
 
-.cell-src { min-width: 132px; }
+.cell-src { min-width: 112px; }
 .src { display: inline-block; padding: 3px 8px; border-radius: 999px; font-size: 10.5px; font-weight: 700; letter-spacing: .03em; white-space: nowrap; border: 1px solid transparent; }
 .src.confirmed { background: rgba(86,217,138,.13); color: var(--green); border-color: rgba(86,217,138,.34); }
 .src.close { background: rgba(126,224,163,.10); color: var(--accent); border-color: rgba(126,224,163,.26); }
