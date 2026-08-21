@@ -13,6 +13,7 @@
 import type { ItemId } from "./types.ts";
 import { GENERATED_MAPPING, AUTHORITATIVE_IDENTITY_MAPPING } from "./mapping.generated.ts";
 import { NINJA_BRIDGE_MAPPING } from "./mapping.ninja-bridge.ts";
+import { POE2SCOUT_MAPPING } from "./mapping.poe2scout.ts";
 
 export const GGG_HUB_PATHS = {
   DIVINE: "Metadata/Items/Currency/CurrencyModValues",
@@ -103,6 +104,16 @@ for (const item of Object.values(ITEM_MAP)) {
 
 // Apply manual overrides (gold costs from the poe2wiki exchange table).
 for (const [path, item] of Object.entries(MANUAL_OVERRIDES)) {
+  ITEM_MAP[path] = item;
+}
+
+// poe2scout entries: the GGG metadata path and the display name arrive in the
+// same record, so this is a read identity rather than an inference — the widest
+// and most reliable layer. It is applied FIRST among the generated layers and
+// still yields to anything already present, so curated and rate-verified
+// entries keep their gold fees.
+for (const [path, item] of Object.entries(POE2SCOUT_MAPPING)) {
+  if (ITEM_MAP[path]) continue;
   ITEM_MAP[path] = item;
 }
 

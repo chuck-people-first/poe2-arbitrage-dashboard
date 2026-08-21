@@ -15,7 +15,7 @@ export interface ItemId {
   /** gold cost per unit received on the Currency Exchange (want side) */
   goldCostPerUnit: number;
   /** where the mapping came from; "quarantined" until proven */
-  mappingSource: "checked-in-verified" | "poe-ninja" | "ggg-only" | "quarantined";
+  mappingSource: "checked-in-verified" | "poe2scout" | "poe-ninja" | "ggg-only" | "quarantined";
   /** when the mapping entry was last verified against live sources */
   lastVerifiedUtc: string;
 }
