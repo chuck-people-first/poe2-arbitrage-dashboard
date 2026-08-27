@@ -14,6 +14,7 @@ import type { ItemId } from "./types.ts";
 import { GENERATED_MAPPING, AUTHORITATIVE_IDENTITY_MAPPING } from "./mapping.generated.ts";
 import { NINJA_BRIDGE_MAPPING } from "./mapping.ninja-bridge.ts";
 import { POE2SCOUT_MAPPING } from "./mapping.poe2scout.ts";
+import { EXCHANGE_FEES } from "./fees.generated.ts";
 
 export const GGG_HUB_PATHS = {
   DIVINE: "Metadata/Items/Currency/CurrencyModValues",
@@ -23,9 +24,11 @@ export const GGG_HUB_PATHS = {
 
 const verified = "checked-in-verified" as const;
 
-// Public PoE2 wiki Currency Exchange table, checked 2026-08-20.
+// Hand-entered from the public PoE2 wiki, checked 2026-08-20. Superseded by
+// fees.generated.ts, which carries the same numbers for all 669 exchangeable
+// items rather than these ten; kept as a regression check that the generated
+// table still agrees with what was verified by hand.
 // Fees are per unit received on the I WANT side.
-// https://www.poe2wiki.net/wiki/Currency_exchange
 const VERIFIED_GOLD_BY_NAME: Record<string, number> = {
   "Orb of Annulment": 1000,
   "Artificer's Shard": 100,
@@ -126,6 +129,26 @@ for (const [path, record] of Object.entries(NINJA_BRIDGE_MAPPING)) {
   ITEM_MAP[path] = record.entry;
 }
 
+// poe2db Currency Exchange entries: the GGG metadata path, the display name
+// and the game's own gold fee all come off the same page, so identity here is
+// read rather than inferred. Applied last, so nothing already resolved moves.
+// These entries keep `goldCostPerUnit` on the record for display, but the fee
+// that routes are priced with is always read from EXCHANGE_FEES below, keyed
+// by path — identity provenance never grants a fee, and never withholds one.
+for (const [path, fee] of Object.entries(EXCHANGE_FEES)) {
+  if (ITEM_MAP[path]) continue;
+  ITEM_MAP[path] = {
+    gggPath: path,
+    ninjaId: "",
+    displayName: fee.displayName,
+    category: fee.section,
+    iconUrl: null,
+    goldCostPerUnit: fee.goldCostPerUnit,
+    mappingSource: "poe2db",
+    lastVerifiedUtc: "2026-08-27T00:00:00Z",
+  };
+}
+
 export function lookupItem(gggPath: string): ItemId | null {
   return ITEM_MAP[gggPath] ?? null;
 }
@@ -135,11 +158,21 @@ export function displayName(gggPath: string): string {
 }
 
 /**
- * Gold cost per received unit. If unmapped OR the fee is unverified (-1),
- * returns 0 and flags `verified: false` so the caller drops the route or marks
- * it low-confidence — never guess a fee, never treat an unknown fee as zero.
+ * Gold cost per unit received on the "I want" side of a Currency Exchange
+ * order. An order's gold cost is this value times the number of units bought,
+ * so a leg that ends in a cheap high-count currency is the expensive one:
+ * 352 Exalted Orbs (one Divine's worth) cost 42,240 gold to buy, while the
+ * Divine itself costs 800.
+ *
+ * The fee is a static per-item constant in the game's own Currency Exchange
+ * table, so it is looked up by GGG metadata path and is independent of how the
+ * item's name was established. A path outside that table is not exchangeable;
+ * it returns unverified so the caller drops the route or marks it
+ * low-confidence — never guess a fee, never treat an unknown fee as zero.
  */
 export function goldCostPerUnit(gggPath: string): { cost: number; verified: boolean } {
+  const fee = EXCHANGE_FEES[gggPath];
+  if (fee) return { cost: fee.goldCostPerUnit, verified: true };
   const item = lookupItem(gggPath);
   if (!item || item.mappingSource !== "checked-in-verified" || item.goldCostPerUnit < 0) {
     return { cost: 0, verified: false };

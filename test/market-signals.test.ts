@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { deriveEdges } from "../src/domain/edges.ts";
 import { parseGggPayload } from "../src/domain/ggg.ts";
 import { buildMarketSignalRows } from "../src/domain/market-signals.ts";
-import { GGG_HUB_PATHS, goldCostPerUnit } from "../src/domain/mapping.ts";
+import { GGG_HUB_PATHS, estimatedGoldCostPerUnit, goldCostPerUnit } from "../src/domain/mapping.ts";
 import type { RunSettings } from "../src/domain/types.ts";
 
 const LEAGUE = "Runes of Aldur";
@@ -41,13 +41,18 @@ describe("broad market signals", () => {
     expect(goldCostPerUnit("Metadata/Items/Currency/CurrencyFlaskQuality")).toEqual({ cost: 750, verified: true });
   });
 
-  it("surfaces a broad named scanner instead of only fee-verified routes", () => {
+  it("surfaces a broad named scanner, now with a verified fee on every row", () => {
     // Discovery lists every readable item mispriced at the completed-hour
     // midpoint. Proving the round trip is a separate, stricter question that
     // `classification` answers per row — it is not an entry requirement.
     expect(rows.length).toBeGreaterThan(40);
     expect(rows.every((row) => row.route.discovery?.item.name && !row.route.discovery.item.name.startsWith("Metadata/"))).toBe(true);
-    expect(rows.some((row) => row.route.discovery?.goldVerified === false)).toBe(true);
+    // The gold fee is a static per-item constant in the game's Currency
+    // Exchange table, and the generated table carries all 669 of them. Every
+    // path that trades on the exchange therefore has a verified fee; a row
+    // with an unverified one would mean an item traded that the exchange
+    // table does not list, which should not happen.
+    expect(rows.every((row) => row.route.discovery?.goldVerified === true)).toBe(true);
   });
 
   it("prices every listed row against an independently observed return market", () => {
@@ -73,19 +78,21 @@ describe("broad market signals", () => {
   });
 
   it("never converts an unknown fee into zero-cost executable profit", () => {
-    const unverified = rows.filter((candidate) => !candidate.route.discovery!.goldVerified);
-    expect(unverified.length).toBeGreaterThan(0);
-    for (const row of unverified) {
+    // No live row exercises this any more — the exchange table covers every
+    // traded path — so the invariant is asserted against the gate itself: a
+    // path that is not on the Currency Exchange has no fee, and an absent fee
+    // reports as unverified with a zero cost the caller must not spend.
+    const notExchangeable = "Metadata/Items/Armours/BodyArmours/BodyStr1";
+    expect(goldCostPerUnit(notExchangeable)).toEqual({ cost: 0, verified: false });
+    const fallback = estimatedGoldCostPerUnit(notExchangeable);
+    expect(fallback.verified).toBe(false);
+    expect(fallback.cost).toBeGreaterThan(0);
+    expect(fallback.basis).toMatch(/fallback/i);
+    // And nothing in the scanner reports a fee it did not verify.
+    for (const row of rows) {
       const signal = row.route.discovery!;
-      expect(signal.totalGold).toBeNull();
-      expect(signal.estimatedTotalGold).toBeGreaterThan(0);
-      expect(signal.estimatedGoldPerUnknownUnit).toBeGreaterThan(0);
-      expect(signal.goldEstimateBasis).toMatch(/fallback/i);
-      expect(signal.recommendation).not.toBe("TRADE NOW");
-      // An unverified fee can never be the strongest classification, and the
-      // row always says why it is not actionable.
-      expect(signal.classification).not.toBe("return-confirmed");
-      expect(signal.warning).toMatch(/gold fee is not verified|fits inside the observed hourly volume|least-favorable boundary/i);
+      if (signal.goldVerified) expect(signal.totalGold).toBeGreaterThan(0);
+      else expect(signal.totalGold).toBeNull();
     }
   });
 

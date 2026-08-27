@@ -181,10 +181,14 @@ Fixtures: `fixtures/ggg-currency-exchange-*.json` (two real hours) and
    table and multiply the row count. **This is the highest-value next task.**
 2. **poe.ninja `details` endpoint returns 404** for the id/type combos I tried;
    only `overview` is wired. More per-item history may be available there.
-3. **Gold fees**: only 14 paths have a *verified* Currency Exchange fee (from the
-   poe2wiki table). poe.ninja does not publish fees, so bridge entries carry
-   `goldCostPerUnit: -1` and can never claim fee-verified status. Everything else
-   uses a labelled category estimate or the in-drawer OCR correction.
+3. ~~**Gold fees**: only 14 paths have a *verified* Currency Exchange fee.~~
+   **Closed.** The fee is a static per-item constant in the game's data, not a
+   market number, and poe2db publishes the whole table with each item's GGG
+   metadata path. `src/domain/fees.generated.ts` now carries all 669 entries
+   and `goldCostPerUnit()` reads it by path, so all 521 traded paths on the
+   live hour are fee-verified (was 13). See `docs/GOLD_FEES.md` — including
+   what the real fees say about which routes are worth running, and why an
+   Exalted leg costs ~53x what the same value costs as Divine.
 4. **Two hours of GGG history only.** The `spreadPct` and trend features get
    better with accumulated ingests; migration 016 starts that accumulating for
    scanner families for the first time.
@@ -267,5 +271,8 @@ lists and we do not).
    live API, and see whether it carries GGG metadata ids.
 2. If it does: extend the identity bridge with it as a third corroborating
    source, using the same rule — identity structural, price only confirms.
-3. Editable gold-fee table seeded from poe2wiki.
+3. ~~Editable gold-fee table seeded from poe2wiki.~~ Superseded: the real table
+   is checked in. What is still worth building is the *gold intensity* column
+   (`scripts/audit-gold-intensity.ts`) in the UI, and a gold-per-hour input so
+   "worth running" is comparable to farming.
 4. Re-audit the ~20 rows where GGG and poe.ninja diverge or conflict.
