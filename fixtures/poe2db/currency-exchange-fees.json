@@ -1,0 +1,5359 @@
+{
+ "source": "https://poe2db.tw/us/Currency_Exchange",
+ "realm": "us",
+ "capturedUtc": "2026-08-27T19:23:05.350Z",
+ "entries": [
+  {
+   "gggPath": "Metadata/Items/Currency/Abyss/AbyssPinnacleKey",
+   "art": "Art/2DItems/Currency/KulemaksInvitation",
+   "slug": "Kulemaks_Invitation",
+   "displayName": "Kulemak's Invitation",
+   "goldCostPerUnit": 1500,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/AbyssalBenchTicketArmour",
+   "art": "Art/2DItems/Currency/Abyss/PreservedRibs",
+   "slug": "Preserved_Rib",
+   "displayName": "Preserved Rib",
+   "goldCostPerUnit": 540,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/AbyssalBenchTicketArmourHigh",
+   "art": "Art/2DItems/Currency/Abyss/AncientRibs",
+   "slug": "Ancient_Rib",
+   "displayName": "Ancient Rib",
+   "goldCostPerUnit": 1500,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/AbyssalBenchTicketArmourLow",
+   "art": "Art/2DItems/Currency/Abyss/GnawedRibs",
+   "slug": "Gnawed_Rib",
+   "displayName": "Gnawed Rib",
+   "goldCostPerUnit": 180,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/AbyssalBenchTicketBreach",
+   "art": "Art/2DItems/Currency/Breach/BreachDesecration",
+   "slug": "Altered_Collarbone",
+   "displayName": "Altered Collarbone",
+   "goldCostPerUnit": 1500,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/AbyssalBenchTicketJewel",
+   "art": "Art/2DItems/Currency/Abyss/PreservedCranium",
+   "slug": "Preserved_Cranium",
+   "displayName": "Preserved Cranium",
+   "goldCostPerUnit": 540,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/AbyssalBenchTicketJewellery",
+   "art": "Art/2DItems/Currency/Abyss/PreservedCalvicle",
+   "slug": "Preserved_Collarbone",
+   "displayName": "Preserved Collarbone",
+   "goldCostPerUnit": 540,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/AbyssalBenchTicketJewelleryHigh",
+   "art": "Art/2DItems/Currency/Abyss/AncientClavicle",
+   "slug": "Ancient_Collarbone",
+   "displayName": "Ancient Collarbone",
+   "goldCostPerUnit": 1500,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/AbyssalBenchTicketJewelleryLow",
+   "art": "Art/2DItems/Currency/Abyss/GnawedClavicle",
+   "slug": "Gnawed_Collarbone",
+   "displayName": "Gnawed Collarbone",
+   "goldCostPerUnit": 180,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/AbyssalBenchTicketWaystone",
+   "art": "Art/2DItems/Currency/Abyss/PreservedSpine",
+   "slug": "Preserved_Vertebrae",
+   "displayName": "Preserved Vertebrae",
+   "goldCostPerUnit": 540,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/AbyssalBenchTicketWeapon",
+   "art": "Art/2DItems/Currency/Abyss/PreservedJawbone",
+   "slug": "Preserved_Jawbone",
+   "displayName": "Preserved Jawbone",
+   "goldCostPerUnit": 540,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/AbyssalBenchTicketWeaponHigh",
+   "art": "Art/2DItems/Currency/Abyss/AncientJawbone",
+   "slug": "Ancient_Jawbone",
+   "displayName": "Ancient Jawbone",
+   "goldCostPerUnit": 1500,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/AbyssalBenchTicketWeaponLow",
+   "art": "Art/2DItems/Currency/Abyss/GnawedJawbone",
+   "slug": "Gnawed_Jawbone",
+   "displayName": "Gnawed Jawbone",
+   "goldCostPerUnit": 180,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/Breach/BreachPinnacleKey",
+   "art": "Art/2DItems/QuestItems/BreachlordSac",
+   "slug": "Breachlord_Sac",
+   "displayName": "Breachlord Sac",
+   "goldCostPerUnit": 1500,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyAddEquipmentSocket",
+   "art": "Art/2DItems/Currency/CurrencyAddEquipmentSocket",
+   "slug": "Artificers_Orb",
+   "displayName": "Artificer's Orb",
+   "goldCostPerUnit": 1000,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyAddEquipmentSocketShard",
+   "art": "Art/2DItems/Currency/CurrencyAddEquipmentSocketShard",
+   "slug": "Artificers_Shard",
+   "displayName": "Artificer's Shard",
+   "goldCostPerUnit": 100,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyAddModToMagic",
+   "art": "Art/2DItems/Currency/CurrencyAddModToMagic",
+   "slug": "Orb_of_Augmentation",
+   "displayName": "Orb of Augmentation",
+   "goldCostPerUnit": 20,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyAddModToMagic2",
+   "art": "Art/2DItems/Currency/CurrencyAddModToMagic",
+   "slug": "Greater_Orb_of_Augmentation",
+   "displayName": "Greater Orb of Augmentation",
+   "goldCostPerUnit": 60,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyAddModToMagic3",
+   "art": "Art/2DItems/Currency/CurrencyAddModToMagic",
+   "slug": "Perfect_Orb_of_Augmentation",
+   "displayName": "Perfect Orb of Augmentation",
+   "goldCostPerUnit": 180,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyAddModToRare",
+   "art": "Art/2DItems/Currency/CurrencyAddModToRare",
+   "slug": "Exalted_Orb",
+   "displayName": "Exalted Orb",
+   "goldCostPerUnit": 120,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyAddModToRare2",
+   "art": "Art/2DItems/Currency/CurrencyAddModToRare",
+   "slug": "Greater_Exalted_Orb",
+   "displayName": "Greater Exalted Orb",
+   "goldCostPerUnit": 360,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyAddModToRare3",
+   "art": "Art/2DItems/Currency/CurrencyAddModToRare",
+   "slug": "Perfect_Exalted_Orb",
+   "displayName": "Perfect Exalted Orb",
+   "goldCostPerUnit": 1000,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyAddSkillGemSocket3",
+   "art": "Art/2DItems/Currency/CurrencyRerollSocketNumbers01",
+   "slug": "Lesser_Jewellers_Orb",
+   "displayName": "Lesser Jeweller's Orb",
+   "goldCostPerUnit": 200,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyAddSkillGemSocket4",
+   "art": "Art/2DItems/Currency/CurrencyRerollSocketNumbers02",
+   "slug": "Greater_Jewellers_Orb",
+   "displayName": "Greater Jeweller's Orb",
+   "goldCostPerUnit": 600,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyAddSkillGemSocket5",
+   "art": "Art/2DItems/Currency/CurrencyRerollSocketNumbers03",
+   "slug": "Perfect_Jewellers_Orb",
+   "displayName": "Perfect Jeweller's Orb",
+   "goldCostPerUnit": 1000,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyAfflictionShard",
+   "art": "Art/2DItems/Maps/DeliriumSplinter",
+   "slug": "Simulacrum_Splinter",
+   "displayName": "Simulacrum Splinter",
+   "goldCostPerUnit": 3,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyArcaneFluxChaos",
+   "art": "Art/2DItems/Currency/Expedition2/ArcaneFlux",
+   "slug": "Void_Flux",
+   "displayName": "Void Flux",
+   "goldCostPerUnit": 1500,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyArcaneFluxCold",
+   "art": "Art/2DItems/Currency/Expedition2/ArcaneFluxCold",
+   "slug": "Chilling_Flux",
+   "displayName": "Chilling Flux",
+   "goldCostPerUnit": 1500,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyArcaneFluxFire",
+   "art": "Art/2DItems/Currency/Expedition2/ArcaneFluxFire",
+   "slug": "Blazing_Flux",
+   "displayName": "Blazing Flux",
+   "goldCostPerUnit": 1500,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyArcaneFluxLightning",
+   "art": "Art/2DItems/Currency/Expedition2/ArcaneFluxLightning",
+   "slug": "Crackling_Flux",
+   "displayName": "Crackling Flux",
+   "goldCostPerUnit": 1500,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyArmourQuality",
+   "art": "Art/2DItems/Currency/CurrencyArmourQuality",
+   "slug": "Armourers_Scrap",
+   "displayName": "Armourer's Scrap",
+   "goldCostPerUnit": 250,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyBreachShard",
+   "art": "Art/2DItems/Currency/Breach/BreachstoneSplinter",
+   "slug": "Breach_Splinter",
+   "displayName": "Breach Splinter",
+   "goldCostPerUnit": 3,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyCorrupt",
+   "art": "Art/2DItems/Currency/CurrencyVaal",
+   "slug": "Vaal_Orb",
+   "displayName": "Vaal Orb",
+   "goldCostPerUnit": 160,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyCorruptedEssenceAbyss",
+   "art": "Art/2DItems/Currency/Essence/AbyssalEssence",
+   "slug": "Essence_of_the_Abyss",
+   "displayName": "Essence of the Abyss",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyCorruptedEssenceBreach",
+   "art": "Art/2DItems/Currency/Essence/BreachEssence",
+   "slug": "Essence_of_the_Breach",
+   "displayName": "Essence of the Breach",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyCorruptedEssenceDelirium",
+   "art": "Art/2DItems/Currency/Essence/CorruptedEssenceDelirium",
+   "slug": "Essence_of_Delirium",
+   "displayName": "Essence of Delirium",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyCorruptedEssenceHorror",
+   "art": "Art/2DItems/Currency/Essence/CorruptedEssenceHorror",
+   "slug": "Essence_of_Horror",
+   "displayName": "Essence of Horror",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyCorruptedEssenceHysteria",
+   "art": "Art/2DItems/Currency/Essence/CorruptedEssenceHysteria",
+   "slug": "Essence_of_Hysteria",
+   "displayName": "Essence of Hysteria",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyCorruptedEssenceInsanity",
+   "art": "Art/2DItems/Currency/Essence/CorruptedEssenceInsanity",
+   "slug": "Essence_of_Insanity",
+   "displayName": "Essence of Insanity",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyDuplicate",
+   "art": "Art/2DItems/Currency/CurrencyDuplicate",
+   "slug": "Mirror_of_Kalandra",
+   "displayName": "Mirror of Kalandra",
+   "goldCostPerUnit": 25000,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceAlly",
+   "art": "Art/2DItems/Currency/Essence/AllyEssence",
+   "slug": "Essence_of_Command",
+   "displayName": "Essence of Command",
+   "goldCostPerUnit": 180,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceAttack",
+   "art": "Art/2DItems/Currency/Essence/AttackEssence",
+   "slug": "Essence_of_Battle",
+   "displayName": "Essence of Battle",
+   "goldCostPerUnit": 160,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceAttribute",
+   "art": "Art/2DItems/Currency/Essence/AttributeEssence",
+   "slug": "Essence_of_the_Infinite",
+   "displayName": "Essence of the Infinite",
+   "goldCostPerUnit": 200,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceCaster",
+   "art": "Art/2DItems/Currency/Essence/CasterEssence",
+   "slug": "Essence_of_Sorcery",
+   "displayName": "Essence of Sorcery",
+   "goldCostPerUnit": 160,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceChaos",
+   "art": "Art/2DItems/Currency/Essence/ChaosEssence",
+   "slug": "Essence_of_Ruin",
+   "displayName": "Essence of Ruin",
+   "goldCostPerUnit": 180,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceCold",
+   "art": "Art/2DItems/Currency/Essence/ColdEssence",
+   "slug": "Essence_of_Ice",
+   "displayName": "Essence of Ice",
+   "goldCostPerUnit": 120,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceColdResist",
+   "art": "Art/2DItems/Currency/Essence/ColdResistanceEssence",
+   "slug": "Essence_of_Thawing",
+   "displayName": "Essence of Thawing",
+   "goldCostPerUnit": 120,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceCritical",
+   "art": "Art/2DItems/Currency/Essence/CriticalEssence",
+   "slug": "Essence_of_Seeking",
+   "displayName": "Essence of Seeking",
+   "goldCostPerUnit": 200,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceDefences",
+   "art": "Art/2DItems/Currency/Essence/DefencesEssence",
+   "slug": "Essence_of_Enhancement",
+   "displayName": "Essence of Enhancement",
+   "goldCostPerUnit": 100,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceFire",
+   "art": "Art/2DItems/Currency/Essence/FireEssence",
+   "slug": "Essence_of_Flames",
+   "displayName": "Essence of Flames",
+   "goldCostPerUnit": 120,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceFireResist",
+   "art": "Art/2DItems/Currency/Essence/FireResistanceEssence",
+   "slug": "Essence_of_Insulation",
+   "displayName": "Essence of Insulation",
+   "goldCostPerUnit": 120,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceLife",
+   "art": "Art/2DItems/Currency/Essence/LifeEssence",
+   "slug": "Essence_of_the_Body",
+   "displayName": "Essence of the Body",
+   "goldCostPerUnit": 100,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceLightning",
+   "art": "Art/2DItems/Currency/Essence/LightningEssence",
+   "slug": "Essence_of_Electricity",
+   "displayName": "Essence of Electricity",
+   "goldCostPerUnit": 120,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceLightningResist",
+   "art": "Art/2DItems/Currency/Essence/LightningResistanceEssence",
+   "slug": "Essence_of_Grounding",
+   "displayName": "Essence of Grounding",
+   "goldCostPerUnit": 120,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceMana",
+   "art": "Art/2DItems/Currency/Essence/ManaEssence",
+   "slug": "Essence_of_the_Mind",
+   "displayName": "Essence of the Mind",
+   "goldCostPerUnit": 100,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssencePhysical",
+   "art": "Art/2DItems/Currency/Essence/PhysicalEssence",
+   "slug": "Essence_of_Abrasion",
+   "displayName": "Essence of Abrasion",
+   "goldCostPerUnit": 140,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceRarity",
+   "art": "Art/2DItems/Currency/Essence/RarityResistanceEssence",
+   "slug": "Essence_of_Opulence",
+   "displayName": "Essence of Opulence",
+   "goldCostPerUnit": 200,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceSpeed",
+   "art": "Art/2DItems/Currency/Essence/SpeedEssence",
+   "slug": "Essence_of_Haste",
+   "displayName": "Essence of Haste",
+   "goldCostPerUnit": 200,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyEssenceSpeedCaster",
+   "art": "Art/2DItems/Currency/Essence/SpeedCasterEssence",
+   "slug": "Essence_of_Alacrity",
+   "displayName": "Essence of Alacrity",
+   "goldCostPerUnit": 200,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyFlaskQuality",
+   "art": "Art/2DItems/Currency/CurrencyFlaskQuality",
+   "slug": "Glassblowers_Bauble",
+   "displayName": "Glassblower's Bauble",
+   "goldCostPerUnit": 750,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyFractureRare",
+   "art": "Art/2DItems/Currency/FracturingOrb",
+   "slug": "Fracturing_Orb",
+   "displayName": "Fracturing Orb",
+   "goldCostPerUnit": 1000,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGemQuality",
+   "art": "Art/2DItems/Currency/CurrencyGemQuality",
+   "slug": "Gemcutters_Prism",
+   "displayName": "Gemcutter's Prism",
+   "goldCostPerUnit": 1000,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceAlly",
+   "art": "Art/2DItems/Currency/Essence/GreaterAllyEssence",
+   "slug": "Greater_Essence_of_Command",
+   "displayName": "Greater Essence of Command",
+   "goldCostPerUnit": 500,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceAttack",
+   "art": "Art/2DItems/Currency/Essence/GreaterAttackEssence",
+   "slug": "Greater_Essence_of_Battle",
+   "displayName": "Greater Essence of Battle",
+   "goldCostPerUnit": 450,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceAttribute",
+   "art": "Art/2DItems/Currency/Essence/GreaterAttributeEssence",
+   "slug": "Greater_Essence_of_the_Infinite",
+   "displayName": "Greater Essence of the Infinite",
+   "goldCostPerUnit": 330,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceCaster",
+   "art": "Art/2DItems/Currency/Essence/GreaterCasterEssence",
+   "slug": "Greater_Essence_of_Sorcery",
+   "displayName": "Greater Essence of Sorcery",
+   "goldCostPerUnit": 450,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceChaos",
+   "art": "Art/2DItems/Currency/Essence/GreaterChaosEssence",
+   "slug": "Greater_Essence_of_Ruin",
+   "displayName": "Greater Essence of Ruin",
+   "goldCostPerUnit": 500,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceCold",
+   "art": "Art/2DItems/Currency/Essence/GreaterColdEssence",
+   "slug": "Greater_Essence_of_Ice",
+   "displayName": "Greater Essence of Ice",
+   "goldCostPerUnit": 370,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceColdResist",
+   "art": "Art/2DItems/Currency/Essence/GreaterColdResistanceEssence",
+   "slug": "Greater_Essence_of_Thawing",
+   "displayName": "Greater Essence of Thawing",
+   "goldCostPerUnit": 370,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceCritical",
+   "art": "Art/2DItems/Currency/Essence/GreaterCriticalEssence",
+   "slug": "Greater_Essence_of_Seeking",
+   "displayName": "Greater Essence of Seeking",
+   "goldCostPerUnit": 500,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceDefences",
+   "art": "Art/2DItems/Currency/Essence/GreaterDefencesEssence",
+   "slug": "Greater_Essence_of_Enhancement",
+   "displayName": "Greater Essence of Enhancement",
+   "goldCostPerUnit": 300,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceFire",
+   "art": "Art/2DItems/Currency/Essence/GreaterFireEssence",
+   "slug": "Greater_Essence_of_Flames",
+   "displayName": "Greater Essence of Flames",
+   "goldCostPerUnit": 370,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceFireResist",
+   "art": "Art/2DItems/Currency/Essence/GreaterFireResistanceEssence",
+   "slug": "Greater_Essence_of_Insulation",
+   "displayName": "Greater Essence of Insulation",
+   "goldCostPerUnit": 370,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceLife",
+   "art": "Art/2DItems/Currency/Essence/GreaterLifeEssence",
+   "slug": "Greater_Essence_of_the_Body",
+   "displayName": "Greater Essence of the Body",
+   "goldCostPerUnit": 300,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceLightning",
+   "art": "Art/2DItems/Currency/Essence/GreaterLightningEssence",
+   "slug": "Greater_Essence_of_Electricity",
+   "displayName": "Greater Essence of Electricity",
+   "goldCostPerUnit": 370,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceLightningResist",
+   "art": "Art/2DItems/Currency/Essence/GreaterLightningResistanceEssence",
+   "slug": "Greater_Essence_of_Grounding",
+   "displayName": "Greater Essence of Grounding",
+   "goldCostPerUnit": 370,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceMana",
+   "art": "Art/2DItems/Currency/Essence/GreaterManaEssence",
+   "slug": "Greater_Essence_of_the_Mind",
+   "displayName": "Greater Essence of the Mind",
+   "goldCostPerUnit": 300,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssencePhysical",
+   "art": "Art/2DItems/Currency/Essence/GreaterPhysicalEssence",
+   "slug": "Greater_Essence_of_Abrasion",
+   "displayName": "Greater Essence of Abrasion",
+   "goldCostPerUnit": 410,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceRarity",
+   "art": "Art/2DItems/Currency/Essence/GreaterRarityResistanceEssence",
+   "slug": "Greater_Essence_of_Opulence",
+   "displayName": "Greater Essence of Opulence",
+   "goldCostPerUnit": 500,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceSpeed",
+   "art": "Art/2DItems/Currency/Essence/GreaterSpeedEssence",
+   "slug": "Greater_Essence_of_Haste",
+   "displayName": "Greater Essence of Haste",
+   "goldCostPerUnit": 500,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyGreaterEssenceSpeedCaster",
+   "art": "Art/2DItems/Currency/Essence/GreaterSpeedCasterEssence",
+   "slug": "Greater_Essence_of_Alacrity",
+   "displayName": "Greater Essence of Alacrity",
+   "goldCostPerUnit": 500,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyHinekorasLock",
+   "art": "Art/2DItems/Currency/HinekorasLock",
+   "slug": "Hinekoras_Lock",
+   "displayName": "Hinekora's Lock",
+   "goldCostPerUnit": 6000,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIdentification",
+   "art": "Art/2DItems/Currency/CurrencyIdentification",
+   "slug": "Scroll_of_Wisdom",
+   "displayName": "Scroll of Wisdom",
+   "goldCostPerUnit": 1,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionCasterWeaponQuality",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/VaalArcanistsEtcher",
+   "slug": "Vaal_Arcanists_Infuser",
+   "displayName": "Vaal Arcanist's Infuser",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionCorruptTablet",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/IncursionAncientInfusion",
+   "slug": "Ancient_Infuser",
+   "displayName": "Ancient Infuser",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionDoubleCorrupt",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/IncursionGreaterVaalOrb",
+   "slug": "Architects_Orb",
+   "displayName": "Architect's Orb",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionDoubleCorruptGem",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/IncursionCrystallisedCorruption",
+   "slug": "Crystallised_Corruption",
+   "displayName": "Crystallised Corruption",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionExtractAllSocketablesCurrency",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/IncursionSocketableExtractorCurrency",
+   "slug": "Orb_of_Extraction",
+   "displayName": "Orb of Extraction",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionJewelleryQuality",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/VaalCatalyst",
+   "slug": "Vaal_Catalysing_Infuser",
+   "displayName": "Vaal Catalysing Infuser",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionMartialWeaponQuality",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/VaalBlacksmithsWhetstone",
+   "slug": "Vaal_Blacksmiths_Infuser",
+   "displayName": "Vaal Blacksmith's Infuser",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionModifySoulCore",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/IncursionCoreDestabliser",
+   "slug": "Core_Destabiliser",
+   "displayName": "Core Destabiliser",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionMutateCorruptionEnchantArmour",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/IncursionCorruptionOrb2",
+   "slug": "Kopecs_Orb_of_Sacrifice",
+   "displayName": "Kopec's Orb of Sacrifice",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionMutateCorruptionEnchantJewel",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/IncursionCorruptionOrb4",
+   "slug": "Yuguls_Orb_of_Sacrifice",
+   "displayName": "Yugul's Orb of Sacrifice",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionMutateCorruptionEnchantJewellery",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/IncursionCorruptionOrb3",
+   "slug": "Kamasas_Orb_of_Sacrifice",
+   "displayName": "Kamasa's Orb of Sacrifice",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionMutateCorruptionEnchantWeapon",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/IncursionCorruptionOrb1",
+   "slug": "Yaomacs_Orb_of_Sacrifice",
+   "displayName": "Yaomac's Orb of Sacrifice",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionMutateUnique",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/IncursionHistoricVaalOrb",
+   "slug": "Vaal_Cultivation_Orb",
+   "displayName": "Vaal Cultivation Orb",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionVaalIncubator",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/IncursionVaalSiphoner",
+   "slug": "Vaal_Siphoner",
+   "displayName": "Vaal Siphoner",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyIncursionWeaponOrArmourQualityHigh",
+   "art": "Art/2DItems/Currency/IncursionCraftingOrbs/VaakArmourersScrap",
+   "slug": "Vaal_Armourers_Infuser",
+   "displayName": "Vaal Armourer's Infuser",
+   "goldCostPerUnit": 250,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelleryQualityAttack",
+   "art": "Art/2DItems/Currency/Breach/BreachCatalystAttack",
+   "slug": "Reaver_Catalyst",
+   "displayName": "Reaver Catalyst",
+   "goldCostPerUnit": 560,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelleryQualityAttribute",
+   "art": "Art/2DItems/Currency/Breach/BreachCatalystAttribute",
+   "slug": "Adaptive_Catalyst",
+   "displayName": "Adaptive Catalyst",
+   "goldCostPerUnit": 160,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelleryQualityCaster",
+   "art": "Art/2DItems/Currency/Breach/BreachCatalystCaster",
+   "slug": "Sibilant_Catalyst",
+   "displayName": "Sibilant Catalyst",
+   "goldCostPerUnit": 560,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelleryQualityChaos",
+   "art": "Art/2DItems/Currency/Breach/BreachCatalystChaos",
+   "slug": "Chayulas_Catalyst",
+   "displayName": "Chayula's Catalyst",
+   "goldCostPerUnit": 960,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelleryQualityCold",
+   "art": "Art/2DItems/Currency/Breach/BreachCatalystCold",
+   "slug": "Tuls_Catalyst",
+   "displayName": "Tul's Catalyst",
+   "goldCostPerUnit": 260,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelleryQualityDefences",
+   "art": "Art/2DItems/Currency/Breach/BreachCatalystDefences",
+   "slug": "Carapace_Catalyst",
+   "displayName": "Carapace Catalyst",
+   "goldCostPerUnit": 100,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelleryQualityFire",
+   "art": "Art/2DItems/Currency/Breach/BreachCatalystFire",
+   "slug": "Xophs_Catalyst",
+   "displayName": "Xoph's Catalyst",
+   "goldCostPerUnit": 260,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelleryQualityLife",
+   "art": "Art/2DItems/Currency/Breach/BreachCatalystLife",
+   "slug": "Flesh_Catalyst",
+   "displayName": "Flesh Catalyst",
+   "goldCostPerUnit": 100,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelleryQualityLightning",
+   "art": "Art/2DItems/Currency/Breach/BreachCatalystLightning",
+   "slug": "Eshs_Catalyst",
+   "displayName": "Esh's Catalyst",
+   "goldCostPerUnit": 260,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelleryQualityMana",
+   "art": "Art/2DItems/Currency/Breach/BreachCatalystMana",
+   "slug": "Neural_Catalyst",
+   "displayName": "Neural Catalyst",
+   "goldCostPerUnit": 100,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelleryQualityMinion",
+   "art": "Art/2DItems/Currency/Breach/BreachCatalystNecrotic",
+   "slug": "Necrotic_Catalyst",
+   "displayName": "Necrotic Catalyst",
+   "goldCostPerUnit": 560,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelleryQualityPhysical",
+   "art": "Art/2DItems/Currency/Breach/BreachCatalystPhysical",
+   "slug": "Uul-Netols_Catalyst",
+   "displayName": "Uul-Netol's Catalyst",
+   "goldCostPerUnit": 360,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelleryQualitySpeed",
+   "art": "Art/2DItems/Currency/Breach/BreachCatalystSpeed",
+   "slug": "Skittering_Catalyst",
+   "displayName": "Skittering Catalyst",
+   "goldCostPerUnit": 1000,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelQualityAttack",
+   "art": "Art/2DItems/Currency/Breach/JewelCatalystAttack",
+   "slug": "Refined_Reaver_Catalyst",
+   "displayName": "Refined Reaver Catalyst",
+   "goldCostPerUnit": 2800,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelQualityAttribute",
+   "art": "Art/2DItems/Currency/Breach/JewelCatalystAttribute",
+   "slug": "Refined_Adaptive_Catalyst",
+   "displayName": "Refined Adaptive Catalyst",
+   "goldCostPerUnit": 5000,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelQualityCaster",
+   "art": "Art/2DItems/Currency/Breach/JewelCatalystCaster",
+   "slug": "Refined_Sibilant_Catalyst",
+   "displayName": "Refined Sibilant Catalyst",
+   "goldCostPerUnit": 2800,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelQualityChaos",
+   "art": "Art/2DItems/Currency/Breach/JewelCatalystChaos",
+   "slug": "Refined_Chayulas_Catalyst",
+   "displayName": "Refined Chayula's Catalyst",
+   "goldCostPerUnit": 1800,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelQualityCold",
+   "art": "Art/2DItems/Currency/Breach/JewelCatalystCold",
+   "slug": "Refined_Tuls_Catalyst",
+   "displayName": "Refined Tul's Catalyst",
+   "goldCostPerUnit": 1300,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelQualityDefences",
+   "art": "Art/2DItems/Currency/Breach/JewelCatalystDefences",
+   "slug": "Refined_Carapace_Catalyst",
+   "displayName": "Refined Carapace Catalyst",
+   "goldCostPerUnit": 500,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelQualityFire",
+   "art": "Art/2DItems/Currency/Breach/JewelCatalystFire",
+   "slug": "Refined_Xophs_Catalyst",
+   "displayName": "Refined Xoph's Catalyst",
+   "goldCostPerUnit": 1300,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelQualityLife",
+   "art": "Art/2DItems/Currency/Breach/JewelCatalystLife",
+   "slug": "Refined_Flesh_Catalyst",
+   "displayName": "Refined Flesh Catalyst",
+   "goldCostPerUnit": 500,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelQualityLightning",
+   "art": "Art/2DItems/Currency/Breach/JewelCatalystLightning",
+   "slug": "Refined_Eshs_Catalyst",
+   "displayName": "Refined Esh's Catalyst",
+   "goldCostPerUnit": 1300,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelQualityMana",
+   "art": "Art/2DItems/Currency/Breach/JewelCatalystMana",
+   "slug": "Refined_Neural_Catalyst",
+   "displayName": "Refined Neural Catalyst",
+   "goldCostPerUnit": 500,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelQualityMinion",
+   "art": "Art/2DItems/Currency/Breach/JewelCatalystNecrotic",
+   "slug": "Refined_Necrotic_Catalyst",
+   "displayName": "Refined Necrotic Catalyst",
+   "goldCostPerUnit": 2800,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelQualityPhysical",
+   "art": "Art/2DItems/Currency/Breach/JewelCatalystPhysical",
+   "slug": "Refined_Uul-Netols_Catalyst",
+   "displayName": "Refined Uul-Netol's Catalyst",
+   "goldCostPerUnit": 800,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyJewelQualitySpeed",
+   "art": "Art/2DItems/Currency/Breach/JewelCatalystSpeed",
+   "slug": "Refined_Skittering_Catalyst",
+   "displayName": "Refined Skittering Catalyst",
+   "goldCostPerUnit": 4800,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceAlly",
+   "art": "Art/2DItems/Currency/Essence/AllyEssenceLesser",
+   "slug": "Lesser_Essence_of_Command",
+   "displayName": "Lesser Essence of Command",
+   "goldCostPerUnit": 90,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceAttack",
+   "art": "Art/2DItems/Currency/Essence/AttackEssenceLesser",
+   "slug": "Lesser_Essence_of_Battle",
+   "displayName": "Lesser Essence of Battle",
+   "goldCostPerUnit": 80,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceAttribute",
+   "art": "Art/2DItems/Currency/Essence/AttributeEssenceLesser",
+   "slug": "Lesser_Essence_of_the_Infinite",
+   "displayName": "Lesser Essence of the Infinite",
+   "goldCostPerUnit": 100,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceCaster",
+   "art": "Art/2DItems/Currency/Essence/CasterEssenceLesser",
+   "slug": "Lesser_Essence_of_Sorcery",
+   "displayName": "Lesser Essence of Sorcery",
+   "goldCostPerUnit": 80,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceChaos",
+   "art": "Art/2DItems/Currency/Essence/ChaosEssenceLesser",
+   "slug": "Lesser_Essence_of_Ruin",
+   "displayName": "Lesser Essence of Ruin",
+   "goldCostPerUnit": 90,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceCold",
+   "art": "Art/2DItems/Currency/Essence/ColdEssenceLesser",
+   "slug": "Lesser_Essence_of_Ice",
+   "displayName": "Lesser Essence of Ice",
+   "goldCostPerUnit": 60,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceColdResist",
+   "art": "Art/2DItems/Currency/Essence/ColdResistanceEssenceLesser",
+   "slug": "Lesser_Essence_of_Thawing",
+   "displayName": "Lesser Essence of Thawing",
+   "goldCostPerUnit": 60,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceCritical",
+   "art": "Art/2DItems/Currency/Essence/CriticalEssenceLesser",
+   "slug": "Lesser_Essence_of_Seeking",
+   "displayName": "Lesser Essence of Seeking",
+   "goldCostPerUnit": 100,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceDefences",
+   "art": "Art/2DItems/Currency/Essence/DefencesEssenceLesser",
+   "slug": "Lesser_Essence_of_Enhancement",
+   "displayName": "Lesser Essence of Enhancement",
+   "goldCostPerUnit": 50,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceFire",
+   "art": "Art/2DItems/Currency/Essence/FireEssenceLesser",
+   "slug": "Lesser_Essence_of_Flames",
+   "displayName": "Lesser Essence of Flames",
+   "goldCostPerUnit": 60,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceFireResist",
+   "art": "Art/2DItems/Currency/Essence/FireResistanceEssenceLesser",
+   "slug": "Lesser_Essence_of_Insulation",
+   "displayName": "Lesser Essence of Insulation",
+   "goldCostPerUnit": 60,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceLife",
+   "art": "Art/2DItems/Currency/Essence/LifeEssenceLesser",
+   "slug": "Lesser_Essence_of_the_Body",
+   "displayName": "Lesser Essence of the Body",
+   "goldCostPerUnit": 50,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceLightning",
+   "art": "Art/2DItems/Currency/Essence/LightningEssenceLesser",
+   "slug": "Lesser_Essence_of_Electricity",
+   "displayName": "Lesser Essence of Electricity",
+   "goldCostPerUnit": 60,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceLightningResist",
+   "art": "Art/2DItems/Currency/Essence/LightningResistanceEssenceLesser",
+   "slug": "Lesser_Essence_of_Grounding",
+   "displayName": "Lesser Essence of Grounding",
+   "goldCostPerUnit": 60,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceMana",
+   "art": "Art/2DItems/Currency/Essence/ManaEssenceLesser",
+   "slug": "Lesser_Essence_of_the_Mind",
+   "displayName": "Lesser Essence of the Mind",
+   "goldCostPerUnit": 50,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssencePhysical",
+   "art": "Art/2DItems/Currency/Essence/PhysicalEssenceLesser",
+   "slug": "Lesser_Essence_of_Abrasion",
+   "displayName": "Lesser Essence of Abrasion",
+   "goldCostPerUnit": 70,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceRarity",
+   "art": "Art/2DItems/Currency/Essence/RarityResistanceEssenceLesser",
+   "slug": "Lesser_Essence_of_Opulence",
+   "displayName": "Lesser Essence of Opulence",
+   "goldCostPerUnit": 100,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceSpeed",
+   "art": "Art/2DItems/Currency/Essence/SpeedEssenceLesser",
+   "slug": "Lesser_Essence_of_Haste",
+   "displayName": "Lesser Essence of Haste",
+   "goldCostPerUnit": 100,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyLesserEssenceSpeedCaster",
+   "art": "Art/2DItems/Currency/Essence/SpeedCasterEssenceLesser",
+   "slug": "Lesser_Essence_of_Alacrity",
+   "displayName": "Lesser Essence of Alacrity",
+   "goldCostPerUnit": 100,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyMagicQuality",
+   "art": "Art/2DItems/Currency/CurrencyWeaponMagicQuality",
+   "slug": "Arcanists_Etcher",
+   "displayName": "Arcanist's Etcher",
+   "goldCostPerUnit": 500,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyModValues",
+   "art": "Art/2DItems/Currency/CurrencyModValues",
+   "slug": "Divine_Orb",
+   "displayName": "Divine Orb",
+   "goldCostPerUnit": 800,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceAlly",
+   "art": "Art/2DItems/Currency/Essence/AllyEssencePerfect",
+   "slug": "Perfect_Essence_of_Command",
+   "displayName": "Perfect Essence of Command",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceAttack",
+   "art": "Art/2DItems/Currency/Essence/AttackEssencePerfect",
+   "slug": "Perfect_Essence_of_Battle",
+   "displayName": "Perfect Essence of Battle",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceAttribute",
+   "art": "Art/2DItems/Currency/Essence/AttributeEssencePerfect",
+   "slug": "Perfect_Essence_of_the_Infinite",
+   "displayName": "Perfect Essence of the Infinite",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceCaster",
+   "art": "Art/2DItems/Currency/Essence/CasterEssencePerfect",
+   "slug": "Perfect_Essence_of_Sorcery",
+   "displayName": "Perfect Essence of Sorcery",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceChaos",
+   "art": "Art/2DItems/Currency/Essence/ChaosEssencePerfect",
+   "slug": "Perfect_Essence_of_Ruin",
+   "displayName": "Perfect Essence of Ruin",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceCold",
+   "art": "Art/2DItems/Currency/Essence/ColdEssencePerfect",
+   "slug": "Perfect_Essence_of_Ice",
+   "displayName": "Perfect Essence of Ice",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceColdResist",
+   "art": "Art/2DItems/Currency/Essence/ColdResistanceEssencePerfect",
+   "slug": "Perfect_Essence_of_Thawing",
+   "displayName": "Perfect Essence of Thawing",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceCritical",
+   "art": "Art/2DItems/Currency/Essence/CriticalEssencePerfect",
+   "slug": "Perfect_Essence_of_Seeking",
+   "displayName": "Perfect Essence of Seeking",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceDefences",
+   "art": "Art/2DItems/Currency/Essence/DefencesEssencePerfect",
+   "slug": "Perfect_Essence_of_Enhancement",
+   "displayName": "Perfect Essence of Enhancement",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceFire",
+   "art": "Art/2DItems/Currency/Essence/FireEssencePerfect",
+   "slug": "Perfect_Essence_of_Flames",
+   "displayName": "Perfect Essence of Flames",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceFireResist",
+   "art": "Art/2DItems/Currency/Essence/FireResistanceEssencePerfect",
+   "slug": "Perfect_Essence_of_Insulation",
+   "displayName": "Perfect Essence of Insulation",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceLife",
+   "art": "Art/2DItems/Currency/Essence/LifeEssencePerfect",
+   "slug": "Perfect_Essence_of_the_Body",
+   "displayName": "Perfect Essence of the Body",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceLightning",
+   "art": "Art/2DItems/Currency/Essence/LightningEssencePerfect",
+   "slug": "Perfect_Essence_of_Electricity",
+   "displayName": "Perfect Essence of Electricity",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceLightningResist",
+   "art": "Art/2DItems/Currency/Essence/LightningResistanceEssencePerfect",
+   "slug": "Perfect_Essence_of_Grounding",
+   "displayName": "Perfect Essence of Grounding",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceMana",
+   "art": "Art/2DItems/Currency/Essence/ManaEssencePerfect",
+   "slug": "Perfect_Essence_of_the_Mind",
+   "displayName": "Perfect Essence of the Mind",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssencePhysical",
+   "art": "Art/2DItems/Currency/Essence/PhysicalEssencePerfect",
+   "slug": "Perfect_Essence_of_Abrasion",
+   "displayName": "Perfect Essence of Abrasion",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceRarity",
+   "art": "Art/2DItems/Currency/Essence/RarityResistanceEssencePerfect",
+   "slug": "Perfect_Essence_of_Opulence",
+   "displayName": "Perfect Essence of Opulence",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceSpeed",
+   "art": "Art/2DItems/Currency/Essence/SpeedEssencePerfect",
+   "slug": "Perfect_Essence_of_Haste",
+   "displayName": "Perfect Essence of Haste",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyPerfectEssenceSpeedCaster",
+   "art": "Art/2DItems/Currency/Essence/SpeedCasterEssencePerfect",
+   "slug": "Perfect_Essence_of_Alacrity",
+   "displayName": "Perfect Essence of Alacrity",
+   "goldCostPerUnit": 1000,
+   "section": "Essences"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyRemoveMod",
+   "art": "Art/2DItems/Currency/AnnullOrb",
+   "slug": "Orb_of_Annulment",
+   "displayName": "Orb of Annulment",
+   "goldCostPerUnit": 1000,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyRerollRare",
+   "art": "Art/2DItems/Currency/CurrencyRerollRare",
+   "slug": "Chaos_Orb",
+   "displayName": "Chaos Orb",
+   "goldCostPerUnit": 160,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyRerollRare2",
+   "art": "Art/2DItems/Currency/CurrencyRerollRare",
+   "slug": "Greater_Chaos_Orb",
+   "displayName": "Greater Chaos Orb",
+   "goldCostPerUnit": 500,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyRerollRare3",
+   "art": "Art/2DItems/Currency/CurrencyRerollRare",
+   "slug": "Perfect_Chaos_Orb",
+   "displayName": "Perfect Chaos Orb",
+   "goldCostPerUnit": 1500,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyRerollRemnant",
+   "art": "Art/2DItems/Currency/Expedition2/LiquidMetalVerisium",
+   "slug": "Liquid_Verisium",
+   "displayName": "Liquid Verisium",
+   "goldCostPerUnit": 1000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel10",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_10%29",
+   "displayName": "Thaumaturgic Flux (Level 10)",
+   "goldCostPerUnit": 1243,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel11",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_11%29",
+   "displayName": "Thaumaturgic Flux (Level 11)",
+   "goldCostPerUnit": 1353,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel12",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_12%29",
+   "displayName": "Thaumaturgic Flux (Level 12)",
+   "goldCostPerUnit": 1524,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel13",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_13%29",
+   "displayName": "Thaumaturgic Flux (Level 13)",
+   "goldCostPerUnit": 1654,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel14",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_14%29",
+   "displayName": "Thaumaturgic Flux (Level 14)",
+   "goldCostPerUnit": 1873,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel15",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_15%29",
+   "displayName": "Thaumaturgic Flux (Level 15)",
+   "goldCostPerUnit": 2317,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel16",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_16%29",
+   "displayName": "Thaumaturgic Flux (Level 16)",
+   "goldCostPerUnit": 2579,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel17",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_17%29",
+   "displayName": "Thaumaturgic Flux (Level 17)",
+   "goldCostPerUnit": 2922,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel18",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_18%29",
+   "displayName": "Thaumaturgic Flux (Level 18)",
+   "goldCostPerUnit": 3309,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel19",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_19%29",
+   "displayName": "Thaumaturgic Flux (Level 19)",
+   "goldCostPerUnit": 4010,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel20",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_20%29",
+   "displayName": "Thaumaturgic Flux (Level 20)",
+   "goldCostPerUnit": 16107,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel5",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_5%29",
+   "displayName": "Thaumaturgic Flux (Level 5)",
+   "goldCostPerUnit": 654,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel6",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_6%29",
+   "displayName": "Thaumaturgic Flux (Level 6)",
+   "goldCostPerUnit": 746,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel7",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_7%29",
+   "displayName": "Thaumaturgic Flux (Level 7)",
+   "goldCostPerUnit": 830,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel8",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_8%29",
+   "displayName": "Thaumaturgic Flux (Level 8)",
+   "goldCostPerUnit": 915,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencySetKalguuranSkillGemLevel9",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrency",
+   "slug": "Thaumaturgic_Flux_%28Level_9%29",
+   "displayName": "Thaumaturgic Flux (Level 9)",
+   "goldCostPerUnit": 1004,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyUpgradeInherentTo20",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionGemCurrencyPowerful",
+   "slug": "Perfect_Flux",
+   "displayName": "Perfect Flux",
+   "goldCostPerUnit": 5000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyUpgradeMagicToRare",
+   "art": "Art/2DItems/Currency/CurrencyUpgradeMagicToRare",
+   "slug": "Regal_Orb",
+   "displayName": "Regal Orb",
+   "goldCostPerUnit": 120,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyUpgradeMagicToRare2",
+   "art": "Art/2DItems/Currency/CurrencyUpgradeMagicToRare",
+   "slug": "Greater_Regal_Orb",
+   "displayName": "Greater Regal Orb",
+   "goldCostPerUnit": 360,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyUpgradeMagicToRare3",
+   "art": "Art/2DItems/Currency/CurrencyUpgradeMagicToRare",
+   "slug": "Perfect_Regal_Orb",
+   "displayName": "Perfect Regal Orb",
+   "goldCostPerUnit": 1000,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyUpgradeMagicToRareShard",
+   "art": "Art/2DItems/Currency/CurrencyUpgradeMagicToRareShard",
+   "slug": "Regal_Shard",
+   "displayName": "Regal Shard",
+   "goldCostPerUnit": 12,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyUpgradeRandomly",
+   "art": "Art/2DItems/Currency/CurrencyUpgradeToUnique",
+   "slug": "Orb_of_Chance",
+   "displayName": "Orb of Chance",
+   "goldCostPerUnit": 1000,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyUpgradeRandomlyShard",
+   "art": "Art/2DItems/Currency/CurrencyUpgradeToUniqueShard",
+   "slug": "Chance_Shard",
+   "displayName": "Chance Shard",
+   "goldCostPerUnit": 100,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyUpgradeToMagic",
+   "art": "Art/2DItems/Currency/CurrencyUpgradeToMagic",
+   "slug": "Orb_of_Transmutation",
+   "displayName": "Orb of Transmutation",
+   "goldCostPerUnit": 50,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyUpgradeToMagic2",
+   "art": "Art/2DItems/Currency/CurrencyUpgradeToMagic",
+   "slug": "Greater_Orb_of_Transmutation",
+   "displayName": "Greater Orb of Transmutation",
+   "goldCostPerUnit": 150,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyUpgradeToMagic3",
+   "art": "Art/2DItems/Currency/CurrencyUpgradeToMagic",
+   "slug": "Perfect_Orb_of_Transmutation",
+   "displayName": "Perfect Orb of Transmutation",
+   "goldCostPerUnit": 450,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyUpgradeToMagicShard",
+   "art": "Art/2DItems/Currency/CurrencyUpgradeToMagicShard",
+   "slug": "Transmutation_Shard",
+   "displayName": "Transmutation Shard",
+   "goldCostPerUnit": 4,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyUpgradeToRare",
+   "art": "Art/2DItems/Currency/CurrencyUpgradeToRare",
+   "slug": "Orb_of_Alchemy",
+   "displayName": "Orb of Alchemy",
+   "goldCostPerUnit": 200,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumAlloy1",
+   "art": "Art/2DItems/Currency/Expedition2/ScrapVerisium",
+   "slug": "Runic_Alloy",
+   "displayName": "Runic Alloy",
+   "goldCostPerUnit": 100,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumAlloy10",
+   "art": "Art/2DItems/Currency/Expedition2/Alloy4",
+   "slug": "Celestial_Alloy",
+   "displayName": "Celestial Alloy",
+   "goldCostPerUnit": 1500,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumAlloy11",
+   "art": "Art/2DItems/Currency/Expedition2/Alloy5",
+   "slug": "Transcendent_Alloy",
+   "displayName": "Transcendent Alloy",
+   "goldCostPerUnit": 2000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumAlloy12",
+   "art": "Art/2DItems/Currency/Expedition2/Alloy2",
+   "slug": "The_Runebinders_Alloy",
+   "displayName": "The Runebinder's Alloy",
+   "goldCostPerUnit": 2000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumAlloy13",
+   "art": "Art/2DItems/Currency/Expedition2/Alloy3",
+   "slug": "The_Runefathers_Alloy",
+   "displayName": "The Runefather's Alloy",
+   "goldCostPerUnit": 2000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumAlloy2",
+   "art": "Art/2DItems/Currency/Expedition2/ChippedVerisium",
+   "slug": "Adaptive_Alloy",
+   "displayName": "Adaptive Alloy",
+   "goldCostPerUnit": 150,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumAlloy3",
+   "art": "Art/2DItems/Currency/Expedition2/ImpureVerisium",
+   "slug": "Protective_Alloy",
+   "displayName": "Protective Alloy",
+   "goldCostPerUnit": 200,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumAlloy4",
+   "art": "Art/2DItems/Currency/Expedition2/StandardVerisium",
+   "slug": "Expansive_Alloy",
+   "displayName": "Expansive Alloy",
+   "goldCostPerUnit": 300,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumAlloy5",
+   "art": "Art/2DItems/Currency/Expedition2/PureVerisium",
+   "slug": "Swift_Alloy",
+   "displayName": "Swift Alloy",
+   "goldCostPerUnit": 450,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumAlloy6",
+   "art": "Art/2DItems/Currency/Expedition2/ImbuedVerisium",
+   "slug": "Cyclonic_Alloy",
+   "displayName": "Cyclonic Alloy",
+   "goldCostPerUnit": 600,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumAlloy7",
+   "art": "Art/2DItems/Currency/Expedition2/SovereignVerisium",
+   "slug": "Prismatic_Alloy",
+   "displayName": "Prismatic Alloy",
+   "goldCostPerUnit": 800,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumAlloy8",
+   "art": "Art/2DItems/Currency/Expedition2/CelestialVerisium",
+   "slug": "Mystic_Alloy",
+   "displayName": "Mystic Alloy",
+   "goldCostPerUnit": 1000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumAlloy9",
+   "art": "Art/2DItems/Currency/Expedition2/Alloy1",
+   "slug": "Sovereign_Alloy",
+   "displayName": "Sovereign Alloy",
+   "goldCostPerUnit": 1500,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumMetal1",
+   "art": "Art/2DItems/Currency/Expedition2/RefinedVerisium",
+   "slug": "Verisium",
+   "displayName": "Verisium",
+   "goldCostPerUnit": 10,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumMetal2",
+   "art": "Art/2DItems/Currency/Expedition2/PerfectVerisium",
+   "slug": "Exceptional_Verisium",
+   "displayName": "Exceptional Verisium",
+   "goldCostPerUnit": 450,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumMetalUnique1",
+   "art": "Art/2DItems/Currency/Expedition2/UhtredCrest",
+   "slug": "Medveds_Crest_of_the_Circle",
+   "displayName": "Medved's Crest of the Circle",
+   "goldCostPerUnit": 250,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumMetalUnique2",
+   "art": "Art/2DItems/Currency/Expedition2/VoranaCrest",
+   "slug": "Voranas_Crest_of_the_Scythe",
+   "displayName": "Vorana's Crest of the Scythe",
+   "goldCostPerUnit": 500,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumMetalUnique3",
+   "art": "Art/2DItems/Currency/Expedition2/MedvedCrest",
+   "slug": "Uhtreds_Crest_of_the_Chalice",
+   "displayName": "Uhtred's Crest of the Chalice",
+   "goldCostPerUnit": 1000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumMetalUnique4",
+   "art": "Art/2DItems/Currency/Expedition2/OlrothCrest",
+   "slug": "Olroths_Crest_of_the_Sun",
+   "displayName": "Olroth's Crest of the Sun",
+   "goldCostPerUnit": 1500,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumOreUniqueEventidePetals",
+   "art": "Art/2DItems/Crafting/Verisium/VerisiumOre_Starlit_1x1",
+   "slug": "Veridical_Starlit_Ore",
+   "displayName": "Veridical Starlit Ore",
+   "goldCostPerUnit": 2000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumOreUniqueEyesOfTheRunefather",
+   "art": "Art/2DItems/Crafting/Verisium/VerisiumOre_Starlit_2x3",
+   "slug": "Venerable_Starlit_Ore",
+   "displayName": "Venerable Starlit Ore",
+   "goldCostPerUnit": 2000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumOreUniqueSerlesGrit",
+   "art": "Art/2DItems/Crafting/Verisium/VerisiumOre_Starlit_2x2",
+   "slug": "Starlit_Ore",
+   "displayName": "Starlit Ore",
+   "goldCostPerUnit": 2000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumOreUniqueStolvarheim",
+   "art": "Art/2DItems/Crafting/Verisium/VerisiumOre_Starlit_2x4_Weapon",
+   "slug": "Warding_Starlit_Ore",
+   "displayName": "Warding Starlit Ore",
+   "goldCostPerUnit": 2000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyVerisiumOreUniqueTheUnleashed",
+   "art": "Art/2DItems/Crafting/Verisium/VerisiumOre_Starlit_2x4_Armour",
+   "slug": "Revered_Starlit_Ore",
+   "displayName": "Revered Starlit Ore",
+   "goldCostPerUnit": 2000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/CurrencyWeaponQuality",
+   "art": "Art/2DItems/Currency/CurrencyWeaponQuality",
+   "slug": "Blacksmiths_Whetstone",
+   "displayName": "Blacksmith's Whetstone",
+   "goldCostPerUnit": 500,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/Delirium/DeliriumPinnacleKey",
+   "art": "Art/2DItems/Maps/TangamazuKey",
+   "slug": "Ravens_Reflection",
+   "displayName": "Raven's Reflection",
+   "goldCostPerUnit": 1500,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotion1",
+   "art": "Art/2DItems/Currency/DistilledEmotions/DilutedDistilledIre",
+   "slug": "Diluted_Liquid_Ire",
+   "displayName": "Diluted Liquid Ire",
+   "goldCostPerUnit": 100,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotion10",
+   "art": "Art/2DItems/Currency/DistilledEmotions/ConcentratedDistilledIsolation",
+   "slug": "Concentrated_Liquid_Isolation",
+   "displayName": "Concentrated Liquid Isolation",
+   "goldCostPerUnit": 1000,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotion2",
+   "art": "Art/2DItems/Currency/DistilledEmotions/DilutedDistilledGuilt",
+   "slug": "Diluted_Liquid_Guilt",
+   "displayName": "Diluted Liquid Guilt",
+   "goldCostPerUnit": 140,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotion3",
+   "art": "Art/2DItems/Currency/DistilledEmotions/DilutedDistilledGreed",
+   "slug": "Diluted_Liquid_Greed",
+   "displayName": "Diluted Liquid Greed",
+   "goldCostPerUnit": 180,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotion4",
+   "art": "Art/2DItems/Currency/DistilledEmotions/DistilledParanoia",
+   "slug": "Liquid_Paranoia",
+   "displayName": "Liquid Paranoia",
+   "goldCostPerUnit": 220,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotion5",
+   "art": "Art/2DItems/Currency/DistilledEmotions/DistilledEnvy",
+   "slug": "Liquid_Envy",
+   "displayName": "Liquid Envy",
+   "goldCostPerUnit": 300,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotion6",
+   "art": "Art/2DItems/Currency/DistilledEmotions/DistilledDisgust",
+   "slug": "Liquid_Disgust",
+   "displayName": "Liquid Disgust",
+   "goldCostPerUnit": 400,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotion7",
+   "art": "Art/2DItems/Currency/DistilledEmotions/DistilledDespair",
+   "slug": "Liquid_Despair",
+   "displayName": "Liquid Despair",
+   "goldCostPerUnit": 520,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotion8",
+   "art": "Art/2DItems/Currency/DistilledEmotions/ConcentratedDistilledFear",
+   "slug": "Concentrated_Liquid_Fear",
+   "displayName": "Concentrated Liquid Fear",
+   "goldCostPerUnit": 700,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotion9",
+   "art": "Art/2DItems/Currency/DistilledEmotions/ConcentratedDistilledSuffering",
+   "slug": "Concentrated_Liquid_Suffering",
+   "displayName": "Concentrated Liquid Suffering",
+   "goldCostPerUnit": 920,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotionTimeLost1",
+   "art": "Art/2DItems/Currency/DistilledEmotions/TimelostDilutedDistilledIre",
+   "slug": "Ancient_Diluted_Liquid_Ire",
+   "displayName": "Ancient Diluted Liquid Ire",
+   "goldCostPerUnit": 100,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotionTimeLost10",
+   "art": "Art/2DItems/Currency/DistilledEmotions/TimelostConcentratedDistilledIsolation",
+   "slug": "Ancient_Concentrated_Liquid_Isolation",
+   "displayName": "Ancient Concentrated Liquid Isolation",
+   "goldCostPerUnit": 1000,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotionTimeLost2",
+   "art": "Art/2DItems/Currency/DistilledEmotions/TimelostDilutedDistilledGuilt",
+   "slug": "Ancient_Diluted_Liquid_Guilt",
+   "displayName": "Ancient Diluted Liquid Guilt",
+   "goldCostPerUnit": 140,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotionTimeLost3",
+   "art": "Art/2DItems/Currency/DistilledEmotions/TimelostDilutedDistilledGreed",
+   "slug": "Ancient_Diluted_Liquid_Greed",
+   "displayName": "Ancient Diluted Liquid Greed",
+   "goldCostPerUnit": 180,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotionTimeLost4",
+   "art": "Art/2DItems/Currency/DistilledEmotions/TimelostDistilledParanoia",
+   "slug": "Ancient_Liquid_Paranoia",
+   "displayName": "Ancient Liquid Paranoia",
+   "goldCostPerUnit": 220,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotionTimeLost5",
+   "art": "Art/2DItems/Currency/DistilledEmotions/TimelostDistilledEnvy",
+   "slug": "Ancient_Liquid_Envy",
+   "displayName": "Ancient Liquid Envy",
+   "goldCostPerUnit": 300,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotionTimeLost6",
+   "art": "Art/2DItems/Currency/DistilledEmotions/TimelostDistilledDisgust",
+   "slug": "Ancient_Liquid_Disgust",
+   "displayName": "Ancient Liquid Disgust",
+   "goldCostPerUnit": 400,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotionTimeLost7",
+   "art": "Art/2DItems/Currency/DistilledEmotions/TimelostDistilledDespair",
+   "slug": "Ancient_Liquid_Despair",
+   "displayName": "Ancient Liquid Despair",
+   "goldCostPerUnit": 520,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotionTimeLost8",
+   "art": "Art/2DItems/Currency/DistilledEmotions/TimelostConcentratedDistilledFear",
+   "slug": "Ancient_Concentrated_Liquid_Fear",
+   "displayName": "Ancient Concentrated Liquid Fear",
+   "goldCostPerUnit": 700,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/DistilledEmotionTimeLost9",
+   "art": "Art/2DItems/Currency/DistilledEmotions/TimelostConcentratedDistilledSuffering",
+   "slug": "Ancient_Concentrated_Liquid_Suffering",
+   "displayName": "Ancient Concentrated Liquid Suffering",
+   "goldCostPerUnit": 920,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/EndgameDistilledEmotion1",
+   "art": "Art/2DItems/Currency/DistilledEmotions/UniqueHumansEmotion",
+   "slug": "Potent_Liquid_Melancholy",
+   "displayName": "Potent Liquid Melancholy",
+   "goldCostPerUnit": 1500,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/EndgameDistilledEmotion2",
+   "art": "Art/2DItems/Currency/DistilledEmotions/UniqueConstructsEmotion",
+   "slug": "Potent_Liquid_Ferocity",
+   "displayName": "Potent Liquid Ferocity",
+   "goldCostPerUnit": 1500,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/EndgameDistilledEmotion3",
+   "art": "Art/2DItems/Currency/DistilledEmotions/UniqueBeastEmotion",
+   "slug": "Potent_Liquid_Contempt",
+   "displayName": "Potent Liquid Contempt",
+   "goldCostPerUnit": 1500,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/EndgameDistilledEmotionTimeLost1",
+   "art": "Art/2DItems/Currency/DistilledEmotions/TimelessUniqueHumansEmotion",
+   "slug": "Ancient_Potent_Liquid_Melancholy",
+   "displayName": "Ancient Potent Liquid Melancholy",
+   "goldCostPerUnit": 1500,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/EndgameDistilledEmotionTimeLost2",
+   "art": "Art/2DItems/Currency/DistilledEmotions/TimlessUniqueConstructsEmotion",
+   "slug": "Ancient_Potent_Liquid_Ferocity",
+   "displayName": "Ancient Potent Liquid Ferocity",
+   "goldCostPerUnit": 1500,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/EndgameDistilledEmotionTimeLost3",
+   "art": "Art/2DItems/Currency/DistilledEmotions/TimelessUniqueBeastEmotion",
+   "slug": "Ancient_Potent_Liquid_Contempt",
+   "displayName": "Ancient Potent Liquid Contempt",
+   "goldCostPerUnit": 1500,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/Expedition/ExpeditionPinnacleKey",
+   "art": "Art/2DItems/QuestItems/KalguuranTriskellion",
+   "slug": "The_Triskelion_Reforged",
+   "displayName": "The Triskelion Reforged",
+   "goldCostPerUnit": 1500,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/Expedition/ExpeditionPinnacleKeyShard",
+   "art": "Art/2DItems/QuestItems/DamagedKalguuranTriskellion",
+   "slug": "Shattered_Triskelion",
+   "displayName": "Shattered Triskelion",
+   "goldCostPerUnit": 1500,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenGambleNoGoldCost",
+   "art": "Art/2DItems/Currency/Omens/OmenGambleNoGoldCost",
+   "slug": "Omen_of_Gambling",
+   "displayName": "Omen of Gambling",
+   "goldCostPerUnit": 120,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnAbyssAddPrefixes",
+   "art": "Art/2DItems/Currency/Omens/OmenOnAbyssAddPrefixes",
+   "slug": "Omen_of_Sinistral_Necromancy",
+   "displayName": "Omen of Sinistral Necromancy",
+   "goldCostPerUnit": 1000,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnAbyssAddSuffixes",
+   "art": "Art/2DItems/Currency/Omens/OmenOnAbyssAddSuffixes",
+   "slug": "Omen_of_Dextral_Necromancy",
+   "displayName": "Omen of Dextral Necromancy",
+   "goldCostPerUnit": 1000,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnAbyssGuarenteeLichTypeMod1",
+   "art": "Art/2DItems/Currency/Omens/OmenOnAbyssGuarenteedLichTypeMod1",
+   "slug": "Omen_of_the_Sovereign",
+   "displayName": "Omen of the Sovereign",
+   "goldCostPerUnit": 1000,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnAbyssGuarenteeLichTypeMod2",
+   "art": "Art/2DItems/Currency/Omens/OmenOnAbyssGuarenteedLichTypeMod2",
+   "slug": "Omen_of_the_Liege",
+   "displayName": "Omen of the Liege",
+   "goldCostPerUnit": 1000,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnAbyssGuarenteeLichTypeMod3",
+   "art": "Art/2DItems/Currency/Omens/OmenOnAbyssGuarenteedLichTypeMod3",
+   "slug": "Omen_of_the_Blackblooded",
+   "displayName": "Omen of the Blackblooded",
+   "goldCostPerUnit": 1000,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnAbyssRerollOptions",
+   "art": "Art/2DItems/Currency/Omens/OmenOnAbyssRerollOptions",
+   "slug": "Omen_of_Abyssal_Echoes",
+   "displayName": "Omen of Abyssal Echoes",
+   "goldCostPerUnit": 1000,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnAbyssVeilAllAndCorrupt",
+   "art": "Art/2DItems/Currency/Omens/OmenOnAbyssVeilAllAndCorrupt",
+   "slug": "Omen_of_Putrefaction",
+   "displayName": "Omen of Putrefaction",
+   "goldCostPerUnit": 1000,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnAlchemyMaximumPrefixes",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens1Green",
+   "slug": "Omen_of_Sinistral_Alchemy",
+   "displayName": "Omen of Sinistral Alchemy",
+   "goldCostPerUnit": 120,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnAlchemyMaximumSuffixes",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens2Green",
+   "slug": "Omen_of_Dextral_Alchemy",
+   "displayName": "Omen of Dextral Alchemy",
+   "goldCostPerUnit": 120,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnAnnulRemoveAbyssMod",
+   "art": "Art/2DItems/Currency/Omens/OmenOnAnnulRemoveAbyssMod",
+   "slug": "Omen_of_Light",
+   "displayName": "Omen of Light",
+   "goldCostPerUnit": 1000,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnAnnulRemovePrefixes",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens2Purple",
+   "slug": "Omen_of_Sinistral_Annulment",
+   "displayName": "Omen of Sinistral Annulment",
+   "goldCostPerUnit": 1000,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnAnnulRemoveSuffixes",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens3Purple",
+   "slug": "Omen_of_Dextral_Annulment",
+   "displayName": "Omen of Dextral Annulment",
+   "goldCostPerUnit": 1000,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnAnnulRemoveTwoMods",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens1Purple",
+   "slug": "Omen_of_Greater_Annulment",
+   "displayName": "Omen of Greater Annulment",
+   "goldCostPerUnit": 920,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnChanceAncientOrb",
+   "art": "Art/2DItems/Currency/Omens/OmenOnChanceAncientOrb",
+   "slug": "Omen_of_the_Ancients",
+   "displayName": "Omen of the Ancients",
+   "goldCostPerUnit": 250,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnChanceNotDestroy",
+   "art": "Art/2DItems/Currency/Omens/OmenOnChanceNotDestroy",
+   "slug": "Omen_of_Chance",
+   "displayName": "Omen of Chance",
+   "goldCostPerUnit": 1000,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnChaosLowestLevelMod",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens1Dark",
+   "slug": "Omen_of_Whittling",
+   "displayName": "Omen of Whittling",
+   "goldCostPerUnit": 800,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnChaosMapItemRarity",
+   "art": "Art/2DItems/Currency/Omens/OmenOnChaosMapItemRarity",
+   "slug": "Omen_of_Chaotic_Rarity",
+   "displayName": "Omen of Chaotic Rarity",
+   "goldCostPerUnit": 450,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnChaosMapMonsterEffectiveness",
+   "art": "Art/2DItems/Currency/Omens/OmenOnChaosMapMonsterEffectiveness",
+   "slug": "Omen_of_Chaotic_Effectiveness",
+   "displayName": "Omen of Chaotic Effectiveness",
+   "goldCostPerUnit": 450,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnChaosMapMonsterRarity",
+   "art": "Art/2DItems/Currency/Omens/OmenOnChaosMapItemQuantity",
+   "slug": "Omen_of_Chaotic_Monsters",
+   "displayName": "Omen of Chaotic Monsters",
+   "goldCostPerUnit": 450,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnChaosMapPackSize",
+   "art": "Art/2DItems/Currency/Omens/OmenOnChaosMapPackSize",
+   "slug": "Omen_of_Chaotic_Quantity",
+   "displayName": "Omen of Chaotic Quantity",
+   "goldCostPerUnit": 450,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnChaosPrefix",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens2Dark",
+   "slug": "Omen_of_Sinistral_Erasure",
+   "displayName": "Omen of Sinistral Erasure",
+   "goldCostPerUnit": 1000,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnChaosSuffix",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens3Dark",
+   "slug": "Omen_of_Dextral_Erasure",
+   "displayName": "Omen of Dextral Erasure",
+   "goldCostPerUnit": 1000,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnDeathPreventExpLoss",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens3Blue",
+   "slug": "Omen_of_Amelioration",
+   "displayName": "Omen of Amelioration",
+   "goldCostPerUnit": 450,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnDivineRerollImplicits",
+   "art": "Art/2DItems/Currency/Omens/OmenOnDivineRerollImplicits",
+   "slug": "Omen_of_the_Blessed",
+   "displayName": "Omen of the Blessed",
+   "goldCostPerUnit": 800,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnDivineSanctify",
+   "art": "Art/2DItems/Currency/Omens/OmenOnDivineSanctify",
+   "slug": "Omen_of_Sanctification",
+   "displayName": "Omen of Sanctification",
+   "goldCostPerUnit": 1000,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnExaltAddExistingModType",
+   "art": "Art/2DItems/Currency/Omens/OmenOnExaltAddExistingModType",
+   "slug": "Omen_of_Homogenising_Exaltation",
+   "displayName": "Omen of Homogenising Exaltation",
+   "goldCostPerUnit": 600,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnExaltAddPrefixes",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens2Yellow",
+   "slug": "Omen_of_Sinistral_Exaltation",
+   "displayName": "Omen of Sinistral Exaltation",
+   "goldCostPerUnit": 450,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnExaltAddSuffixes",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens3Yellow",
+   "slug": "Omen_of_Dextral_Exaltation",
+   "displayName": "Omen of Dextral Exaltation",
+   "goldCostPerUnit": 450,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnExaltAddTwoMods",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens1Yellow",
+   "slug": "Omen_of_Greater_Exaltation",
+   "displayName": "Omen of Greater Exaltation",
+   "goldCostPerUnit": 120,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnExaltConsumeQuality",
+   "art": "Art/2DItems/Currency/Omens/OmenOnExaltConsumeQuality",
+   "slug": "Omen_of_Catalysing_Exaltation",
+   "displayName": "Omen of Catalysing Exaltation",
+   "goldCostPerUnit": 600,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnLowLifeFullyHeal",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens2Blue",
+   "slug": "Omen_of_Resurgence",
+   "displayName": "Omen of Resurgence",
+   "goldCostPerUnit": 120,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnLowLifeRecoverCharges",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens1Blue",
+   "slug": "Omen_of_Refreshment",
+   "displayName": "Omen of Refreshment",
+   "goldCostPerUnit": 120,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnPerfectEssencePrefix",
+   "art": "Art/2DItems/Currency/Omens/OmenOnPerfectEssencePrefix",
+   "slug": "Omen_of_Sinistral_Crystallisation",
+   "displayName": "Omen of Sinistral Crystallisation",
+   "goldCostPerUnit": 800,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnPerfectEssenceSuffix",
+   "art": "Art/2DItems/Currency/Omens/OmenOnPerfectEssenceSuffix",
+   "slug": "Omen_of_Dextral_Crystallisation",
+   "displayName": "Omen of Dextral Crystallisation",
+   "goldCostPerUnit": 800,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnRegalAddExistingModType",
+   "art": "Art/2DItems/Currency/Omens/OmenOnRegalAddExistingModType",
+   "slug": "Omen_of_Homogenising_Coronation",
+   "displayName": "Omen of Homogenising Coronation",
+   "goldCostPerUnit": 120,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnRegalPrefix",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens1Red",
+   "slug": "Omen_of_Sinistral_Coronation",
+   "displayName": "Omen of Sinistral Coronation",
+   "goldCostPerUnit": 120,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnRegalSuffix",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens2Red",
+   "slug": "Omen_of_Dextral_Coronation",
+   "displayName": "Omen of Dextral Coronation",
+   "goldCostPerUnit": 120,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenOnVaalRemoveDoNothingOutcome",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens3Red",
+   "slug": "Omen_of_Corruption",
+   "displayName": "Omen of Corruption",
+   "goldCostPerUnit": 450,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenRogueExileSummonsPartyMember",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens4Purple",
+   "slug": "Omen_of_Reinforcements",
+   "displayName": "Omen of Reinforcements",
+   "goldCostPerUnit": 500,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenSellVendorRandomise",
+   "art": "Art/2DItems/Currency/Omens/OmenSellVendorRandomise",
+   "slug": "Omen_of_Bartering",
+   "displayName": "Omen of Bartering",
+   "goldCostPerUnit": 120,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenShrineAdditionalEffect",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens4Blue",
+   "slug": "Omen_of_Answered_Prayers",
+   "displayName": "Omen of Answered Prayers",
+   "goldCostPerUnit": 500,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenStrongboxOpenableAgain",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens4Dark",
+   "slug": "Omen_of_Secret_Compartments",
+   "displayName": "Omen of Secret Compartments",
+   "goldCostPerUnit": 500,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/OmenTormentedMonsterReleased",
+   "art": "Art/2DItems/Currency/Omens/VoodooOmens4Green",
+   "slug": "Omen_of_the_Hunt",
+   "displayName": "Omen of the Hunt",
+   "goldCostPerUnit": 500,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/Ritual/RitualPinnacleKey",
+   "art": "Art/2DItems/QuestItems/KingoftheMistHead",
+   "slug": "Head_of_the_King",
+   "displayName": "Head of the King",
+   "goldCostPerUnit": 1500,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/Currency/StrongboxKey",
+   "art": "Art/2DItems/Currency/StrongboxSkeletonKey",
+   "slug": "Cryptic_Key",
+   "displayName": "Cryptic Key",
+   "goldCostPerUnit": 2500,
+   "section": "Currency"
+  },
+  {
+   "gggPath": "Metadata/Items/Expedition/Expedition2Logbook",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionLogbook5",
+   "slug": "Expedition_Logbook",
+   "displayName": "Expedition Logbook",
+   "goldCostPerUnit": 1500,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Expedition/Expedition2LogbookMedved",
+   "art": "Art/2DItems/Currency/Expedition2/SpecialExpeditionPage3",
+   "slug": "Medveds_Saga",
+   "displayName": "Medved's Saga",
+   "goldCostPerUnit": 2000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Expedition/Expedition2LogbookOlroth",
+   "art": "Art/2DItems/Currency/Expedition2/SpecialExpeditionPage1",
+   "slug": "Olroths_Saga",
+   "displayName": "Olroth's Saga",
+   "goldCostPerUnit": 2000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Expedition/Expedition2LogbookSpecial",
+   "art": "Art/2DItems/Currency/Expedition2/SpecialExpeditionPage5",
+   "slug": "Aldurs_Saga",
+   "displayName": "Aldur's Saga",
+   "goldCostPerUnit": 2000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Expedition/Expedition2LogbookUhtred",
+   "art": "Art/2DItems/Currency/Expedition2/SpecialExpeditionPage4",
+   "slug": "Uhtreds_Saga",
+   "displayName": "Uhtred's Saga",
+   "goldCostPerUnit": 2000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Expedition/Expedition2LogbookVorana",
+   "art": "Art/2DItems/Currency/Expedition2/SpecialExpeditionPage2",
+   "slug": "Voranas_Saga",
+   "displayName": "Vorana's Saga",
+   "goldCostPerUnit": 2000,
+   "section": "Expedition"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemAmanamusTithe",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageAmanamu",
+   "slug": "Amanamus_Tithe",
+   "displayName": "Amanamu's Tithe",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemAmmoConservationFour",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/AmmoConservation",
+   "slug": "Arjuns_Medal",
+   "displayName": "Arjun's Medal",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemArakaalisLust",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageArakaali",
+   "slug": "Arakaalis_Lust",
+   "displayName": "Arakaali's Lust",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemArbitersIgnition",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageArbiter",
+   "slug": "Arbiters_Ignition",
+   "displayName": "Arbiter's Ignition",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemArbitersReach",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/MothersWard",
+   "slug": "Arbiters_Reach",
+   "displayName": "Arbiter's Reach",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemAtzirisAllure",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageAtziri",
+   "slug": "Atziris_Allure",
+   "displayName": "Atziri's Allure",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemAtzirisCommunion",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/AtziriCommunion",
+   "slug": "Atziris_Communion",
+   "displayName": "Atziri's Communion",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemAtzirisImpatience",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/AtziriImpatience",
+   "slug": "Atziris_Impatience",
+   "displayName": "Atziri's Impatience",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemBreachlordsAmalgam",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/BreachlordsAmalgam",
+   "slug": "Breachlords_Amalgam",
+   "displayName": "Breachlord's Amalgam",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemBreachlordsRift",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/BreachlordsRemorse",
+   "slug": "Breachlords_Rift",
+   "displayName": "Breachlord's Rift",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemCathasBrilliance",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/CathasBrilliance",
+   "slug": "Cathas_Brilliance",
+   "displayName": "Catha's Brilliance",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemCombatReload",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Azadian",
+   "slug": "Rathas_Assault",
+   "displayName": "Ratha's Assault",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemDaressosPassion",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageDaresso",
+   "slug": "Daressos_Passion",
+   "displayName": "Daresso's Passion",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemDiallasDesire",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Dialla",
+   "slug": "Diallas_Desire",
+   "displayName": "Dialla's Desire",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemDoedresUndoing",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageDoedre",
+   "slug": "Doedres_Undoing",
+   "displayName": "Doedre's Undoing",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemEshsProwess",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/EshsProwess",
+   "slug": "Eshs_Prowess",
+   "displayName": "Esh's Prowess",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemEshsRadiance",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageEsh",
+   "slug": "Eshs_Radiance",
+   "displayName": "Esh's Radiance",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemFlukeTwo",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Trialmaster",
+   "slug": "Ixchels_Torment",
+   "displayName": "Ixchel's Torment",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemGarukhansResolve",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Garukhan",
+   "slug": "Garukhans_Resolve",
+   "displayName": "Garukhan's Resolve",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemGreatwood",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Greatwood",
+   "slug": "Cirels_Cultivation",
+   "displayName": "Cirel's Cultivation",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemGuatelitzi",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Guatelitzi",
+   "slug": "Guatelitzis_Ablation",
+   "displayName": "Guatelitzi's Ablation",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemHardyTotemsThree",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Tukohama",
+   "slug": "Tawhoas_Tending",
+   "displayName": "Tawhoa's Tending",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemHayoxisFulmination",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Hayoxi",
+   "slug": "Hayoxis_Fulmination",
+   "displayName": "Hayoxi's Fulmination",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemHelbrymsHide",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/HideofHelbrym",
+   "slug": "Helbryms_Hide",
+   "displayName": "Helbrym's Hide",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemHerDeclaration",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/MothersDeclaration",
+   "slug": "Her_Declaration",
+   "displayName": "Her Declaration",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemKalisasCrescendo",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageKalisaChorus",
+   "slug": "Kalisas_Crescendo",
+   "displayName": "Kalisa's Crescendo",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemKaomsMadness",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageKaom",
+   "slug": "Kaoms_Madness",
+   "displayName": "Kaom's Madness",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemKhatalsRejuvenation",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageKhatal",
+   "slug": "Khatals_Rejuvenation",
+   "displayName": "Khatal's Rejuvenation",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemKulemaksDominion",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageKulemakSpire",
+   "slug": "Kulemaks_Dominion",
+   "displayName": "Kulemak's Dominion",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemKurgalsLeash",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/AbyssKurgal",
+   "slug": "Kurgals_Leash",
+   "displayName": "Kurgal's Leash",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemMedvedsFelling",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/MedvedsFelling",
+   "slug": "Medveds_Felling",
+   "displayName": "Medved's Felling",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemMorganasTempest",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/MorganasTempest",
+   "slug": "Morganas_Tempest",
+   "displayName": "Morgana's Tempest",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemMorrigansInsight",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/MorrigansRefuge",
+   "slug": "M%C3%B3rrigans_Insight",
+   "displayName": "Mórrigan's Insight",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemPietysMercy",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageMercy",
+   "slug": "Dominus_Grasp",
+   "displayName": "Dominus' Grasp",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemPrototypeSeventeen",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/PrototypeSeventeen",
+   "slug": "Prototype_Seventeen",
+   "displayName": "Prototype Seventeen",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemRakiatasFlow",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Rakiata",
+   "slug": "Rakiatas_Flow",
+   "displayName": "Rakiata's Flow",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemRigwaldsFerocity",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Rigwald",
+   "slug": "Rigwalds_Ferocity",
+   "displayName": "Rigwald's Ferocity",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemRomirasRequital",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageRomira",
+   "slug": "Romiras_Requital",
+   "displayName": "Romira's Requital",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemSeraphsHeart",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/SeraphsHeart",
+   "slug": "Seraphs_Heart",
+   "displayName": "Seraph's Heart",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemStyrnsFerocity",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/KnightsFerocity",
+   "slug": "Styrns_Ferocity",
+   "displayName": "Styrn's Ferocity",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemStyrnsMountain",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/KnightsLegacy",
+   "slug": "Styrns_Mountain",
+   "displayName": "Styrn's Mountain",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemTacatisIre",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageTacati",
+   "slug": "Tacatis_Ire",
+   "displayName": "Tacati's Ire",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemTangmazusThurible",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/TangmazusThurible",
+   "slug": "Tangmazus_Thurible",
+   "displayName": "Tangmazu's Thurible",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemTasaliosRhythm",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageTasalio",
+   "slug": "Tasalios_Rhythm",
+   "displayName": "Tasalio's Rhythm",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemTecrodsRevenge",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageTecrod",
+   "slug": "Tecrods_Revenge",
+   "displayName": "Tecrod's Revenge",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemTrickstersShard",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/TrickstersShard",
+   "slug": "Tricksters_Shard",
+   "displayName": "Trickster's Shard",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemTulsAvalanche",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/TulsProgeny",
+   "slug": "Tuls_Avalanche",
+   "displayName": "Tul's Avalanche",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemTulsStillness",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageTul",
+   "slug": "Tuls_Stillness",
+   "displayName": "Tul's Stillness",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemUhtredsAugury",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageUhtredGreater",
+   "slug": "Uhtreds_Augury",
+   "displayName": "Uhtred's Augury",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemUhtredsConstellation",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/UhtredsConstellation",
+   "slug": "Uhtreds_Constellation",
+   "displayName": "Uhtred's Constellation",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemUhtredsExodus",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageUhtredLesser",
+   "slug": "Uhtreds_Exodus",
+   "displayName": "Uhtred's Exodus",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemUhtredsOmen",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageUhtredStandard",
+   "slug": "Uhtreds_Omen",
+   "displayName": "Uhtred's Omen",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemUhtredsRite",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/UthredsChalice",
+   "slug": "Uhtreds_Rite",
+   "displayName": "Uhtred's Rite",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemUulNetolsEmbrace",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageUulNetol",
+   "slug": "Uul-Netols_Embrace",
+   "displayName": "Uul-Netol's Embrace",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemVarashtasBlessing",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageDjinn",
+   "slug": "Varashtas_Blessing",
+   "displayName": "Varashta's Blessing",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemVoranasSiege",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/VoranasSiege",
+   "slug": "Voranas_Siege",
+   "displayName": "Vorana's Siege",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemVruunsAftermath",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/VruunsAftermath",
+   "slug": "Vruuns_Aftermath",
+   "displayName": "Vruun's Aftermath",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemVruunsInevitability",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/VruunsSpike",
+   "slug": "Vruuns_Inevitability",
+   "displayName": "Vruun's Inevitability",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemWildshardsThree",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Wildshards",
+   "slug": "Siones_Temper",
+   "displayName": "Sione's Temper",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemXibaquasRending",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageXibaqua",
+   "slug": "Xibaquas_Rending",
+   "displayName": "Xibaqua's Rending",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemXophsPyre",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageXoph",
+   "slug": "Xophs_Pyre",
+   "displayName": "Xoph's Pyre",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemZarokhsRefrain",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Zarokh",
+   "slug": "Zarokhs_Refrain",
+   "displayName": "Zarokh's Refrain",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gem/SupportGemZerphisLegacy",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/ZerphisLegacy",
+   "slug": "Zerphis_Infamy",
+   "displayName": "Zerphi's Infamy",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut10",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_10%29",
+   "displayName": "Uncut Spirit Gem (Level 10)",
+   "goldCostPerUnit": 1243,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut11",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_11%29",
+   "displayName": "Uncut Spirit Gem (Level 11)",
+   "goldCostPerUnit": 1353,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut12",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_12%29",
+   "displayName": "Uncut Spirit Gem (Level 12)",
+   "goldCostPerUnit": 1524,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut13",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_13%29",
+   "displayName": "Uncut Spirit Gem (Level 13)",
+   "goldCostPerUnit": 1654,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut14",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_14%29",
+   "displayName": "Uncut Spirit Gem (Level 14)",
+   "goldCostPerUnit": 1873,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut15",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_15%29",
+   "displayName": "Uncut Spirit Gem (Level 15)",
+   "goldCostPerUnit": 2317,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut16",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_16%29",
+   "displayName": "Uncut Spirit Gem (Level 16)",
+   "goldCostPerUnit": 2579,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut17",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_17%29",
+   "displayName": "Uncut Spirit Gem (Level 17)",
+   "goldCostPerUnit": 2922,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut18",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_18%29",
+   "displayName": "Uncut Spirit Gem (Level 18)",
+   "goldCostPerUnit": 3309,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut19",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_19%29",
+   "displayName": "Uncut Spirit Gem (Level 19)",
+   "goldCostPerUnit": 4010,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut20",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_20%29",
+   "displayName": "Uncut Spirit Gem (Level 20)",
+   "goldCostPerUnit": 16107,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut4",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_4%29",
+   "displayName": "Uncut Spirit Gem (Level 4)",
+   "goldCostPerUnit": 576,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut5",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_5%29",
+   "displayName": "Uncut Spirit Gem (Level 5)",
+   "goldCostPerUnit": 654,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut6",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_6%29",
+   "displayName": "Uncut Spirit Gem (Level 6)",
+   "goldCostPerUnit": 746,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut7",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_7%29",
+   "displayName": "Uncut Spirit Gem (Level 7)",
+   "goldCostPerUnit": 830,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut8",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_8%29",
+   "displayName": "Uncut Spirit Gem (Level 8)",
+   "goldCostPerUnit": 915,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/ReservationGemUncut9",
+   "art": "Art/2DItems/Gems/UncutSkillGemBuff",
+   "slug": "Uncut_Spirit_Gem_%28Level_9%29",
+   "displayName": "Uncut Spirit Gem (Level 9)",
+   "goldCostPerUnit": 1004,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut1",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_1%29",
+   "displayName": "Uncut Skill Gem (Level 1)",
+   "goldCostPerUnit": 270,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut10",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_10%29",
+   "displayName": "Uncut Skill Gem (Level 10)",
+   "goldCostPerUnit": 1243,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut11",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_11%29",
+   "displayName": "Uncut Skill Gem (Level 11)",
+   "goldCostPerUnit": 1353,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut12",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_12%29",
+   "displayName": "Uncut Skill Gem (Level 12)",
+   "goldCostPerUnit": 1524,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut13",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_13%29",
+   "displayName": "Uncut Skill Gem (Level 13)",
+   "goldCostPerUnit": 1654,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut14",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_14%29",
+   "displayName": "Uncut Skill Gem (Level 14)",
+   "goldCostPerUnit": 1873,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut15",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_15%29",
+   "displayName": "Uncut Skill Gem (Level 15)",
+   "goldCostPerUnit": 2317,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut16",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_16%29",
+   "displayName": "Uncut Skill Gem (Level 16)",
+   "goldCostPerUnit": 2579,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut17",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_17%29",
+   "displayName": "Uncut Skill Gem (Level 17)",
+   "goldCostPerUnit": 2922,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut18",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_18%29",
+   "displayName": "Uncut Skill Gem (Level 18)",
+   "goldCostPerUnit": 3309,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut19",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_19%29",
+   "displayName": "Uncut Skill Gem (Level 19)",
+   "goldCostPerUnit": 4010,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut2",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_2%29",
+   "displayName": "Uncut Skill Gem (Level 2)",
+   "goldCostPerUnit": 421,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut20",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_20%29",
+   "displayName": "Uncut Skill Gem (Level 20)",
+   "goldCostPerUnit": 16107,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut3",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_3%29",
+   "displayName": "Uncut Skill Gem (Level 3)",
+   "goldCostPerUnit": 498,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut4",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_4%29",
+   "displayName": "Uncut Skill Gem (Level 4)",
+   "goldCostPerUnit": 576,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut5",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_5%29",
+   "displayName": "Uncut Skill Gem (Level 5)",
+   "goldCostPerUnit": 654,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut6",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_6%29",
+   "displayName": "Uncut Skill Gem (Level 6)",
+   "goldCostPerUnit": 746,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut7",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_7%29",
+   "displayName": "Uncut Skill Gem (Level 7)",
+   "goldCostPerUnit": 830,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut8",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_8%29",
+   "displayName": "Uncut Skill Gem (Level 8)",
+   "goldCostPerUnit": 915,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SkillGemUncut9",
+   "art": "Art/2DItems/Gems/UncutSkillGem",
+   "slug": "Uncut_Skill_Gem_%28Level_9%29",
+   "displayName": "Uncut Skill Gem (Level 9)",
+   "goldCostPerUnit": 1004,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemAhnsCitadel",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageAhnChisel",
+   "slug": "Ahns_Citadel",
+   "displayName": "Ahn's Citadel",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemAilithLineage",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Monastic",
+   "slug": "Ailiths_Chimes",
+   "displayName": "Ailith's Chimes",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemAtaluiBloodletting",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageLifetap",
+   "slug": "Ataluis_Bloodletting",
+   "displayName": "Atalui's Bloodletting",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemBhatairsVengeance",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/ShatteredFang",
+   "slug": "Bhatairs_Vengeance",
+   "displayName": "Bhatair's Vengeance",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemBrutusBrain",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageMeatshield",
+   "slug": "Brutus_Brain",
+   "displayName": "Brutus' Brain",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemCorruptingCryThree",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/Paquate",
+   "slug": "Paquates_Pact",
+   "displayName": "Paquate's Pact",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemEinharsBeastrite",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageEinhar",
+   "slug": "Einhars_Beastrite",
+   "displayName": "Einhar's Beastrite",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemEonyrsThunder",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/ScaleofEonyr",
+   "slug": "Eonyrs_Thunder",
+   "displayName": "Eonyr's Thunder",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemOisinsOath",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/WalkeroftheWilds",
+   "slug": "Ois%C3%ADns_Oath",
+   "displayName": "Oisín's Oath",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemOlrothsHubris",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/OlrothsHubris",
+   "slug": "Olroths_Hubris",
+   "displayName": "Olroth's Hubris",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemUncut1",
+   "art": "Art/2DItems/Gems/UncutSupportGem",
+   "slug": "Uncut_Support_Gem_%28Level_1%29",
+   "displayName": "Uncut Support Gem (Level 1)",
+   "goldCostPerUnit": 100,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemUncut2",
+   "art": "Art/2DItems/Gems/UncutSupportGem",
+   "slug": "Uncut_Support_Gem_%28Level_2%29",
+   "displayName": "Uncut Support Gem (Level 2)",
+   "goldCostPerUnit": 200,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemUncut3",
+   "art": "Art/2DItems/Gems/UncutSupportGem",
+   "slug": "Uncut_Support_Gem_%28Level_3%29",
+   "displayName": "Uncut Support Gem (Level 3)",
+   "goldCostPerUnit": 300,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemUncut4",
+   "art": "Art/2DItems/Gems/UncutSupportGem",
+   "slug": "Uncut_Support_Gem_%28Level_4%29",
+   "displayName": "Uncut Support Gem (Level 4)",
+   "goldCostPerUnit": 400,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemUncut5",
+   "art": "Art/2DItems/Gems/UncutSupportGem",
+   "slug": "Uncut_Support_Gem_%28Level_5%29",
+   "displayName": "Uncut Support Gem (Level 5)",
+   "goldCostPerUnit": 500,
+   "section": "Uncut Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemUruksSmelting",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageArmourBreak",
+   "slug": "Uruks_Smelting",
+   "displayName": "Uruk's Smelting",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemVilentasPropulsion",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/LineageVilenta",
+   "slug": "Vilentas_Propulsion",
+   "displayName": "Vilenta's Propulsion",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportGemZarokhsRevolt",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/ZarokhsRevolt",
+   "slug": "Zarokhs_Revolt",
+   "displayName": "Zarokh's Revolt",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/Gems/SupportOlrothsConviction",
+   "art": "Art/2DItems/Gems/New/NewSupport/Lineage/OlrothsConviction",
+   "slug": "Olroths_Conviction",
+   "displayName": "Olroth's Conviction",
+   "goldCostPerUnit": 1000,
+   "section": "Gems"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/CurrencyAfflictionFragment",
+   "art": "Art/2DItems/Maps/DeliriumFragment",
+   "slug": "Simulacrum",
+   "displayName": "Simulacrum",
+   "goldCostPerUnit": 1000,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/CurrencyBreachFragment",
+   "art": "Art/2DItems/Currency/Breach/Breachstone",
+   "slug": "Breachstone",
+   "displayName": "Breachstone",
+   "goldCostPerUnit": 1500,
+   "section": "Breach"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/CurrencyRitualBossFragment",
+   "art": "Art/2DItems/Currency/Ritual/VoodooKingEffigy",
+   "slug": "An_Audience_with_the_King",
+   "displayName": "An Audience with the King",
+   "goldCostPerUnit": 1500,
+   "section": "Ritual"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/VaultKeyAzmeriSpirits",
+   "art": "Art/2DItems/Maps/TwilightOrderReliquaryKeyAzmeri",
+   "slug": "Azmeri_Reliquary_Key",
+   "displayName": "Azmeri Reliquary Key",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/VaultKeyBreach",
+   "art": "Art/2DItems/Maps/TwilightOrderReliquaryKeyBreach",
+   "slug": "Xeshts_Reliquary_Key",
+   "displayName": "Xesht's Reliquary Key",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/VaultKeyDelirium",
+   "art": "Art/2DItems/Maps/TwilightOrderReliquaryKeyDelirium",
+   "slug": "Tangmazus_Reliquary_Key",
+   "displayName": "Tangmazu's Reliquary Key",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/VaultKeyExpedition",
+   "art": "Art/2DItems/Maps/TwilightOrderReliquaryKeyExpedition",
+   "slug": "Olroths_Reliquary_Key",
+   "displayName": "Olroth's Reliquary Key",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/VaultKeyPinnacle",
+   "art": "Art/2DItems/Maps/TwilightOrderReliquaryKeyPinnacle",
+   "slug": "The_Arbiters_Reliquary_Key",
+   "displayName": "The Arbiter's Reliquary Key",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/VaultKeyRitual",
+   "art": "Art/2DItems/Maps/TwilightOrderReliquaryKeyRitual",
+   "slug": "Ritualistic_Reliquary_Key",
+   "displayName": "Ritualistic Reliquary Key",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/VaultKeySanctumRelic2",
+   "art": "Art/2DItems/Maps/TwilightOrderReliquaryKeySanctum2",
+   "slug": "Zarokhs_Reliquary_Key%3A_Against_the_Darkness",
+   "displayName": "Zarokh's Reliquary Key: Against the Darkness",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/VaultKeySanctumRelic3",
+   "art": "Art/2DItems/Maps/TwilightOrderReliquaryKeySanctum3",
+   "slug": "Zarokhs_Reliquary_Key%3A_Sandstorm_Visage",
+   "displayName": "Zarokh's Reliquary Key: Sandstorm Visage",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/VaultKeySanctumRelic4",
+   "art": "Art/2DItems/Maps/TwilightOrderReliquaryKeySanctum4",
+   "slug": "Zarokhs_Reliquary_Key%3A_Blessed_Bonds",
+   "displayName": "Zarokh's Reliquary Key: Blessed Bonds",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/VaultKeySanctumRelic5",
+   "art": "Art/2DItems/Maps/TwilightOrderReliquaryKeySanctum5",
+   "slug": "Zarokhs_Reliquary_Key%3A_Sekhemas_Resolve",
+   "displayName": "Zarokh's Reliquary Key: Sekhema's Resolve",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/VaultKeySanctumRelic6",
+   "art": "Art/2DItems/Maps/TwilightOrderReliquaryKeySanctum6",
+   "slug": "Zarokhs_Reliquary_Key%3A_Temporalis",
+   "displayName": "Zarokh's Reliquary Key: Temporalis",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/VaultKeyUltimatum",
+   "art": "Art/2DItems/Maps/TwilightOrderReliquaryKeyUltimatum",
+   "slug": "The_Trialmasters_Reliquary_Key",
+   "displayName": "The Trialmaster's Reliquary Key",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/MapFragments/VaultKeyWorldDrop",
+   "art": "Art/2DItems/Maps/TwilightOrderReliquaryKeyWorld",
+   "slug": "Twilight_Reliquary_Key",
+   "displayName": "Twilight Reliquary Key",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/Pinnacle/BurningMonolithKey1",
+   "art": "Art/2DItems/QuestItems/PinnacleKey1",
+   "slug": "Ancient_Crisis_Fragment",
+   "displayName": "Ancient Crisis Fragment",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/Pinnacle/BurningMonolithKey2",
+   "art": "Art/2DItems/QuestItems/PinnacleKey2",
+   "slug": "Faded_Crisis_Fragment",
+   "displayName": "Faded Crisis Fragment",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/Pinnacle/BurningMonolithKey3",
+   "art": "Art/2DItems/QuestItems/PinnacleKey3",
+   "slug": "Weathered_Crisis_Fragment",
+   "displayName": "Weathered Crisis Fragment",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/Pinnacle/MothersoulCombined",
+   "art": "Art/2DItems/Currency/PrecursorSeedEggCombined",
+   "slug": "Origin_Core",
+   "displayName": "Origin Core",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/Pinnacle/MothersoulEgg",
+   "art": "Art/2DItems/Currency/PrecursorEgg",
+   "slug": "Origin_Cradle",
+   "displayName": "Origin Cradle",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/Pinnacle/MothersoulEmbryo",
+   "art": "Art/2DItems/Currency/PrecursorSeed",
+   "slug": "Origin_Spark",
+   "displayName": "Origin Spark",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/Pinnacle/RitualPinnacleEffigyPiece",
+   "art": "Art/2DItems/Currency/Ritual/RitualEffigyPieces",
+   "slug": "Call_of_the_Shadows",
+   "displayName": "Call of the Shadows",
+   "goldCostPerUnit": 1000,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/AmanamusGaze",
+   "art": "Art/2DItems/Currency/AbyssalEyeSocketables/AmanamusGaze",
+   "slug": "Amanamus_Gaze",
+   "displayName": "Amanamu's Gaze",
+   "goldCostPerUnit": 1500,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/AugmentAnoint",
+   "art": "Art/2DItems/Currency/Delirium/DeliriumEndgameSocketable",
+   "slug": "Raven-Touched_Shard",
+   "displayName": "Raven-Touched Shard",
+   "goldCostPerUnit": 1500,
+   "section": "Delirium"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/CarvedCunning",
+   "art": "Art/2DItems/Currency/Ritual/RitualAmbushPredators",
+   "slug": "Carved_Cunning",
+   "displayName": "Carved Cunning",
+   "goldCostPerUnit": 1500,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/CarvedMajesty",
+   "art": "Art/2DItems/Currency/Ritual/RitualMajesticBeasts",
+   "slug": "Carved_Majesty",
+   "displayName": "Carved Majesty",
+   "goldCostPerUnit": 1500,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/CarvedMischief",
+   "art": "Art/2DItems/Currency/Ritual/RitualMischievousCreatures",
+   "slug": "Carved_Mischief",
+   "displayName": "Carved Mischief",
+   "goldCostPerUnit": 1500,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/CarvedTenacity",
+   "art": "Art/2DItems/Currency/Ritual/RitualTenaciousBeasts",
+   "slug": "Carved_Tenacity",
+   "displayName": "Carved Tenacity",
+   "goldCostPerUnit": 1500,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/EmergentInstinct",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionWarAncientAugment",
+   "slug": "Emergent_Instinct",
+   "displayName": "Emergent Instinct",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/EmergentPossibility",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionScienceAncientAugment",
+   "slug": "Emergent_Possibility",
+   "displayName": "Emergent Possibility",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/EmergentProtection",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionValorAncientAugment",
+   "slug": "Emergent_Protection",
+   "displayName": "Emergent Protection",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/EmergentVigour",
+   "art": "Art/2DItems/Currency/Expedition2/ExpeditionReligionAncientAugment",
+   "slug": "Emergent_Vigour",
+   "displayName": "Emergent Vigour",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/IdolCorrupted1",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/RitualCorruptedIdol1",
+   "slug": "Idol_of_the_Sycophant",
+   "displayName": "Idol of the Sycophant",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/IdolCorrupted2",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/RitualCorruptedIdol2",
+   "slug": "Idol_of_the_Martyr",
+   "displayName": "Idol of the Martyr",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/IdolCorrupted3",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/RitualCorruptedIdol3",
+   "slug": "Idol_of_the_Pharisee",
+   "displayName": "Idol of the Pharisee",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/IdolHawk",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableHawk",
+   "slug": "Hawk_Idol",
+   "displayName": "Hawk Idol",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/IdolPanther",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketablePanther",
+   "slug": "Panther_Idol",
+   "displayName": "Panther Idol",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/IdolSpecial1",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/IdolofGreust",
+   "slug": "Idol_of_Greust",
+   "displayName": "Idol of Greust",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/IdolSpecial2",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/IdolofYeena",
+   "slug": "Idol_of_Yeena",
+   "displayName": "Idol of Yeena",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/IdolSpecial3",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/IdolofEramir",
+   "slug": "Idol_of_Eramir",
+   "displayName": "Idol of Eramir",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/IdolSpecial4",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/IdolofOak",
+   "slug": "Idol_of_Oak",
+   "displayName": "Idol of Oak",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/IdolSpecial5",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/IdoloAlira",
+   "slug": "Idol_of_Alira",
+   "displayName": "Idol of Alira",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/IdolSpecial6",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/IdoloKraityn",
+   "slug": "Idol_of_Kraityn",
+   "displayName": "Idol of Kraityn",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/IdolSpecial7",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/IdolofSilk",
+   "slug": "Idol_of_Silk",
+   "displayName": "Idol of Silk",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/IdolStoat",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableStoat",
+   "slug": "Stoat_Idol",
+   "displayName": "Stoat Idol",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/KurgalsGaze",
+   "art": "Art/2DItems/Currency/AbyssalEyeSocketables/KurgalsGaze",
+   "slug": "Kurgals_Gaze",
+   "displayName": "Kurgal's Gaze",
+   "goldCostPerUnit": 1500,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneAccuracy",
+   "art": "Art/2DItems/Currency/Runes/AccuracyRune",
+   "slug": "Vision_Rune",
+   "displayName": "Vision Rune",
+   "goldCostPerUnit": 350,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneAccuracyGreater",
+   "art": "Art/2DItems/Currency/Runes/AccuracyRuneTier2",
+   "slug": "Greater_Vision_Rune",
+   "displayName": "Greater Vision Rune",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneAccuracyLesser",
+   "art": "Art/2DItems/Currency/Runes/AccuracyRuneTier1",
+   "slug": "Lesser_Vision_Rune",
+   "displayName": "Lesser Vision Rune",
+   "goldCostPerUnit": 125,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneAccuracyPerfect",
+   "art": "Art/2DItems/Currency/Runes/PerfectRuneAccuracy",
+   "slug": "Perfect_Vision_Rune",
+   "displayName": "Perfect Vision Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneCold",
+   "art": "Art/2DItems/Currency/Runes/ColdRune",
+   "slug": "Glacial_Rune",
+   "displayName": "Glacial Rune",
+   "goldCostPerUnit": 250,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneColdGreater",
+   "art": "Art/2DItems/Currency/Runes/ColdRuneTier2",
+   "slug": "Greater_Glacial_Rune",
+   "displayName": "Greater Glacial Rune",
+   "goldCostPerUnit": 750,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneColdLesser",
+   "art": "Art/2DItems/Currency/Runes/ColdRuneTier1",
+   "slug": "Lesser_Glacial_Rune",
+   "displayName": "Lesser Glacial Rune",
+   "goldCostPerUnit": 100,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneColdPerfect",
+   "art": "Art/2DItems/Currency/Runes/PerfectRuneCold",
+   "slug": "Perfect_Glacial_Rune",
+   "displayName": "Perfect Glacial Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneConvertChaos",
+   "art": "Art/2DItems/Currency/Expedition2/ElementalConversionRuneChaos",
+   "slug": "Betrayal_of_Aldur",
+   "displayName": "Betrayal of Aldur",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneConvertCold",
+   "art": "Art/2DItems/Currency/Expedition2/ElementalConversionRuneCold",
+   "slug": "Breath_of_Aldur",
+   "displayName": "Breath of Aldur",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneConvertFire",
+   "art": "Art/2DItems/Currency/Expedition2/ElementalConversionRuneFire",
+   "slug": "Passion_of_Aldur",
+   "displayName": "Passion of Aldur",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneConvertLightning",
+   "art": "Art/2DItems/Currency/Expedition2/ElementalConversionRuneLightning",
+   "slug": "Ire_of_Aldur",
+   "displayName": "Ire of Aldur",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneDexterity",
+   "art": "Art/2DItems/Currency/Runes/DexRune",
+   "slug": "Adept_Rune",
+   "displayName": "Adept Rune",
+   "goldCostPerUnit": 350,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneDexterityGreater",
+   "art": "Art/2DItems/Currency/Runes/DexRuneTier3",
+   "slug": "Greater_Adept_Rune",
+   "displayName": "Greater Adept Rune",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneDexterityLesser",
+   "art": "Art/2DItems/Currency/Runes/DexRuneTier1",
+   "slug": "Lesser_Adept_Rune",
+   "displayName": "Lesser Adept Rune",
+   "goldCostPerUnit": 125,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneDexterityPerfect",
+   "art": "Art/2DItems/Currency/Runes/PerfectRuneDexterity",
+   "slug": "Perfect_Adept_Rune",
+   "displayName": "Perfect Adept Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneEnhance",
+   "art": "Art/2DItems/Currency/Runes/EnhanceRune",
+   "slug": "Iron_Rune",
+   "displayName": "Iron Rune",
+   "goldCostPerUnit": 250,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneEnhanceGreater",
+   "art": "Art/2DItems/Currency/Runes/EnhanceRuneTier2",
+   "slug": "Greater_Iron_Rune",
+   "displayName": "Greater Iron Rune",
+   "goldCostPerUnit": 750,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneEnhanceLesser",
+   "art": "Art/2DItems/Currency/Runes/EnhanceRuneTier1",
+   "slug": "Lesser_Iron_Rune",
+   "displayName": "Lesser Iron Rune",
+   "goldCostPerUnit": 100,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneEnhancePerfect",
+   "art": "Art/2DItems/Currency/Runes/PerfectRuneEnhance",
+   "slug": "Perfect_Iron_Rune",
+   "displayName": "Perfect Iron Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneFire",
+   "art": "Art/2DItems/Currency/Runes/FireRune",
+   "slug": "Desert_Rune",
+   "displayName": "Desert Rune",
+   "goldCostPerUnit": 250,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneFireGreater",
+   "art": "Art/2DItems/Currency/Runes/FireRuneTier2",
+   "slug": "Greater_Desert_Rune",
+   "displayName": "Greater Desert Rune",
+   "goldCostPerUnit": 750,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneFireLesser",
+   "art": "Art/2DItems/Currency/Runes/FireRuneTier1",
+   "slug": "Lesser_Desert_Rune",
+   "displayName": "Lesser Desert Rune",
+   "goldCostPerUnit": 100,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneFirePerfect",
+   "art": "Art/2DItems/Currency/Runes/PerfectRuneFire",
+   "slug": "Perfect_Desert_Rune",
+   "displayName": "Perfect Desert Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneIntelligence",
+   "art": "Art/2DItems/Currency/Runes/IntRune",
+   "slug": "Resolve_Rune",
+   "displayName": "Resolve Rune",
+   "goldCostPerUnit": 350,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneIntelligenceGreater",
+   "art": "Art/2DItems/Currency/Runes/IntRuneTier3",
+   "slug": "Greater_Resolve_Rune",
+   "displayName": "Greater Resolve Rune",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneIntelligenceLesser",
+   "art": "Art/2DItems/Currency/Runes/IntRuneTier1",
+   "slug": "Lesser_Resolve_Rune",
+   "displayName": "Lesser Resolve Rune",
+   "goldCostPerUnit": 125,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneIntelligencePerfect",
+   "art": "Art/2DItems/Currency/Runes/PerfectRuneIntelligence",
+   "slug": "Perfect_Resolve_Rune",
+   "displayName": "Perfect Resolve Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneLife",
+   "art": "Art/2DItems/Currency/Runes/LifeRune",
+   "slug": "Body_Rune",
+   "displayName": "Body Rune",
+   "goldCostPerUnit": 350,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneLifeGreater",
+   "art": "Art/2DItems/Currency/Runes/LifeRuneTier2",
+   "slug": "Greater_Body_Rune",
+   "displayName": "Greater Body Rune",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneLifeLesser",
+   "art": "Art/2DItems/Currency/Runes/LifeRuneTier1",
+   "slug": "Lesser_Body_Rune",
+   "displayName": "Lesser Body Rune",
+   "goldCostPerUnit": 125,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneLifePerfect",
+   "art": "Art/2DItems/Currency/Runes/PerfectRuneLife",
+   "slug": "Perfect_Body_Rune",
+   "displayName": "Perfect Body Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneLifeRecovery",
+   "art": "Art/2DItems/Currency/Runes/LifeRecoveryRune",
+   "slug": "Rebirth_Rune",
+   "displayName": "Rebirth Rune",
+   "goldCostPerUnit": 450,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneLifeRecoveryGreater",
+   "art": "Art/2DItems/Currency/Runes/LifeRecoveryRuneTier2",
+   "slug": "Greater_Rebirth_Rune",
+   "displayName": "Greater Rebirth Rune",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneLifeRecoveryLesser",
+   "art": "Art/2DItems/Currency/Runes/LifeRecoveryRuneTier1",
+   "slug": "Lesser_Rebirth_Rune",
+   "displayName": "Lesser Rebirth Rune",
+   "goldCostPerUnit": 150,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneLifeRecoveryPerfect",
+   "art": "Art/2DItems/Currency/Runes/PerfectRuneLifeRecovery",
+   "slug": "Perfect_Rebirth_Rune",
+   "displayName": "Perfect Rebirth Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneLightning",
+   "art": "Art/2DItems/Currency/Runes/LightningRune",
+   "slug": "Storm_Rune",
+   "displayName": "Storm Rune",
+   "goldCostPerUnit": 250,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneLightningGreater",
+   "art": "Art/2DItems/Currency/Runes/LightningRuneTier2",
+   "slug": "Greater_Storm_Rune",
+   "displayName": "Greater Storm Rune",
+   "goldCostPerUnit": 750,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneLightningLesser",
+   "art": "Art/2DItems/Currency/Runes/LightningRuneTier1",
+   "slug": "Lesser_Storm_Rune",
+   "displayName": "Lesser Storm Rune",
+   "goldCostPerUnit": 100,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneLightningPerfect",
+   "art": "Art/2DItems/Currency/Runes/PerfectRuneLightning",
+   "slug": "Perfect_Storm_Rune",
+   "displayName": "Perfect Storm Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneMana",
+   "art": "Art/2DItems/Currency/Runes/ManaRune",
+   "slug": "Mind_Rune",
+   "displayName": "Mind Rune",
+   "goldCostPerUnit": 350,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneManaGreater",
+   "art": "Art/2DItems/Currency/Runes/ManaRuneTier2",
+   "slug": "Greater_Mind_Rune",
+   "displayName": "Greater Mind Rune",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneManaLesser",
+   "art": "Art/2DItems/Currency/Runes/ManaRuneTier1",
+   "slug": "Lesser_Mind_Rune",
+   "displayName": "Lesser Mind Rune",
+   "goldCostPerUnit": 125,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneManaPerfect",
+   "art": "Art/2DItems/Currency/Runes/PerfectRuneMana",
+   "slug": "Perfect_Mind_Rune",
+   "displayName": "Perfect Mind Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneManaRecovery",
+   "art": "Art/2DItems/Currency/Runes/ManaRecoveryRune",
+   "slug": "Inspiration_Rune",
+   "displayName": "Inspiration Rune",
+   "goldCostPerUnit": 450,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneManaRecoveryGreater",
+   "art": "Art/2DItems/Currency/Runes/ManaRecoveryRuneTier2",
+   "slug": "Greater_Inspiration_Rune",
+   "displayName": "Greater Inspiration Rune",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneManaRecoveryLesser",
+   "art": "Art/2DItems/Currency/Runes/ManaRecoveryRuneTier1",
+   "slug": "Lesser_Inspiration_Rune",
+   "displayName": "Lesser Inspiration Rune",
+   "goldCostPerUnit": 150,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneManaRecoveryPerfect",
+   "art": "Art/2DItems/Currency/Runes/PerfectRuneManaRecovery",
+   "slug": "Perfect_Inspiration_Rune",
+   "displayName": "Perfect Inspiration Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients1",
+   "art": "Art/2DItems/Currency/Expedition2/EndgameRune1",
+   "slug": "Ancient_Rune_of_Splinters",
+   "displayName": "Ancient Rune of Splinters",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients10",
+   "art": "Art/2DItems/Currency/Expedition2/EndgameRune10",
+   "slug": "Ancient_Rune_of_the_Horde",
+   "displayName": "Ancient Rune of the Horde",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients11",
+   "art": "Art/2DItems/Currency/Expedition2/EndgameRune11",
+   "slug": "Ancient_Rune_of_Animosity",
+   "displayName": "Ancient Rune of Animosity",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients12",
+   "art": "Art/2DItems/Currency/Expedition2/EndgameRune12",
+   "slug": "Ancient_Rune_of_Detonation",
+   "displayName": "Ancient Rune of Detonation",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients13",
+   "art": "Art/2DItems/Currency/Expedition2/EndgameRune13",
+   "slug": "Ancient_Rune_of_Retaliation",
+   "displayName": "Ancient Rune of Retaliation",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients14",
+   "art": "Art/2DItems/Currency/Expedition2/EarlyMythicRune1",
+   "slug": "Rune_of_Vitality",
+   "displayName": "Rune of Vitality",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients15",
+   "art": "Art/2DItems/Currency/Expedition2/EarlyMythicRune2",
+   "slug": "Rune_of_the_Hunt",
+   "displayName": "Rune of the Hunt",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients16",
+   "art": "Art/2DItems/Currency/Expedition2/EarlyMythicRune3",
+   "slug": "Rune_of_Acrobatics",
+   "displayName": "Rune of Acrobatics",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients17",
+   "art": "Art/2DItems/Currency/Expedition2/EarlyMythicRune4",
+   "slug": "Rune_of_Culmination",
+   "displayName": "Rune of Culmination",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients18",
+   "art": "Art/2DItems/Currency/Expedition2/EarlyMythicRune5",
+   "slug": "Rune_of_Renown",
+   "displayName": "Rune of Renown",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients19",
+   "art": "Art/2DItems/Currency/Expedition2/EarlyMythicRune6",
+   "slug": "Rune_of_Accumulation",
+   "displayName": "Rune of Accumulation",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients2",
+   "art": "Art/2DItems/Currency/Expedition2/EndgameRune2",
+   "slug": "Ancient_Rune_of_Dueling",
+   "displayName": "Ancient Rune of Dueling",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients20",
+   "art": "Art/2DItems/Currency/Expedition2/EarlyMythicRune7",
+   "slug": "Rune_of_Foundations",
+   "displayName": "Rune of Foundations",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients21",
+   "art": "Art/2DItems/Currency/Expedition2/EarlyMythicRune8",
+   "slug": "Rune_of_the_Prism",
+   "displayName": "Rune of the Prism",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients22",
+   "art": "Art/2DItems/Currency/Expedition2/EarlyMythicRune9",
+   "slug": "Rune_of_the_Blossom",
+   "displayName": "Rune of the Blossom",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients23",
+   "art": "Art/2DItems/Currency/Expedition2/EarlyMythicRune10",
+   "slug": "Rune_of_Consistency",
+   "displayName": "Rune of Consistency",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients24",
+   "art": "Art/2DItems/Currency/Expedition2/EarlyMythicRune11",
+   "slug": "Rune_of_Reach",
+   "displayName": "Rune of Reach",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients25",
+   "art": "Art/2DItems/Currency/Expedition2/EarlyMythicRune12",
+   "slug": "Rune_of_Vital_Flame",
+   "displayName": "Rune of Vital Flame",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients26",
+   "art": "Art/2DItems/Currency/Expedition2/EarlyMythicRune13",
+   "slug": "Rune_of_Confrontation",
+   "displayName": "Rune of Confrontation",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients3",
+   "art": "Art/2DItems/Currency/Expedition2/EndgameRune3",
+   "slug": "Ancient_Rune_of_the_Titan",
+   "displayName": "Ancient Rune of the Titan",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients4",
+   "art": "Art/2DItems/Currency/Expedition2/EndgameRune4",
+   "slug": "Ancient_Rune_of_Shattering",
+   "displayName": "Ancient Rune of Shattering",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients5",
+   "art": "Art/2DItems/Currency/Expedition2/EndgameRune5",
+   "slug": "Ancient_Rune_of_Prowess",
+   "displayName": "Ancient Rune of Prowess",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients6",
+   "art": "Art/2DItems/Currency/Expedition2/EndgameRune6",
+   "slug": "Ancient_Rune_of_Control",
+   "displayName": "Ancient Rune of Control",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients7",
+   "art": "Art/2DItems/Currency/Expedition2/EndgameRune7",
+   "slug": "Ancient_Rune_of_Discovery",
+   "displayName": "Ancient Rune of Discovery",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients8",
+   "art": "Art/2DItems/Currency/Expedition2/EndgameRune8",
+   "slug": "Ancient_Rune_of_Decay",
+   "displayName": "Ancient Rune of Decay",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneOfTheAncients9",
+   "art": "Art/2DItems/Currency/Expedition2/EndgameRune9",
+   "slug": "Ancient_Rune_of_Witchcraft",
+   "displayName": "Ancient Rune of Witchcraft",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial1",
+   "art": "Art/2DItems/Currency/Runes/LightningRuneSpecial1",
+   "slug": "Greater_Rune_of_Leadership",
+   "displayName": "Greater Rune of Leadership",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial10",
+   "art": "Art/2DItems/Currency/Runes/NewRune6",
+   "slug": "Craiceanns_Rune_of_Warding",
+   "displayName": "Craiceann's Rune of Warding",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial11",
+   "art": "Art/2DItems/Currency/Runes/NewRune7",
+   "slug": "Saqawals_Rune_of_Memory",
+   "displayName": "Saqawal's Rune of Memory",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial12",
+   "art": "Art/2DItems/Currency/Runes/NewRune8",
+   "slug": "Saqawals_Rune_of_Erosion",
+   "displayName": "Saqawal's Rune of Erosion",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial13",
+   "art": "Art/2DItems/Currency/Runes/NewRune9",
+   "slug": "Farruls_Rune_of_the_Hunt",
+   "displayName": "Farrul's Rune of the Hunt",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial14",
+   "art": "Art/2DItems/Currency/Runes/NewRune10",
+   "slug": "Craiceanns_Rune_of_Recovery",
+   "displayName": "Craiceann's Rune of Recovery",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial15",
+   "art": "Art/2DItems/Currency/Runes/NewRune11",
+   "slug": "Courtesan_Mannans_Rune_of_Cruelty",
+   "displayName": "Courtesan Mannan's Rune of Cruelty",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial16",
+   "art": "Art/2DItems/Currency/Runes/NewRune12",
+   "slug": "Thane_Grannells_Rune_of_Mastery",
+   "displayName": "Thane Grannell's Rune of Mastery",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial17",
+   "art": "Art/2DItems/Currency/Runes/NewRune13",
+   "slug": "Fenumus_Rune_of_Spinning",
+   "displayName": "Fenumus' Rune of Spinning",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial18",
+   "art": "Art/2DItems/Currency/Runes/NewRune14",
+   "slug": "Countess_Seskes_Rune_of_Archery",
+   "displayName": "Countess Seske's Rune of Archery",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial19",
+   "art": "Art/2DItems/Currency/Runes/NewRune15",
+   "slug": "Thane_Girts_Rune_of_Wildness",
+   "displayName": "Thane Girt's Rune of Wildness",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial2",
+   "art": "Art/2DItems/Currency/Runes/LightningRuneSpecial2",
+   "slug": "Greater_Rune_of_Tithing",
+   "displayName": "Greater Rune of Tithing",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial20",
+   "art": "Art/2DItems/Currency/Runes/NewRune16",
+   "slug": "Fenumus_Rune_of_Draining",
+   "displayName": "Fenumus' Rune of Draining",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial21",
+   "art": "Art/2DItems/Currency/Runes/NewRune17",
+   "slug": "Thane_Myrks_Rune_of_Summer",
+   "displayName": "Thane Myrk's Rune of Summer",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial22",
+   "art": "Art/2DItems/Currency/Runes/NewRune18",
+   "slug": "Lady_Hestras_Rune_of_Winter",
+   "displayName": "Lady Hestra's Rune of Winter",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial23",
+   "art": "Art/2DItems/Currency/Runes/NewRune19",
+   "slug": "Thane_Lelds_Rune_of_Spring",
+   "displayName": "Thane Leld's Rune of Spring",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial24",
+   "art": "Art/2DItems/Currency/Runes/NewRune20",
+   "slug": "The_Greatwolfs_Rune_of_Claws",
+   "displayName": "The Greatwolf's Rune of Claws",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial25",
+   "art": "Art/2DItems/Currency/Runes/NewRune21",
+   "slug": "The_Greatwolfs_Rune_of_Willpower",
+   "displayName": "The Greatwolf's Rune of Willpower",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial3",
+   "art": "Art/2DItems/Currency/Runes/LightningRuneSpecial3",
+   "slug": "Greater_Rune_of_Alacrity",
+   "displayName": "Greater Rune of Alacrity",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial4",
+   "art": "Art/2DItems/Currency/Runes/LightningRuneSpecial4",
+   "slug": "Greater_Rune_of_Nobility",
+   "displayName": "Greater Rune of Nobility",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial5",
+   "art": "Art/2DItems/Currency/Runes/NewRune1",
+   "slug": "Hedgewitch_Assandras_Rune_of_Wisdom",
+   "displayName": "Hedgewitch Assandra's Rune of Wisdom",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial6",
+   "art": "Art/2DItems/Currency/Runes/NewRune2",
+   "slug": "Saqawals_Rune_of_the_Sky",
+   "displayName": "Saqawal's Rune of the Sky",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial7",
+   "art": "Art/2DItems/Currency/Runes/NewRune3",
+   "slug": "Fenumus_Rune_of_Agony",
+   "displayName": "Fenumus' Rune of Agony",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial8",
+   "art": "Art/2DItems/Currency/Runes/NewRune4",
+   "slug": "Farruls_Rune_of_Grace",
+   "displayName": "Farrul's Rune of Grace",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneSpecial9",
+   "art": "Art/2DItems/Currency/Runes/NewRune5",
+   "slug": "Farruls_Rune_of_the_Chase",
+   "displayName": "Farrul's Rune of the Chase",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneStrength",
+   "art": "Art/2DItems/Currency/Runes/StrengthRune",
+   "slug": "Robust_Rune",
+   "displayName": "Robust Rune",
+   "goldCostPerUnit": 350,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneStrengthGreater",
+   "art": "Art/2DItems/Currency/Runes/StrengthRuneTier3",
+   "slug": "Greater_Robust_Rune",
+   "displayName": "Greater Robust Rune",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneStrengthLesser",
+   "art": "Art/2DItems/Currency/Runes/StrengthRuneTier1",
+   "slug": "Lesser_Robust_Rune",
+   "displayName": "Lesser Robust Rune",
+   "goldCostPerUnit": 125,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneStrengthPerfect",
+   "art": "Art/2DItems/Currency/Runes/PerfectRuneStrength",
+   "slug": "Perfect_Robust_Rune",
+   "displayName": "Perfect Robust Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneStun",
+   "art": "Art/2DItems/Currency/Runes/StunRune",
+   "slug": "Stone_Rune",
+   "displayName": "Stone Rune",
+   "goldCostPerUnit": 500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneStunGreater",
+   "art": "Art/2DItems/Currency/Runes/StunRuneTier2",
+   "slug": "Greater_Stone_Rune",
+   "displayName": "Greater Stone Rune",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneStunLesser",
+   "art": "Art/2DItems/Currency/Runes/StunRuneTier1",
+   "slug": "Lesser_Stone_Rune",
+   "displayName": "Lesser Stone Rune",
+   "goldCostPerUnit": 175,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneStunPerfect",
+   "art": "Art/2DItems/Currency/Runes/PerfectRuneStun",
+   "slug": "Perfect_Stone_Rune",
+   "displayName": "Perfect Stone Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneUpgrade",
+   "art": "Art/2DItems/Currency/Expedition2/UpgradeRune",
+   "slug": "Masterwork_Rune",
+   "displayName": "Masterwork Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWard1Greater",
+   "art": "Art/2DItems/Currency/Expedition2/AddedWardGreater",
+   "slug": "Greater_Ward_Rune",
+   "displayName": "Greater Ward Rune",
+   "goldCostPerUnit": 750,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWard1Lesser",
+   "art": "Art/2DItems/Currency/Expedition2/AddedWardLesser",
+   "slug": "Lesser_Ward_Rune",
+   "displayName": "Lesser Ward Rune",
+   "goldCostPerUnit": 100,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWard1Normal",
+   "art": "Art/2DItems/Currency/Expedition2/AddedWardNormal",
+   "slug": "Ward_Rune",
+   "displayName": "Ward Rune",
+   "goldCostPerUnit": 250,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWard1Perfect",
+   "art": "Art/2DItems/Currency/Expedition2/AddedWardPerfect",
+   "slug": "Perfect_Ward_Rune",
+   "displayName": "Perfect Ward Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWard2Greater",
+   "art": "Art/2DItems/Currency/Expedition2/WardRegenerationGreater",
+   "slug": "Greater_Charging_Rune",
+   "displayName": "Greater Charging Rune",
+   "goldCostPerUnit": 750,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWard2Lesser",
+   "art": "Art/2DItems/Currency/Expedition2/WardRegenerationLesser",
+   "slug": "Lesser_Charging_Rune",
+   "displayName": "Lesser Charging Rune",
+   "goldCostPerUnit": 100,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWard2Normal",
+   "art": "Art/2DItems/Currency/Expedition2/WardRegenerationNormal",
+   "slug": "Charging_Rune",
+   "displayName": "Charging Rune",
+   "goldCostPerUnit": 250,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWard2Perfect",
+   "art": "Art/2DItems/Currency/Expedition2/WardRegenerationPerfect",
+   "slug": "Perfect_Charging_Rune",
+   "displayName": "Perfect Charging Rune",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial1",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard1",
+   "slug": "Warding_Rune_of_Reinforcement",
+   "displayName": "Warding Rune of Reinforcement",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial10",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard10",
+   "slug": "Warding_Rune_of_Stability",
+   "displayName": "Warding Rune of Stability",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial13",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard13",
+   "slug": "Warding_Rune_of_Glancing",
+   "displayName": "Warding Rune of Glancing",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial14",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard14",
+   "slug": "Warding_Rune_of_Heart",
+   "displayName": "Warding Rune of Heart",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial15",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard15",
+   "slug": "Warding_Rune_of_Nourishment",
+   "displayName": "Warding Rune of Nourishment",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial16",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard16",
+   "slug": "Warding_Rune_of_Annihilation",
+   "displayName": "Warding Rune of Annihilation",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial18",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard18",
+   "slug": "Warding_Rune_of_Armature",
+   "displayName": "Warding Rune of Armature",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial19",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard19",
+   "slug": "Warding_Rune_of_Obsession",
+   "displayName": "Warding Rune of Obsession",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial2",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard2",
+   "slug": "Warding_Rune_of_Protection",
+   "displayName": "Warding Rune of Protection",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial20",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard20",
+   "slug": "Warding_Rune_of_Equinox",
+   "displayName": "Warding Rune of Equinox",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial21",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard21",
+   "slug": "Warding_Rune_of_Salvaging",
+   "displayName": "Warding Rune of Salvaging",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial23",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard23",
+   "slug": "Warding_Rune_of_Bodyguards",
+   "displayName": "Warding Rune of Bodyguards",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial24",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard24",
+   "slug": "Warding_Rune_of_Hollowing",
+   "displayName": "Warding Rune of Hollowing",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial3",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard3",
+   "slug": "Warding_Rune_of_Disintegration",
+   "displayName": "Warding Rune of Disintegration",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial4",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard4",
+   "slug": "Warding_Rune_of_Desperation",
+   "displayName": "Warding Rune of Desperation",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial8",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard8",
+   "slug": "Warding_Rune_of_Symbiosis",
+   "displayName": "Warding Rune of Symbiosis",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWardSpecial9",
+   "art": "Art/2DItems/Currency/Expedition2/RunicWard9",
+   "slug": "Warding_Rune_of_Courage",
+   "displayName": "Warding Rune of Courage",
+   "goldCostPerUnit": 1000,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWarpingAdditionalCraftedMod",
+   "art": "Art/2DItems/Currency/Expedition2/GameWarpRune1",
+   "slug": "Astrids_Creativity",
+   "displayName": "Astrid's Creativity",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWarpingAdditionalSuffix",
+   "art": "Art/2DItems/Currency/Expedition2/GameWarpRune2",
+   "slug": "Serles_Triumph",
+   "displayName": "Serle's Triumph",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWarpingBerserkerInfluence",
+   "art": "Art/2DItems/Currency/Expedition2/GameWarpRunePhysical",
+   "slug": "Voranas_Carnage",
+   "displayName": "Vorana's Carnage",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWarpingCreateJewelSocket",
+   "art": "Art/2DItems/Currency/Expedition2/GameWarpRune3",
+   "slug": "Cadigans_Epiphany",
+   "displayName": "Cadigan's Epiphany",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWarpingDecayInfluence",
+   "art": "Art/2DItems/Currency/Expedition2/GameWarpRuneChaos",
+   "slug": "Katlas_Gloom",
+   "displayName": "Katla's Gloom",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWarpingDestructionInfluence",
+   "art": "Art/2DItems/Currency/Expedition2/GameWarpRuneFire",
+   "slug": "Thruds_Might",
+   "displayName": "Thrud's Might",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWarpingMarksmanInfluence",
+   "art": "Art/2DItems/Currency/Expedition2/GameWarpRuneDex",
+   "slug": "Kolrs_Hunt",
+   "displayName": "Kolr's Hunt",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWarpingOlrothsLegacy",
+   "art": "Art/2DItems/Currency/Expedition2/GameWarpRuneUnique",
+   "slug": "Aldurs_Legacy",
+   "displayName": "Aldur's Legacy",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWarpingSoulInfluence",
+   "art": "Art/2DItems/Currency/Expedition2/GameWarpRuneCold",
+   "slug": "Medveds_Tending",
+   "displayName": "Medved's Tending",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/RuneWarpingTimeInfluence",
+   "art": "Art/2DItems/Currency/Expedition2/GameWarpRuneTime",
+   "slug": "Uhtreds_Sidereus",
+   "displayName": "Uhtred's Sidereus",
+   "goldCostPerUnit": 1500,
+   "section": "Runes"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreBleed",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCorePhysical",
+   "slug": "Soul_Core_of_Opiloti",
+   "displayName": "Soul Core of Opiloti",
+   "goldCostPerUnit": 500,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreChaos",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreChaos",
+   "slug": "Soul_Core_of_Tacati",
+   "displayName": "Soul Core of Tacati",
+   "goldCostPerUnit": 500,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreCrit",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreCrit",
+   "slug": "Soul_Core_of_Ticaba",
+   "displayName": "Soul Core of Ticaba",
+   "goldCostPerUnit": 850,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreDexterity",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreDex",
+   "slug": "Soul_Core_of_Cholotl",
+   "displayName": "Soul Core of Cholotl",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreElemental",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreTriElement",
+   "slug": "Soul_Core_of_Topotante",
+   "displayName": "Soul Core of Topotante",
+   "goldCostPerUnit": 500,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreEnlighten",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreElementalResist",
+   "slug": "Soul_Core_of_Citaqualotl",
+   "displayName": "Soul Core of Citaqualotl",
+   "goldCostPerUnit": 850,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreFreeze",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreCold",
+   "slug": "Soul_Core_of_Tzamoto",
+   "displayName": "Soul Core of Tzamoto",
+   "goldCostPerUnit": 850,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreIgnite",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreFire",
+   "slug": "Soul_Core_of_Puhuarte",
+   "displayName": "Soul Core of Puhuarte",
+   "goldCostPerUnit": 850,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreIntelligence",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreint",
+   "slug": "Soul_Core_of_Zantipi",
+   "displayName": "Soul Core of Zantipi",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreLight",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreWealthRarity",
+   "slug": "Soul_Core_of_Azcapa",
+   "displayName": "Soul Core of Azcapa",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreMaxLife",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreLife",
+   "slug": "Soul_Core_of_Jiquani",
+   "displayName": "Soul Core of Jiquani",
+   "goldCostPerUnit": 850,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreMaxMana",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreMana",
+   "slug": "Soul_Core_of_Zalatl",
+   "displayName": "Soul Core of Zalatl",
+   "goldCostPerUnit": 850,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreShock",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreLightning",
+   "slug": "Soul_Core_of_Xopec",
+   "displayName": "Soul Core of Xopec",
+   "goldCostPerUnit": 850,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial1",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreIce",
+   "slug": "Hayoxis_Soul_Core_of_Heatproofing",
+   "displayName": "Hayoxi's Soul Core of Heatproofing",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial10",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCorePowerCharge",
+   "slug": "Xopecs_Soul_Core_of_Power",
+   "displayName": "Xopec's Soul Core of Power",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial11",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreTimeSlow",
+   "slug": "Estazuntis_Soul_Core_of_Convalescence",
+   "displayName": "Estazunti's Soul Core of Convalescence",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial12",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreChaos1",
+   "slug": "Tacatis_Soul_Core_of_Affliction",
+   "displayName": "Tacati's Soul Core of Affliction",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial13",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreProjectile",
+   "slug": "Cholotls_Soul_Core_of_War",
+   "displayName": "Cholotl's Soul Core of War",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial14",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreChaos2",
+   "slug": "Citaqualotls_Soul_Core_of_Foulness",
+   "displayName": "Citaqualotl's Soul Core of Foulness",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial15",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreMinion",
+   "slug": "Xipocados_Soul_Core_of_Dominion",
+   "displayName": "Xipocado's Soul Core of Dominion",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial2",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreLightning",
+   "slug": "Zalatls_Soul_Core_of_Insulation",
+   "displayName": "Zalatl's Soul Core of Insulation",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial3",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreFire",
+   "slug": "Topotantes_Soul_Core_of_Dampening",
+   "displayName": "Topotante's Soul Core of Dampening",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial4",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreEnergyShield",
+   "slug": "Atmohuas_Soul_Core_of_Retreat",
+   "displayName": "Atmohua's Soul Core of Retreat",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial5",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreTimeCooldown",
+   "slug": "Quipolatls_Soul_Core_of_Flow",
+   "displayName": "Quipolatl's Soul Core of Flow",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial6",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreRage",
+   "slug": "Tzamotos_Soul_Core_of_Ferocity",
+   "displayName": "Tzamoto's Soul Core of Ferocity",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial7",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreCurses2",
+   "slug": "Uromotis_Soul_Core_of_Attenuation",
+   "displayName": "Uromoti's Soul Core of Attenuation",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial8",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreFrenzyCharge",
+   "slug": "Opilotis_Soul_Core_of_Assault",
+   "displayName": "Opiloti's Soul Core of Assault",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpecial9",
+   "art": "Art/2DItems/Currency/SoulCores/NewSoulCoreEnduranceCharge",
+   "slug": "Guatelitzis_Soul_Core_of_Endurance",
+   "displayName": "Guatelitzi's Soul Core of Endurance",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreSpeed",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreSpeed",
+   "slug": "Soul_Core_of_Quipolatl",
+   "displayName": "Soul Core of Quipolatl",
+   "goldCostPerUnit": 850,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/SoulCoreStrength",
+   "art": "Art/2DItems/Currency/SoulCores/GreaterSoulCoreStrength",
+   "slug": "Soul_Core_of_Atmohua",
+   "displayName": "Soul Core of Atmohua",
+   "goldCostPerUnit": 1000,
+   "section": "Soul Cores"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanBear",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableBear",
+   "slug": "Bear_Idol",
+   "displayName": "Bear Idol",
+   "goldCostPerUnit": 500,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanBoar",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableBoar",
+   "slug": "Boar_Idol",
+   "displayName": "Boar Idol",
+   "goldCostPerUnit": 500,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanCat",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableCat",
+   "slug": "Cat_Idol",
+   "displayName": "Cat Idol",
+   "goldCostPerUnit": 500,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanFox",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableFox",
+   "slug": "Fox_Idol",
+   "displayName": "Fox Idol",
+   "goldCostPerUnit": 850,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanMonkey",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableMonkey",
+   "slug": "Primate_Idol",
+   "displayName": "Primate Idol",
+   "goldCostPerUnit": 500,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanOwl",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableOwl",
+   "slug": "Owl_Idol",
+   "displayName": "Owl Idol",
+   "goldCostPerUnit": 500,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanOx",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableOx",
+   "slug": "Ox_Idol",
+   "displayName": "Ox Idol",
+   "goldCostPerUnit": 500,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanRabbit",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableRabbit",
+   "slug": "Rabbit_Idol",
+   "displayName": "Rabbit Idol",
+   "goldCostPerUnit": 850,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanSnake",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableSnake",
+   "slug": "Snake_Idol",
+   "displayName": "Snake Idol",
+   "goldCostPerUnit": 500,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanSpecial1",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableWolfSpecial",
+   "slug": "Idol_of_Sirrius",
+   "displayName": "Idol of Sirrius",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanSpecial2",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableSnakeSpecial",
+   "slug": "Idol_of_Thruldana",
+   "displayName": "Idol of Thruldana",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanSpecial3",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableBearSpecial",
+   "slug": "Idol_of_Grold",
+   "displayName": "Idol of Grold",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanSpecial4",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableOwlSpecial",
+   "slug": "Idol_of_Eeshta",
+   "displayName": "Idol of Eeshta",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanSpecial5",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableCatSpecial",
+   "slug": "Idol_of_Egrin",
+   "displayName": "Idol of Egrin",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanSpecial6",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableStagSpecial",
+   "slug": "Idol_of_Maxarius",
+   "displayName": "Idol of Maxarius",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanSpecial7",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableMonkeySpecial",
+   "slug": "Idol_of_Ralakesh",
+   "displayName": "Idol of Ralakesh",
+   "goldCostPerUnit": 1000,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanStag",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableStag",
+   "slug": "Stag_Idol",
+   "displayName": "Stag Idol",
+   "goldCostPerUnit": 500,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TalismanWolf",
+   "art": "Art/2DItems/Currency/TormentedSpiritSocketables/AzmeriSocketableWolf",
+   "slug": "Wolf_Idol",
+   "displayName": "Wolf Idol",
+   "goldCostPerUnit": 500,
+   "section": "Idols"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/TecrodsGaze",
+   "art": "Art/2DItems/Currency/AbyssalEyeSocketables/TecrodsGaze",
+   "slug": "Tecrods_Gaze",
+   "displayName": "Tecrod's Gaze",
+   "goldCostPerUnit": 1500,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/ThesisOfBlood",
+   "art": "Art/2DItems/Currency/PerfectSoulCores/SoulCoreBlood",
+   "slug": "Guatelitzis_Thesis",
+   "displayName": "Guatelitzi's Thesis",
+   "goldCostPerUnit": 1500,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/ThesisOfExperiments",
+   "art": "Art/2DItems/Currency/PerfectSoulCores/SoulCoreScience",
+   "slug": "Quipolatls_Thesis",
+   "displayName": "Quipolatl's Thesis",
+   "goldCostPerUnit": 1500,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/ThesisOfSacrifice",
+   "art": "Art/2DItems/Currency/PerfectSoulCores/SoulCoreSacrifice",
+   "slug": "Citaqualotls_Thesis",
+   "displayName": "Citaqualotl's Thesis",
+   "goldCostPerUnit": 1500,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/ThesisOfSouls",
+   "art": "Art/2DItems/Currency/PerfectSoulCores/SoulCoreSoul",
+   "slug": "Jiquanis_Thesis",
+   "displayName": "Jiquani's Thesis",
+   "goldCostPerUnit": 1500,
+   "section": "Atziri's Temple"
+  },
+  {
+   "gggPath": "Metadata/Items/SoulCores/UlamansGaze",
+   "art": "Art/2DItems/Currency/AbyssalEyeSocketables/UlamansGaze",
+   "slug": "Ulamans_Gaze",
+   "displayName": "Ulaman's Gaze",
+   "goldCostPerUnit": 1500,
+   "section": "Abyss"
+  },
+  {
+   "gggPath": "Metadata/Items/Ultimatum/TrialmasterKey1",
+   "art": "Art/2DItems/Currency/SoulCores/TrialmasterKey1",
+   "slug": "Cowardly_Fate",
+   "displayName": "Cowardly Fate",
+   "goldCostPerUnit": 350,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/Ultimatum/TrialmasterKey2",
+   "art": "Art/2DItems/Currency/SoulCores/TrialmasterKey2",
+   "slug": "Deadly_Fate",
+   "displayName": "Deadly Fate",
+   "goldCostPerUnit": 350,
+   "section": "Fragments"
+  },
+  {
+   "gggPath": "Metadata/Items/Ultimatum/TrialmasterKey3",
+   "art": "Art/2DItems/Currency/SoulCores/TrialmasterKey3",
+   "slug": "Victorious_Fate",
+   "displayName": "Victorious Fate",
+   "goldCostPerUnit": 350,
+   "section": "Fragments"
+  }
+ ]
+}

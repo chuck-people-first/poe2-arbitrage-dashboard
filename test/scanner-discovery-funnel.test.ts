@@ -101,24 +101,26 @@ describe("discovery funnel on the checked-in real GGG hour", () => {
   const funnel = auditFunnel();
 
   it("measures each stage of the candidate funnel", () => {
-    // These numbers have moved twice. poe.ninja's bridge took readable families
-    // from 98 to 192; poe2scout — which publishes the GGG metadata path and the
-    // display name in the same record — took them to 1,372, naming 574 of the
-    // 583 traded paths and 100% of traded volume.
+    // These numbers have moved three times. poe.ninja's bridge took readable
+    // families from 98 to 192; poe2scout — which publishes the GGG metadata
+    // path and the display name in the same record — took them to 1,372,
+    // naming 574 of the 583 traded paths and 100% of traded volume; the
+    // poe2db Currency Exchange table added the last 18 and, more importantly,
+    // a verified gold fee for every one of them.
     //
     // That coverage also introduced the noise the last two stages exist to
     // remove: hundreds of items that traded once or twice an hour, arriving at
     // the top of the board as "+5,316%" round trips.
     expect(funnel).toMatchObject({
       marketsInLeague: 1389,
-      readableFamilies: 1372,
-      withDirectReturnMarket: 1372,
-      positiveFavorable: 1102,
-      positiveMidpoint: 686,
-      midpointAtLeast25Pct: 406,
-      positiveConservative: 258,
-      liquidEnoughToPrice: 271,
-      plausibleSpread: 256,
+      readableFamilies: 1390,
+      withDirectReturnMarket: 1390,
+      positiveFavorable: 1116,
+      positiveMidpoint: 695,
+      midpointAtLeast25Pct: 413,
+      positiveConservative: 262,
+      liquidEnoughToPrice: 274,
+      plausibleSpread: 259,
     });
   });
 

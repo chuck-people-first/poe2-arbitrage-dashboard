@@ -1,14 +1,16 @@
 // Golden test on real fixture data.
 //
-// Item 4 changed the outcome for this fixture hour: every two-leg cross from
-// the 22:00Z fixture ends in a non-base currency whose reference valuation
-// path is too illiquid to support the notional (e.g. the Exalted->Divine path
-// through ThesisOfExperiments has a ~2598% bottleneck share vs the 20% cap).
-// Those signals are therefore REJECTED instead of being published as reliable
-// mark-to-market value. The "golden" behavior for this hour is: zero
-// publishable two-leg signals, and the safe status projection (covered by the
-// DB integration test) reports the hour with 0 candidates rather than falling
-// back to an older hour.
+// Item 4 rejected every two-leg cross from the 22:00Z fixture whose reference
+// valuation path was too illiquid to support the notional (e.g. the
+// Exalted->Divine path through ThesisOfExperiments has a ~2598% bottleneck
+// share vs the 20% cap). That gate still rejects those.
+//
+// What changed since: the Currency Exchange fee table (fees.generated.ts) now
+// carries all 669 per-item gold fees, so candidates that used to be dropped
+// for an UNVERIFIED fee are now priced with the game's real one. Nine survive
+// this hour — all short Chaos -> item -> Divine/Exalted crosses. The safe
+// status projection (covered by the DB integration test) reports the hour with
+// those candidates rather than falling back to an older hour.
 
 import { describe, expect, it } from "vitest";
 import { readFileSync } from "node:fs";
@@ -48,7 +50,7 @@ function settings(): RunSettings {
 }
 
 describe("golden playbook on real fixture data", () => {
-  it("zero publishable two-leg signals this hour: every reference valuation path is illiquid or unvalued", () => {
+  it("nine publishable two-leg signals this hour; the rest fail the valuation-path liquidity gate", () => {
     const payload = loadFixture();
     const roa = payload.markets.filter((m) => m.league === LEAGUE);
     const edges = deriveEdges(roa, HOUR_UTC);
@@ -62,9 +64,11 @@ describe("golden playbook on real fixture data", () => {
       .filter((x) => x.route !== null)
       .sort((a, b) => a.sc.score! - b.sc.score!);
 
-    // Item 4 honest outcome for this hour: no two-leg cross survives the
-    // valuation-path liquidity gate (all end in illiquid reference markets).
-    expect(scored.length).toBe(0);
+    // The valuation-path liquidity gate still rejects most of the 1,343 flips
+    // this hour. What gets through is what the real fee table unlocked: nine
+    // short crosses out of Chaos, priced with the game's own gold fees rather
+    // than dropped as unpriceable.
+    expect(scored.length).toBe(9);
     // And the previously-published 533% candidate is among the rejected set.
     const rejected = flips
       .map((c) => scoreCandidate(c, evaluateCandidate(c), edges, settings(), referenceTimeMs))

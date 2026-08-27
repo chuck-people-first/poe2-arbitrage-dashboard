@@ -8,7 +8,7 @@ import type { RunSettings } from "../../../src/domain/types.ts";
 
 const FUNCTION = "poe2-hourly-ingest";
 const LEAGUE = Deno.env.get("POE2_LEAGUE") ?? "Runes of Aldur";
-const ALGORITHM_VERSION = "phase9-poe2scout-identity-1";
+const ALGORITHM_VERSION = "phase10-verified-gold-fees-1";
 const MAX_ATTEMPTS = 3;
 
 function json(status: number, body: Record<string, unknown>): Response {
