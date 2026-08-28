@@ -49,6 +49,19 @@
       <div id="currencyRates" class="rate-reference"><div class="empty">Loading currency ratios…</div></div>
     </section>
 
+
+    <section class="panel fee-panel" id="feePanel" aria-labelledby="feeTitle" hidden>
+      <div class="panel-head">
+        <div>
+          <h2 id="feeTitle">Fees worth checking</h2>
+          <p>These rows close a profitable cycle but carry a gold fee nobody has verified, so the scanner will not call them executable. Check the fee once in the in-game Exchange and enter it here — it is remembered, and every row using that item re-prices immediately.</p>
+        </div>
+        <span class="pill" id="feeUnlockPill">—</span>
+      </div>
+      <div id="feeQueue" class="fee-queue"></div>
+      <p class="drawer-note">Entered fees are yours, stored in this browser only. They are marked <strong>your fee</strong> wherever they are used and never presented as repo-verified. Clearing a box restores the built-in value.</p>
+    </section>
+
     <nav class="tabs" aria-label="Opportunity type">
       <button class="active" data-tab="scanner">Market Scanner</button>
       <button data-tab="closed">Verified Closed Cycles</button>
@@ -101,6 +114,7 @@
   <script src="/config.js"></script>
   <script src="/currency-rates.js"></script>
   <script src="/ocr-gold.js"></script>
+  <script src="/gold-fees.js"></script>
   <script src="/dashboard-data.js"></script>
   <script src="/dashboard.js"></script>
 </body>

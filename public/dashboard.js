@@ -63,6 +63,10 @@ function loadSettings() {
   } catch { /* ignore malformed state rather than blocking the page */ }
 }
 const { normalizeOpportunityRow, isCredibleSignal, MIN_ITEM_HOURLY_VOLUME } = window.POE2Dashboard;
+const GoldFees = window.POE2GoldFees;
+// The operator's own checked fees. Loaded once; every render reads this table.
+let goldFees = GoldFees.load(window.localStorage);
+
 const fmt = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 2 }).format(Number(n || 0));
 const fmtInt = n => new Intl.NumberFormat('en-US', { maximumFractionDigits: 0 }).format(Number(n || 0));
 const pct = (n, d = 1) => `${(Number(n || 0) * 100).toFixed(d)}%`;
@@ -216,12 +220,30 @@ function scaleFlow(s, bankroll) {
   }
 
   const fallbackGold = Number(s.estimatedGoldPerUnknownUnit) || 0;
-  let units = start, gold = 0, goldKnown = true;
+  // Fees are charged per unit received, and the three steps receive, in order,
+  // the item, the sell currency, then the starting currency back. Resolution is
+  // guarded: if the fee table has not loaded, the server's own figures decide,
+  // exactly as they did before the operator table existed.
+  const feeModule = typeof GoldFees !== 'undefined' ? GoldFees : null;
+  const feeTable = typeof goldFees !== 'undefined' ? goldFees : null;
+  const receives = [s.item, s.sellCurrency, s.buyCurrency];
+  let units = start, gold = 0, goldKnown = true, usesOperatorFee = false;
   const steps = [];
-  for (const step of flow.steps) {
+  for (const [index, step] of flow.steps.entries()) {
     const receive = Math.floor(units * stepRate(step));
-    const perUnit = stepGoldPerUnit(step, fallbackGold);
-    if (step.goldCost == null) goldKnown = false;
+    const resolved = feeModule && feeTable && receives[index]
+      ? feeModule.resolveFee(receives[index], feeTable)
+      : null;
+    let perUnit;
+    if (resolved && resolved.verified) {
+      // An operator fee is knowledge the server did not have.
+      perUnit = resolved.cost;
+      if (resolved.source === 'user-verified') usesOperatorFee = true;
+    } else {
+      // A missing fee is still missing: estimate, and keep it flagged.
+      perUnit = stepGoldPerUnit(step, fallbackGold);
+      if (resolved || step.goldCost == null) goldKnown = false;
+    }
     gold += receive * perUnit;
     steps.push({ action: step.action, have: units, haveCurrency: step.haveCurrency, want: receive, wantCurrency: step.wantCurrency });
     units = receive;
@@ -236,7 +258,7 @@ function scaleFlow(s, bankroll) {
     final: closed ? units : null,
     net: closed ? units - start : null,
     netPct: closed && start > 0 ? (units / start - 1) * 100 : null,
-    gold: Math.round(gold), goldKnown,
+    gold: Math.round(gold), goldKnown, usesOperatorFee,
     volumeShare: share,
     tooThin: !closed,
   };
@@ -438,28 +460,36 @@ function scannerRowHtml(r) {
   const spread = spreadOf(s);
   const divGold = r._divGold == null ? '—' : fmt(r._divGold);
   const losing = plan && plan.net != null && plan.net <= 0;
+  const goldLabel = !plan || !plan.goldKnown ? 'estimated' : plan.usesOperatorFee ? 'your fee' : 'verified';
   const gold = plan
-    ? `<b>${plan.goldKnown ? '' : '~'}${fmtInt(plan.gold)}</b><small class="${plan.goldKnown ? '' : 'warn'}">${plan.goldKnown ? 'verified' : 'estimated'}</small>`
+    ? `<b>${plan.goldKnown ? '' : '~'}${fmtInt(plan.gold)}</b><small class="${plan.goldKnown ? (plan.usesOperatorFee ? 'own-fee' : '') : 'warn'}">${goldLabel}</small>`
     : `<b>—</b>`;
   // Short chip in the row, full wording on hover and in the drawer: the column
   // is scanned, not read, and the long form costs ~60px on every line.
   const SHORT_STATUS = {
     'return-confirmed': 'Confirmed', 'fee-check-needed': 'Fee check',
+    'fee-confirmed-by-you': 'Your fee',
     'return-quote-available': 'Quote only', 'two-leg-spread': 'Spread only', 'high-risk': 'High risk',
   };
   // A losing plan is labelled as such regardless of how much of the equation is
   // proven: "Quote only" reads neutral next to a 58% loss.
-  const cls = losing ? 'loses' : (s.classification || 'two-leg-spread');
+  // Once the operator has supplied the missing fee the row is no longer waiting
+  // on a fee check — but it is labelled with whose answer resolved it, and it
+  // still does not enter the Verified Closed Cycles tab.
+  const resolvedClass = s.classification === 'fee-check-needed' && plan && plan.goldKnown
+    ? 'fee-confirmed-by-you'
+    : (s.classification || 'two-leg-spread');
+  const cls = losing ? 'loses' : resolvedClass;
   const status = losing
     ? `<span class="status loses" title="This round trip ends with less than it started, at the size you can trade">Loses money</span>`
-    : `<span class="status ${esc(cls)}" title="${esc(s.classificationLabel || '')}">${esc(SHORT_STATUS[cls] || s.classificationLabel || s.recommendation)}</span>`;
+    : `<span class="status ${esc(cls)}" title="${esc(cls === 'fee-confirmed-by-you' ? 'Closed cycle priced with the gold fee you entered, not a repo-verified one' : (s.classificationLabel || ''))}">${esc(SHORT_STATUS[cls] || s.classificationLabel || s.recommendation)}</span>`;
   return `<tr class="clickable lead" data-id="${esc(r.id)}">`
     + `<td class="cell-item">${ICON(s.item)}<span><b>${esc(s.item.name)}</b><small>${esc(shortName(s.buyCurrency.name))} → ${esc(shortName(s.sellCurrency.name))} → ${esc(shortName(s.buyCurrency.name))}</small></span></td>`
     + `<td class="cell-flow">${flowChainHtml(s, plan)}</td>`
     + netCellHtml(plan)
     + `<td class="num ${spread > 0 && !wildRange(s) ? 'green' : ''}"><strong>${spread > 0 ? '+' : ''}${fmt(spread)}%</strong>`
       + `<small class="${wildRange(s) ? 'warn' : ''}">${wildRange(s) ? `range ${fmt(s.ratioRangePct)}%` : 'midpoint'}</small></td>`
-    + `<td class="num dg ${r._divGold != null && r._divGold < 0 ? 'red' : ''}"><strong>${divGold}</strong><small>${s.goldVerified ? 'verified fees' : 'estimated fees'}</small></td>`
+    + `<td class="num dg ${r._divGold != null && r._divGold < 0 ? 'red' : ''}"><strong>${divGold}</strong><small>${plan && plan.goldKnown ? (plan.usesOperatorFee ? 'your fees' : 'verified fees') : 'estimated fees'}</small></td>`
     + `<td class="num">${fmt(s.itemHourlyVolume)}<small class="${plan && plan.volumeShare > MARKET_SHARE_CAP + 1e-9 ? 'warn' : ''}">${plan ? pct(plan.volumeShare, 0) : pct(s.maxVolumeShare, 0)} share</small></td>`
     + `<td class="num">${gold}</td>`
     + sourceCellHtml(s)
@@ -479,6 +509,50 @@ function mtmRowHtml(r) {
   const dg = f.divPer100kGold;
   return `<tr class="clickable" data-id="${esc(r.id)}"><td><b>${esc(f.item.name)}</b><small>${esc(f.buyCurrency.name)} → ${esc(f.sellCurrency.name)}</small></td><td>Pay <b>${fmtInt(f.buyLeg.pay)}</b> ${esc(f.buyCurrency.name)} → Get <b>${fmtInt(f.buyLeg.receive)}</b> ${esc(f.item.name)}<small>then sell ${fmtInt(f.sellLeg.pay)} for ${fmtInt(f.sellLeg.receive)} ${esc(f.sellCurrency.name)}</small></td><td class="green"><strong>+${fmt(f.conservativeNetProfitDivine)}</strong> Div<small>Mark-to-market only</small></td><td class="dg"><strong>${fmt(dg)}</strong><small>per 100K gold</small></td><td>${fmt(f.lowestLegVolume)} / hr</td><td>${risk(f.fillRiskLabel)}</td><td>${fmtInt(f.goldRequired)}</td><td>Insufficient history</td><td>WATCH</td></tr>`;
 }
+
+// ---------------------------------------------------------------------------
+// Fees worth checking.
+//
+// The scanner will not call a cycle executable while any leg's gold fee is
+// unverified, and only 14 fees ship verified — so on a normal hour the best
+// rows on the board are all sitting behind a fee nobody has looked up. This
+// panel turns that into a short, ranked errand list: check this fee in game,
+// type it once, and every row using that item re-prices for good.
+function feeRowHtml(entry) {
+  const identity = entry.identity;
+  const current = goldFees[identity.id];
+  return `<div class="fee-item">`
+    + `<div class="fee-item-name">${ICON(identity)}<span><b>${esc(identity.name)}</b>`
+      + `<small>unlocks ${entry.rows} ${entry.rows === 1 ? 'row' : 'rows'} · best ${fmt(entry.bestProfitPct)}% round trip</small></span></div>`
+    + `<label class="fee-item-input">Gold per unit received`
+      + `<input type="number" min="1" step="1" inputmode="numeric" placeholder="not set"`
+        + ` data-fee-path="${esc(identity.id)}" value="${current == null ? '' : String(current)}">`
+    + `</label>`
+    + `</div>`;
+}
+
+function renderFeeQueue(scannerRowsThisPass) {
+  const panel = $('#feePanel');
+  if (!panel) return;
+  if (tab !== 'scanner') { panel.hidden = true; return; }
+  // Rank against the same filtered, credible population the table shows, so the
+  // errand list can never point at a row the scanner would not display.
+  const signals = (scannerRowsThisPass || scannerRows()).map(r => r.discovery).filter(Boolean);
+  const items = GoldFees.missingFeeItems(signals, goldFees);
+  panel.hidden = items.length === 0;
+  if (!items.length) return;
+  const best = items[0];
+  $('#feeUnlockPill').textContent = `${items.length} ${items.length === 1 ? 'FEE' : 'FEES'} · BEST ${fmt(best.bestProfitPct)}%`;
+  $('#feeQueue').innerHTML = items.slice(0, 8).map(feeRowHtml).join('');
+  $('#feeQueue').querySelectorAll('[data-fee-path]').forEach(input => {
+    input.onchange = () => {
+      goldFees = GoldFees.setFee(goldFees, input.dataset.feePath, input.value);
+      GoldFees.save(window.localStorage, goldFees);
+      render();
+    };
+  });
+}
+
 function render() {
   if (!run) return;
   const flowBar = $('#flowBar');
@@ -502,7 +576,8 @@ function render() {
   $('#routes').innerHTML = rs.length ? rs.map(r => tab === 'scanner' ? scannerRowHtml(r) : tab === 'closed' ? closedRowHtml(r) : mtmRowHtml(r)).join('') : `<tr><td colspan="${tab === 'scanner' ? SCANNER_COLSPAN : 9}" class="empty">${staleRows.length ? `<div class="empty-notice">${staleNotice}</div>` : tab === 'scanner' ? (suppressedRows.length ? `<div class="empty-notice"><b>${suppressedRows.length} stored ${suppressedRows.length === 1 ? 'signal was' : 'signals were'} held back as untradeable.</b><span>They quote markets that traded fewer than ${MIN_ITEM_HOURLY_VOLUME} units in the hour, or a spread too wide for the two markets to be pricing the same item. A single trade in a dead market is not a price, so these are not shown at any filter setting. The next hourly ingest may surface real ones.</span></div>` : `No ${esc((FLOW_PRESETS[flowPreset] || FLOW_PRESETS.all).label)} signals match these filters. Switch to All paths, or lower Min spread / Min volume.`) : tab === 'closed' ? 'No fully verified closed cycles this hour. Check Market Scanner for paths that need a live gold-fee check.' : 'No executable mark-to-market flips this hour.'}</td></tr>`;
   $('#count').textContent = String(rs.length);
   $('#verifiedCount').textContent = String(rs.filter(r => tab === 'scanner' ? isConfirmed(r.discovery) : tab === 'closed').length);
-  $('#unknownCount').textContent = String(rs.filter(r => tab === 'scanner' && !r.discovery?.goldVerified).length);
+  $('#unknownCount').textContent = String(rs.filter(r => tab === 'scanner' && !(r._plan && r._plan.goldKnown)).length);
+  renderFeeQueue(tab === 'scanner' ? rs : null);
   // Copying a bid must not also open the drawer.
   document.querySelectorAll('#routes [data-copy]').forEach(btn => {
     btn.onclick = async event => {

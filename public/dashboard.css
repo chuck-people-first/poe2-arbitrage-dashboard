@@ -310,3 +310,19 @@ td.red, .red { color: var(--red); }
 
 /* A losing round trip is never dressed as an opportunity. */
 .status.loses { background: rgba(245,120,124,.16); color: var(--red); border-color: rgba(245,120,124,.5); }
+
+/* Fees worth checking ------------------------------------------------------ */
+/* A fee the operator supplied is real, so it reads as confirmed — but in its
+   own colour, never the green reserved for repo-verified figures. */
+.status.fee-confirmed-by-you { background: rgba(106,169,255,.14); color: var(--accent-2); border-color: rgba(106,169,255,.42); }
+small.own-fee { color: var(--accent-2); }
+
+.fee-queue { display: grid; grid-template-columns: repeat(auto-fill, minmax(290px, 1fr)); gap: 10px; padding: 0 18px 4px; }
+.fee-item { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; background: var(--panel-2); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; }
+.fee-item-name { display: flex; align-items: center; gap: 9px; min-width: 0; }
+.fee-item-name b { display: block; font-size: 13px; }
+.fee-item-name small { display: block; color: var(--muted); font-size: 11px; }
+.fee-item-name img { width: 26px; height: 26px; flex: none; }
+.fee-item-input { display: flex; flex-direction: column; gap: 3px; font-size: 10px; letter-spacing: .04em; text-transform: uppercase; color: var(--muted); }
+.fee-item-input input { width: 124px; background: var(--raised); border: 1px solid var(--border); border-radius: 8px; color: var(--fg); font-family: var(--font-mono); font-size: 13px; padding: 6px 8px; }
+.fee-item-input input:focus-visible { outline: 2px solid var(--accent-2); outline-offset: 1px; }
