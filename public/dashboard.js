@@ -670,13 +670,26 @@ function wireGoldOcr(s, body) {
   section.querySelector('.ocr-read').onclick = () => read(file.files?.[0]);
   section.onpaste = event => { const image = [...(event.clipboardData?.items || [])].find(i => i.type.startsWith('image/'))?.getAsFile(); if (image) read(image); };
   section.querySelector('.ocr-apply').onclick = () => {
-    const perItem = Number(feeInput.value); if (!Number.isFinite(perItem) || perItem <= 0) return;
+    const perItem = GoldFees.normalizeFee(feeInput.value);
+    if (perItem === null) {
+      section.querySelector('.ocr-result').innerHTML = `<b>Not applied.</b> Enter the gold charged per ${esc(s.item.name)} received — a whole number above zero.`;
+      return;
+    }
     const knownOtherGold = Number(s.sellLeg.goldCost || 0) + Number(s.returnLeg?.goldCost || 0);
     const total = knownOtherGold + Number(s.buyLeg.receive || 0) * perItem;
     const dg = s.spreadProfitDivine == null || total <= 0 ? null : Number(s.spreadProfitDivine) / total * 100000;
-    body.querySelector('#drawerGold').textContent = `${fmtInt(total)} (OCR/manual)`;
+    body.querySelector('#drawerGold').textContent = `${fmtInt(total)} (your fee)`;
     body.querySelector('#drawerDivGold strong').textContent = dg == null ? '—' : fmt(dg);
-    section.querySelector('.ocr-result').innerHTML = `<b>Updated estimate:</b> ${dg == null ? 'Divine conversion unavailable' : `${fmt(dg)} Div / 100K Gold`} using ${fmtInt(total)} total gold. Confirm the in-game fee visually.`;
+    // A fee read off a screenshot is the same knowledge as one typed into the
+    // fee table, so it is kept the same way. Before this it lived only in the
+    // open drawer and was gone on the next render — the same screenshot had to
+    // be re-read every hour.
+    goldFees = GoldFees.setFee(goldFees, s.item.id, perItem);
+    const saved = GoldFees.save(window.localStorage, goldFees);
+    section.querySelector('.ocr-result').innerHTML = `<b>Updated:</b> ${dg == null ? 'Divine conversion unavailable' : `${fmt(dg)} Div / 100K Gold`} using ${fmtInt(total)} total gold.`
+      + ` ${saved ? `Saved as your fee for ${esc(s.item.name)}; every row using it has re-priced.` : 'Applied here, but this browser refused to store it.'}`
+      + ` Confirm the in-game fee visually.`;
+    render();
   };
 }
 function cycleDrawer(c) {
