@@ -2,6 +2,14 @@
 \set ON_ERROR_STOP on
 begin;
 
+-- signal_history_public marks a family's latest row 'EXPIRED' once
+-- now() - latest_source_hour exceeds 26 hours. A source_hour hardcoded to a
+-- fixed calendar date eventually falls behind that window purely because
+-- real time passed -- exactly what broke this test's first real run, months
+-- after it was written. now() is transaction_timestamp(): constant for
+-- every call within this script's single begin/rollback, so every use below
+-- resolves to the same instant and stays valid indefinitely.
+
 insert into private.flip_hourly_observations(
   family_id, league, source_hour, div_per_100k_gold, conservative_profit_divine,
   gold_required, lowest_leg_volume, volume_share, buy_rate, sell_rate, return_rate,
@@ -10,9 +18,9 @@ insert into private.flip_hourly_observations(
   buy_volume_from, buy_volume_to, sell_volume_from, sell_volume_to,
   return_volume_from, return_volume_to, input_divine_value, output_divine_value, payload_sha256
 ) values
-  ('history-family', 'Runes of Aldur', '2026-08-19T00:00:00Z', 1, 1, 47000, 1000, .01, .1, 10, .01,
+  ('history-family', 'Runes of Aldur', now() - interval '2 hours', 1, 1, 47000, 1000, .01, .1, 10, .01,
    100, 500, 500, 4900, 4900, 105, 10000, 20000, 30000, 100000, 50000, 49000, 25000, 5000, 110000, 1, 2, 'history-a'),
-  ('history-family', 'Runes of Aldur', '2026-08-19T01:00:00Z', 2, 2, 47000, 1000, .01, .11, 11, .011,
+  ('history-family', 'Runes of Aldur', now() - interval '1 hour', 2, 2, 47000, 1000, .01, .11, 11, .011,
    101, 501, 501, 5001, 5001, 106, 10001, 20001, 30001, 100001, 50001, 50001, 25001, 5001, 110001, 1, 3, 'history-b')
 on conflict (family_id, league, source_hour) do nothing;
 insert into public.signal_history_projection(
@@ -39,7 +47,7 @@ insert into private.flip_hourly_observations(
   gold_required, lowest_leg_volume, volume_share, buy_rate, sell_rate, return_rate,
   input_divine_value, output_divine_value, payload_sha256
 ) values
-  ('history-family', 'Runes of Aldur', '2026-08-19T00:00:00Z', 99, 99, 1, 1, 1, 99, 99, 99, 1, 100, 'replay')
+  ('history-family', 'Runes of Aldur', now() - interval '2 hours', 99, 99, 1, 1, 1, 99, 99, 99, 1, 100, 'replay')
 on conflict (family_id, league, source_hour) do nothing;
 
 do $$
@@ -56,9 +64,9 @@ begin
   if (select status from public.signal_history_public where family_id = 'history-family' order by source_hour desc limit 1) <> 'NEW' then
     raise exception 'FAIL: new history status';
   end if;
-  if (select buy_pay_units from public.signal_history_public where family_id = 'history-family' and source_hour = '2026-08-19T00:00:00Z') <> 100
-     or (select buy_gold from public.signal_history_public where family_id = 'history-family' and source_hour = '2026-08-19T00:00:00Z') <> 10000
-     or (select return_volume_to from public.signal_history_public where family_id = 'history-family' and source_hour = '2026-08-19T00:00:00Z') <> 110000 then
+  if (select buy_pay_units from public.signal_history_public where family_id = 'history-family' and source_hour = now() - interval '2 hours') <> 100
+     or (select buy_gold from public.signal_history_public where family_id = 'history-family' and source_hour = now() - interval '2 hours') <> 10000
+     or (select return_volume_to from public.signal_history_public where family_id = 'history-family' and source_hour = now() - interval '2 hours') <> 110000 then
     raise exception 'FAIL: exact closed-cycle quantities/gold/volumes were not retained';
   end if;
 end $$;
