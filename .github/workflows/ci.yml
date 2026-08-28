@@ -40,3 +40,36 @@ jobs:
 
       - name: Build
         run: npm run build
+
+  database:
+    name: Database integration (test:db)
+    runs-on: ubuntu-latest
+    # supabase start pulls and boots a Postgres stack before anything runs.
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Pinned to the same CLI version scripts/test-db.sh drives, so the stack
+      # the suite resets is the stack it was written against.
+      - name: Start the local Supabase stack
+        run: >
+          npx --yes supabase@2.115.0 start
+          -x studio,realtime,storage-api,imgproxy,mailpit,postgres-meta,edge-runtime,logflare,vector,supavisor
+
+      # The container name test-db.sh looks for is derived from this id, and it
+      # must match supabase/config.toml's project_id.
+      - name: Run the database integration suite
+        env:
+          SUPABASE_PROJECT_ID: poe2-arbitrage-dashboard
+        run: npm run test:db
+
+      - name: Migration reset log on failure
+        if: failure()
+        run: cat /tmp/test-db-reset.log || echo "no reset log written"
