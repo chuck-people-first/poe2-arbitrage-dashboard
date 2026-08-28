@@ -22,12 +22,32 @@ const payload = parseGggPayload(JSON.parse(readFileSync(join(FIXTURES, gggFile),
 const edges = deriveEdges(payload.markets.filter((m) => m.league === LEAGUE), HOUR);
 const book = buildDivinePriceBook(edges);
 
-const ninjaDir = join(FIXTURES, "poe-ninja");
-const snapshot = buildSnapshot(LEAGUE, readdirSync(ninjaDir).map((f) => ({
-  category: f.replace(".json", "") as NinjaCategory,
-  raw: JSON.parse(readFileSync(join(ninjaDir, f), "utf8")) as RawOverview,
-})), HOUR);
+/** Both sources must describe the SAME hour. Measuring a GGG hour against a
+ *  poe.ninja snapshot captured days later measures the calendar, not the
+ *  sources — so each GGG hour keeps its own paired snapshot directory. */
+function loadNinja(dir: string, hour: string) {
+  const path = join(FIXTURES, dir);
+  return buildSnapshot(LEAGUE, readdirSync(path).map((f) => ({
+    category: f.replace(".json", "") as NinjaCategory,
+    raw: JSON.parse(readFileSync(join(path, f), "utf8")) as RawOverview,
+  })), hour);
+}
+
+const snapshot = loadNinja("poe-ninja", HOUR);
 const quoteById = new Map(snapshot.quotes.map((q) => [q.ninjaId, q]));
+
+// The Whetstone case below is a measurement OF ONE SPECIFIC HOUR, so it keeps
+// that hour's paired snapshot instead of following the latest fixture.
+const PINNED_HOUR = "2026-08-21T01:00:00Z";
+const pinnedBook = buildDivinePriceBook(deriveEdges(
+  parseGggPayload(JSON.parse(readFileSync(
+    join(FIXTURES, "ggg-currency-exchange-1787274000.json"), "utf8",
+  ))).markets.filter((m) => m.league === LEAGUE),
+  PINNED_HOUR,
+));
+const pinnedQuoteById = new Map(
+  loadNinja("poe-ninja-1787274000", PINNED_HOUR).quotes.map((q) => [q.ninjaId, q]),
+);
 
 describe("poe.ninja snapshot", () => {
   it("loads every category with prices, names and the art join key", () => {
@@ -67,14 +87,33 @@ describe("poe.ninja snapshot", () => {
 
 describe("Divine price book", () => {
   it("prices from the market where the item itself traded most, not the nearest hop", () => {
-    // Blacksmith's Whetstone: the direct Divine market moved 10 Divine and
-    // prices it 4x away from the independent source; the Exalted market moved
-    // hundreds of units and agrees. Hop count must not decide this.
+    // Blacksmith's Whetstone on 2026-08-21T01Z: the direct Divine market moved
+    // 10 Divine and prices it 4x away from the independent source; the Exalted
+    // market moved hundreds of units and agrees. Hop count must not decide this.
+    // Pinned to that hour and its paired snapshot, because the corroborating
+    // number is a measurement of that hour (see PINNED_HOUR above).
+    const whetstone = pinnedBook.entries.get("Metadata/Items/Currency/CurrencyWeaponQuality");
+    expect(whetstone).toBeDefined();
+    expect(whetstone!.basis).not.toBe("direct");
+    const ninja = pinnedQuoteById.get("whetstone")!;
+    expect(deviationPct(whetstone!.divine, ninja.divinePrice)!).toBeLessThan(25);
+  });
+
+  it("still applies the rule on the latest hour, and flags a thin hour rather than hiding it", () => {
+    // The rule itself must hold on whatever hour is checked in. The agreement
+    // LABEL is the part allowed to move: on 2026-08-28T08Z the Whetstone
+    // Exalted market was thin and GGG's completed-hour boundary sits ~2x above
+    // poe.ninja. That must surface as a divergence, never as agreement.
     const whetstone = book.entries.get("Metadata/Items/Currency/CurrencyWeaponQuality");
     expect(whetstone).toBeDefined();
     expect(whetstone!.basis).not.toBe("direct");
     const ninja = quoteById.get("whetstone")!;
-    expect(deviationPct(whetstone!.divine, ninja.divinePrice)!).toBeLessThan(25);
+    const deviation = deviationPct(whetstone!.divine, ninja.divinePrice);
+    expect(deviation).not.toBeNull();
+    // Never averaged away, never reported as agreement when it is not.
+    if (deviation! > 25) {
+      expect(classifyAgreement(deviation)).toMatch(/diverging|conflicting/);
+    }
   });
 
   it("beats the hop-count rule on the items the scanner actually publishes", () => {
