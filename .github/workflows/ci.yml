@@ -1,0 +1,42 @@
+# The repo's own gate, run on every push and pull request.
+#
+# Until this existed the only status check was Vercel's static deploy, which
+# publishes public/ and never runs a test — so a red suite could reach main
+# with a green checkmark on the pull request.
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+# A newer push to the same branch makes the in-flight run obsolete.
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  gate:
+    name: Tests, typecheck, build
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+
+      - run: npm ci
+
+      # Ordered cheapest-signal-first so a type error reports as a type error
+      # rather than as a wall of failing assertions.
+      - name: Typecheck
+        run: npm run typecheck
+
+      - name: Tests
+        run: npm test
+
+      - name: Build
+        run: npm run build
