@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PoE2 Toolkit</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="/dashboard.css">
+  <link rel="stylesheet" href="/tools.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div>
+        <p class="eyebrow">POE2 TOOLKIT · <a href="/">Back to market scanner</a></p>
+        <h1>Toolkit</h1>
+        <p class="subhead">Price check an item, value your stash, run EV on a craft, build stash-search regex and jump to the official trade site. Prices are poe.ninja's exchange snapshot, refreshed every 15 minutes.</p>
+      </div>
+      <div class="source-badge">
+        <span class="dot" id="bookDot"></span>
+        <div>
+          <strong id="bookSource">Price book</strong>
+          <small id="bookAge">Loading prices…</small>
+          <small id="bookCount">—</small>
+        </div>
+      </div>
+    </header>
+
+    <section class="controls">
+      <label>League<input id="league" value="Runes of Aldur" autocomplete="off"></label>
+      <button id="reload">Reload prices</button>
+    </section>
+
+    <nav class="tabs tool-tabs" aria-label="Tools">
+      <button class="active" data-tool="price">Price check</button>
+      <button data-tool="stash">Stash value</button>
+      <button data-tool="economy">Economy</button>
+      <button data-tool="ev">EV calculator</button>
+      <button data-tool="regex">Regex builder</button>
+      <button data-tool="trade">Trade links</button>
+      <button data-tool="links">Favourites</button>
+    </nav>
+
+    <!-- Price check -->
+    <section class="panel tool" data-panel="price">
+      <div class="panel-head"><div><h2>Price check</h2><p>In game, hover an item and press <kbd>Ctrl</kbd>+<kbd>C</kbd>, then paste it here, or just type a name.</p></div></div>
+      <div class="tool-body two-col">
+        <div>
+          <textarea id="priceInput" rows="10" placeholder="Item Class: Stackable Currency&#10;Rarity: Currency&#10;Divine Orb&#10;--------&#10;Stack Size: 3/20"></textarea>
+          <div class="row-actions"><button id="pricePaste" class="ghost">Paste from clipboard</button><button id="priceClear" class="ghost">Clear</button></div>
+        </div>
+        <div id="priceResult" class="result-card"><div class="empty">Paste an item to see its value.</div></div>
+      </div>
+    </section>
+
+    <!-- Stash value -->
+    <section class="panel tool" data-panel="stash" hidden>
+      <div class="panel-head"><div><h2>Stash value</h2><p>One item per line: <code>12 Divine Orb</code>, <code>Exalted Orb x340</code> or <code>Omen of Light: 2</code>. Saved in this browser.</p></div></div>
+      <div class="tool-body two-col">
+        <div>
+          <textarea id="stashInput" rows="14" placeholder="5 Divine Orb&#10;340 Exalted Orb&#10;Chaos Orb x40&#10;2 Omen of Light"></textarea>
+          <div class="picker"><input id="stashPick" type="search" placeholder="Add item… (type to search)" autocomplete="off"><div id="stashPickList" class="pick-list"></div></div>
+        </div>
+        <div>
+          <div class="totals" id="stashTotals"></div>
+          <div class="table-wrap"><table><thead><tr><th>Item</th><th>Qty</th><th>Each (Div)</th><th>Total (Div)</th></tr></thead><tbody id="stashRows"></tbody></table></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Economy -->
+    <section class="panel tool" data-panel="economy" hidden>
+      <div class="panel-head"><div><h2>Economy</h2><p>Every exchange-priced item, with a 7-day trend. Use the converter to price one thing in another.</p></div></div>
+      <div class="tool-body">
+        <div class="converter">
+          <label>Amount<input id="convAmount" type="number" min="0" step="any" value="1"></label>
+          <label class="grow">From<input id="convFrom" list="itemNames" value="Divine Orb" autocomplete="off"></label>
+          <span class="arrow">→</span>
+          <label class="grow">To<input id="convTo" list="itemNames" value="Exalted Orb" autocomplete="off"></label>
+          <strong id="convOut" class="conv-out">—</strong>
+        </div>
+        <div class="controls econ-controls">
+          <label class="grow">Search<input id="econSearch" type="search" placeholder="Filter by name…" autocomplete="off"></label>
+          <label>Category<select id="econCategory"><option value="">All</option></select></label>
+          <label>Sort<select id="econSort"><option value="value">Value</option><option value="volume">Volume</option><option value="change">7-day change</option><option value="name">Name</option></select></label>
+        </div>
+        <div class="table-wrap"><table><thead><tr><th>Item</th><th>Category</th><th>Divine</th><th>Exalted</th><th>Chaos</th><th>7-day</th><th>Volume (Div)</th></tr></thead><tbody id="econRows"></tbody></table></div>
+      </div>
+    </section>
+
+    <!-- EV calculator -->
+    <section class="panel tool" data-panel="ev" hidden>
+      <div class="panel-head"><div><h2>EV calculator</h2><p>Is a craft, a Desecration reveal or a gamble worth it? Enter what one attempt costs and what can come out. You supply the odds; prices come from the book.</p></div></div>
+      <div class="tool-body">
+        <div class="ev-grid">
+          <div>
+            <h3>Cost per attempt</h3>
+            <div id="evCosts"></div>
+            <button id="evAddCost" class="ghost">+ Add cost</button>
+          </div>
+          <div>
+            <h3>Outcomes</h3>
+            <div id="evOutcomes"></div>
+            <button id="evAddOutcome" class="ghost">+ Add outcome</button>
+          </div>
+        </div>
+        <div class="totals" id="evTotals"></div>
+        <p class="section-warning">EV is only as good as the odds you enter. Outcomes priced from the exchange assume you can sell at the poe.ninja midpoint; gear outcomes should use a value you have seen sell.</p>
+      </div>
+    </section>
+
+    <!-- Regex builder -->
+    <section class="panel tool" data-panel="regex" hidden>
+      <div class="panel-head"><div><h2>Regex builder</h2><p>Builds a stash / vendor search string. Paste it into the search box in game. The game caps search at 250 characters.</p></div></div>
+      <div class="tool-body two-col">
+        <div class="regex-form">
+          <label>Preset<select id="rxPreset">
+            <option value="waystone">Waystones</option>
+            <option value="tablet">Precursor Tablets</option>
+            <option value="relic">Relics</option>
+            <option value="vendor">Vendor / gear</option>
+          </select></label>
+          <div class="inline">
+            <label>Tier min<input id="rxTierMin" type="number" min="1" max="16"></label>
+            <label>Tier max<input id="rxTierMax" type="number" min="1" max="16"></label>
+          </div>
+          <div id="rxThresholds"></div>
+          <label>Must have (one per line)<textarea id="rxInclude" rows="3"></textarea></label>
+          <label class="toggle"><input id="rxIncludeAll" type="checkbox">Require all of them (otherwise any)</label>
+          <label>Exclude (one per line)<textarea id="rxExclude" rows="3"></textarea></label>
+          <small class="muted">Labels must match the in-game text. Check one item with Ctrl+C if a search finds nothing.</small>
+        </div>
+        <div>
+          <div class="regex-out"><code id="rxOut"></code></div>
+          <div class="row-actions"><span id="rxLen" class="muted"></span><button id="rxCopy">Copy</button><input id="rxName" placeholder="Name to save as…"><button id="rxSave" class="ghost">Save</button></div>
+          <h3>Saved searches</h3>
+          <ul id="rxSaved" class="saved-list"></ul>
+        </div>
+      </div>
+    </section>
+
+    <!-- Trade links -->
+    <section class="panel tool" data-panel="trade" hidden>
+      <div class="panel-head"><div><h2>Trade links</h2><p>Paste an item (Ctrl+C) or type a base / unique name to open the official trade search. Saved links stay in this browser.</p></div></div>
+      <div class="tool-body two-col">
+        <div>
+          <textarea id="tradeInput" rows="8" placeholder="Paste an item, or type a name like &quot;Iron Ring&quot;"></textarea>
+          <div class="row-actions"><button id="tradeOpen">Open trade search</button><button id="tradeExchange" class="ghost">Open currency exchange</button><button id="tradeSave" class="ghost">Save link</button></div>
+          <p id="tradePreview" class="muted"></p>
+        </div>
+        <div><h3>Saved trade links</h3><ul id="tradeSaved" class="saved-list"></ul></div>
+      </div>
+    </section>
+
+    <!-- Favourites -->
+    <section class="panel tool" data-panel="links" hidden>
+      <div class="panel-head"><div><h2>Favourites</h2><p>One-click resources. Add your own; they are saved in this browser.</p></div></div>
+      <div class="tool-body">
+        <div id="linkGrid" class="link-grid"></div>
+        <div class="row-actions"><input id="linkName" placeholder="Name"><input id="linkUrl" placeholder="https://…" class="grow"><button id="linkAdd">Add favourite</button></div>
+      </div>
+    </section>
+
+    <datalist id="itemNames"></datalist>
+
+    <footer>
+      <span>Prices: poe.ninja exchange overview (not affiliated with Grinding Gear Games). Unique and rare gear is not on the exchange, so it is priced through the trade link instead.</span>
+    </footer>
+  </main>
+
+  <script src="/tools-core.js"></script>
+  <script src="/tools.js"></script>
+</body>
+</html>
